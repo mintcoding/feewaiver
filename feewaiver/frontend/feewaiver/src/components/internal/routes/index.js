@@ -174,39 +174,6 @@ export default
                 },
             ]
         },
-        // {
-        //     path: 'district_proposal',
-        //     component: {
-        //         render(c)
-        //         {
-        //             return c('router-view')
-        //         }
-        //     },
-        //     children: [
-        //         {
-        //             path: ':district_proposal_id',
-        //             component: {
-        //                 render(c)
-        //                 {
-        //                     return c('router-view')
-        //                 }
-        //             },
-        //             children: [
-        //                 {
-        //                     path: '/',
-        //                     component: DistrictProposal,
-        //                     name:"internal-district-proposal"
-        //                 },
-        //             ]
-        //         },
-        //     ]
-        // },
-
-        /*{
-            path: 'proposal',
-            component: Proposal,
-            name:"new_proposal"
-        }*/
         */
     ]
 }
