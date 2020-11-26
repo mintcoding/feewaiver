@@ -109,10 +109,23 @@ REST_FRAMEWORK = {
 TEMPLATES[0]['DIRS'].append(os.path.join(BASE_DIR, 'feewaiver', 'templates'))
 TEMPLATES[0]['DIRS'].append(os.path.join(BASE_DIR, 'feewaiver','components','organisations', 'templates'))
 TEMPLATES[0]['DIRS'].append(os.path.join(BASE_DIR, 'feewaiver','components','emails', 'templates'))
+#BOOTSTRAP3 = {
+#    'jquery_url': '//static.dpaw.wa.gov.au/static/libs/jquery/2.2.1/jquery.min.js',
+#    'base_url': '//static.dpaw.wa.gov.au/static/libs/twitter-bootstrap/3.3.6/',
+#    'css_url': None,
+#    'theme_url': None,
+#    'javascript_url': None,
+#    'javascript_in_head': False,
+#    'include_jquery': False,
+#    'required_css_class': 'required-form-field',
+#    'set_placeholder': False,
+#}
 BOOTSTRAP3 = {
     'jquery_url': '//static.dpaw.wa.gov.au/static/libs/jquery/2.2.1/jquery.min.js',
     'base_url': '//static.dpaw.wa.gov.au/static/libs/twitter-bootstrap/3.3.6/',
-    'css_url': None,
+    #'css_url': None,
+    #'css_url': '//static.dpaw.wa.gov.au/static/libs/twitter-bootstrap/3.3.6/',
+    'css_url': '//static/ledger/css/bootstrap.min.css',
     'theme_url': None,
     'javascript_url': None,
     'javascript_in_head': False,
@@ -120,6 +133,7 @@ BOOTSTRAP3 = {
     'required_css_class': 'required-form-field',
     'set_placeholder': False,
 }
+
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',

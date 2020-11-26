@@ -14,7 +14,7 @@ from django.db import transaction
 from datetime import datetime, timedelta
 
 from feewaiver.helpers import is_internal
-#from feewaiver.forms import *
+from feewaiver.forms import *
 #from feewaiver.components.proposals.models import Referral, Proposal, HelpPage, DistrictProposal
 #from feewaiver.components.compliances.models import Compliance
 #from feewaiver.components.proposals.mixins import ReferralOwnerMixin
@@ -40,6 +40,8 @@ class InternalView(UserPassesTestMixin, TemplateView):
         context = super(InternalView, self).get_context_data(**kwargs)
         context['dev'] = settings.DEV_STATIC
         context['dev_url'] = settings.DEV_STATIC_URL
+        if hasattr(settings, 'DEV_APP_BUILD_URL') and settings.DEV_APP_BUILD_URL:
+            context['app_build_url'] = settings.DEV_APP_BUILD_URL
         return context
 
 class ExternalView(LoginRequiredMixin, TemplateView):
@@ -49,6 +51,8 @@ class ExternalView(LoginRequiredMixin, TemplateView):
         context = super(ExternalView, self).get_context_data(**kwargs)
         context['dev'] = settings.DEV_STATIC
         context['dev_url'] = settings.DEV_STATIC_URL
+        if hasattr(settings, 'DEV_APP_BUILD_URL') and settings.DEV_APP_BUILD_URL:
+            context['app_build_url'] = settings.DEV_APP_BUILD_URL
         return context
 #
 #class ReferralView(ReferralOwnerMixin, DetailView):
@@ -71,7 +75,7 @@ class ExternalView(LoginRequiredMixin, TemplateView):
 #    model = DistrictProposal
 #    template_name = 'feewaiver/dash/index.html'
 
-class CommercialOperatorRoutingView(TemplateView):
+class FeeWaiverRoutingView(TemplateView):
     template_name = 'feewaiver/index.html'
 
     def get(self, *args, **kwargs):
@@ -80,12 +84,12 @@ class CommercialOperatorRoutingView(TemplateView):
                 return redirect('internal')
             return redirect('external')
         kwargs['form'] = LoginForm
-        return super(CommercialOperatorRoutingView, self).get(*args, **kwargs)
+        return super(FeeWaiverRoutingView, self).get(*args, **kwargs)
 
-class CommercialOperatorContactView(TemplateView):
+class FeeWaiverContactView(TemplateView):
     template_name = 'feewaiver/contact.html'
 
-class CommercialOperatorFurtherInformationView(TemplateView):
+class FeeWaiverFurtherInformationView(TemplateView):
     template_name = 'feewaiver/further_info.html'
 
 #class InternalProposalView(DetailView):
@@ -100,7 +104,7 @@ class CommercialOperatorFurtherInformationView(TemplateView):
 #                return super(InternalProposalView, self).get(*args, **kwargs)
 #            return redirect('external-proposal-detail')
 #        kwargs['form'] = LoginForm
-#        return super(CommercialOperatorRoutingDetailView, self).get(*args, **kwargs)
+#        return super(FeeWaiverRoutingDetailView, self).get(*args, **kwargs)
 
 
 @login_required(login_url='ds_home')
