@@ -140,7 +140,7 @@ CACHES = {
         #'LOCATION': os.path.join(BASE_DIR, 'commercialoperator', 'cache'),
     }
 }
-STATIC_ROOT=os.path.join(BASE_DIR, 'staticfiles_co')
+STATIC_ROOT=os.path.join(BASE_DIR, 'staticfiles_fw')
 #STATICFILES_DIRS.append(os.path.join(os.path.join(BASE_DIR, 'commercialoperator', 'static')))
 STATICFILES_DIRS.append(os.path.join(os.path.join(BASE_DIR, 'feewaiver', 'static')))
 DEV_STATIC = env('DEV_STATIC',False)

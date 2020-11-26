@@ -3,8 +3,8 @@ var path = require('path')
 module.exports = {
   build: {
     env: require('./prod.env'),
-    index: path.resolve(__dirname, '../../../static/disturbance_vue/index.html'),
-    assetsRoot: path.resolve(__dirname, '../../../static/disturbance_vue'),
+    index: path.resolve(__dirname, '../../../static/feewaiver_vue/index.html'),
+    assetsRoot: path.resolve(__dirname, '../../../static/feewaiver_vue'),
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     productionSourceMap: true,
