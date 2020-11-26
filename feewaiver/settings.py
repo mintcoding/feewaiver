@@ -51,6 +51,7 @@ STATIC_URL = '/static/'
 INSTALLED_APPS += [
     'reversion_compare',
     'bootstrap3',
+    'feewaiver',
     #'commercialoperator',
     #'commercialoperator.components.main',
     #'commercialoperator.components.organisations',
@@ -105,9 +106,9 @@ REST_FRAMEWORK = {
 #    'commercialoperator.middleware.RevisionOverrideMiddleware',
 #]
 
-TEMPLATES[0]['DIRS'].append(os.path.join(BASE_DIR, 'commercialoperator', 'templates'))
-TEMPLATES[0]['DIRS'].append(os.path.join(BASE_DIR, 'commercialoperator','components','organisations', 'templates'))
-TEMPLATES[0]['DIRS'].append(os.path.join(BASE_DIR, 'commercialoperator','components','emails', 'templates'))
+TEMPLATES[0]['DIRS'].append(os.path.join(BASE_DIR, 'feewaiver', 'templates'))
+TEMPLATES[0]['DIRS'].append(os.path.join(BASE_DIR, 'feewaiver','components','organisations', 'templates'))
+TEMPLATES[0]['DIRS'].append(os.path.join(BASE_DIR, 'feewaiver','components','emails', 'templates'))
 BOOTSTRAP3 = {
     'jquery_url': '//static.dpaw.wa.gov.au/static/libs/jquery/2.2.1/jquery.min.js',
     'base_url': '//static.dpaw.wa.gov.au/static/libs/twitter-bootstrap/3.3.6/',
@@ -139,7 +140,7 @@ SYSTEM_NAME = env('SYSTEM_NAME', 'Fee waiver')
 SYSTEM_NAME_SHORT = env('SYSTEM_NAME_SHORT', 'COLS')
 SITE_PREFIX = env('SITE_PREFIX')
 SITE_DOMAIN = env('SITE_DOMAIN')
-#SUPPORT_EMAIL = env('SUPPORT_EMAIL', 'licensing@' + SITE_DOMAIN).lower()
+SUPPORT_EMAIL = env('SUPPORT_EMAIL', 'feewaiver@' + SITE_DOMAIN).lower()
 #SUPPORT_EMAIL_FILMING = env('SUPPORT_EMAIL_FILMING', 'filming@' + SITE_DOMAIN).lower()
 DEP_URL = env('DEP_URL','www.' + SITE_DOMAIN)
 DEP_PHONE = env('DEP_PHONE','(08) 9219 9978')
