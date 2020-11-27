@@ -1,4 +1,4 @@
-//import InternalDashboard from '../dashboard.vue'
+import InternalDashboard from '../dashboard.vue'
 //import Search from '../search.vue'
 export default
 {
@@ -11,11 +11,11 @@ export default
         }
     },
     children: [
-        /*
         {
             path: '/',
             component: InternalDashboard
         },
+        /*
         {
             path: 'approvals',
             component: ApprovalDash,

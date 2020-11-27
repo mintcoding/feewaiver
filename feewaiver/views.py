@@ -34,6 +34,7 @@ class InternalView(UserPassesTestMixin, TemplateView):
     template_name = 'feewaiver/dash/index.html'
 
     def test_func(self):
+        #import ipdb; ipdb.set_trace()
         return is_internal(self.request)
 
     def get_context_data(self, **kwargs):
@@ -44,10 +45,12 @@ class InternalView(UserPassesTestMixin, TemplateView):
             context['app_build_url'] = settings.DEV_APP_BUILD_URL
         return context
 
-class ExternalView(LoginRequiredMixin, TemplateView):
+#class ExternalView(LoginRequiredMixin, TemplateView):
+class ExternalView(TemplateView):
     template_name = 'feewaiver/dash/index.html'
 
     def get_context_data(self, **kwargs):
+        #import ipdb; ipdb.set_trace()
         context = super(ExternalView, self).get_context_data(**kwargs)
         context['dev'] = settings.DEV_STATIC
         context['dev_url'] = settings.DEV_STATIC_URL

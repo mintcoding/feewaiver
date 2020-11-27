@@ -493,13 +493,33 @@ class SystemMaintenance(models.Model):
 
 class UserSystemSettings(models.Model):
     one_row_per_park = models.BooleanField(default=False) #Setting for user if they want to see Payment (Park Entry Fees Dashboard) by one row per park or one row per booking
-    user = models.ForeignKey(EmailUser, unique=True, related_name='system_settings')
+    #user = models.ForeignKey(EmailUser, unique=True, related_name='system_settings')
+    user = models.OneToOneField(EmailUser, related_name='system_settings')
 
 
     class Meta:
         app_label = 'feewaiver'
         verbose_name_plural = "User System Settings"
 
+
+class TemporaryDocumentCollection(models.Model):
+    # input_name = models.CharField(max_length=255, null=True, blank=True)
+
+    class Meta:
+        app_label = 'feewaiver'
+
+
+# temp document obj for generic file upload component
+class TemporaryDocument(Document):
+    temp_document_collection = models.ForeignKey(
+        TemporaryDocumentCollection,
+        related_name='documents')
+    _file = models.FileField(max_length=255)
+
+    # input_name = models.CharField(max_length=255, null=True, blank=True)
+
+    class Meta:
+        app_label = 'feewaiver'
 
 import reversion
 #reversion.register(Region, follow=['districts'])

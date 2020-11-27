@@ -125,7 +125,7 @@ BOOTSTRAP3 = {
     'base_url': '//static.dpaw.wa.gov.au/static/libs/twitter-bootstrap/3.3.6/',
     #'css_url': None,
     #'css_url': '//static.dpaw.wa.gov.au/static/libs/twitter-bootstrap/3.3.6/',
-    'css_url': '//static/ledger/css/bootstrap.min.css',
+    'css_url': 'ledger/css/bootstrap.min.css',
     'theme_url': None,
     'javascript_url': None,
     'javascript_in_head': False,
@@ -148,6 +148,7 @@ DEV_STATIC_URL = env('DEV_STATIC_URL')
 if DEV_STATIC and not DEV_STATIC_URL:
     raise ImproperlyConfigured('If running in DEV_STATIC, DEV_STATIC_URL has to be set')
 DATA_UPLOAD_MAX_NUMBER_FIELDS = None
+DEV_APP_BUILD_URL = env('DEV_APP_BUILD_URL')  # URL of the Dev app.js served by webpack & express
 
 # Department details
 SYSTEM_NAME = env('SYSTEM_NAME', 'Fee waiver')

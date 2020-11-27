@@ -56,10 +56,11 @@
                                     <span class="icon-bar"></span>
                                     <span class="icon-bar"></span>
                                 </a>
-                                <a class="navbar-brand" href="{% url 'ds_home' %}"><div style="inline"><img src="{% static 'feewaiver/img/dpaw_small.png' %}">{% if is_internal_login %}Applications {% else %}Home {% endif %}</div></a>
+                                <!--a class="navbar-brand" href="{% url 'ds_home' %}"><div style="inline"><img src="{% static 'feewaiver/img/dpaw_small.png' %}">{% if is_internal_login %}Applications {% else %}Home {% endif %}</div></a-->
+                                <a class="navbar-brand" href="{% url 'ds_home' %}"><div style="inline"><img src="{% static 'feewaiver/img/dpaw_small.png' %}">Home</div></a>
                             </div>
                             <div id="navbar" class="navbar-collapse collapse">
-                                <ul class="nav navbar-nav">
+                                <!--ul class="nav navbar-nav">
                                     {% block left_menu_items %}
                                         {% if is_internal_login %}
                                         <li><a href="/internal/approvals">Licences</a></li>
@@ -71,7 +72,7 @@
                                         <li><a href="/external/payment">Park Entry Fees</a></li>
                                         {% endif %}
                                     {% endblock %}
-                                </ul>
+                                </ul-->
                                 <ul class="nav navbar-nav navbar-right">
                                     {% if request.user.is_authenticated %}
                                         <li>
@@ -97,19 +98,25 @@
                                                 {% if is_feewaiver_admin_user or request.user.is_superuser %}
                                                     <li><a href="{% url 'admin:index' %}">Admin</a></li>
                                                 {% endif %}
+                                                {% comment %}
                                                 {% if is_feewaiver_admin_user or request.user.is_superuser or is_payment_officer %}
                                                     <li><a href="/internal/reports">Reports</a></li>
                                                 {% endif %}
+                                                {% endcomment %}
+                                                {% comment %}
                                                 {% if is_feewaiver_admin_user or request.user.is_superuser %}
                                                     <li role="separator" class="divider"></li>
                                                 {% endif %}
+                                                {% endcomment %}
+                                                {% comment %}
                                                 {% if request.user.is_superuser %}
                                                     <li><a href="{% url 'mgt-commands' %}">Management Commands</a></li>
                                                 {% endif %}
+                                                {% endcomment %}
                                                 {% if show_tests and request.user.is_superuser %}
                                                     <li><a href="{% url 'test-emails' %}">Test Emails</a></li>
                                                 {% endif %}
-                                                <li><a href="{% url 'manage-account' %}">Manage Account</a></li>
+                                                <!--li><a href="{% url 'manage-account' %}">Manage Account</a></li-->
                                                 <!-- <li><a href="{% url 'manage-profiles' %}">Manage Profiles</a></li> -->
                                                 {% for org in request.user.feewaiver_organisations.all %}
                                                     {% for org_contact in org.contacts.all%}
@@ -177,7 +184,12 @@
             <script type="text/javascript" src="https://static.dpaw.wa.gov.au/static/cdnjs/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
             <script type="text/javascript" src="{% static 'feewaiver_vue/static/js/manifest.js' %}"></script>
             <script type="text/javascript" src="{% static 'feewaiver_vue/static/js/vendor.js' %}"></script>
-            <script type="text/javascript" src="{% static 'feewaiver_vue/static/js/app.js' %}"></script>
+            {% if app_build_url %}
+                <script type="text/javascript" src="{{ app_build_url }}"></script>
+            {% else %}
+                <script type="text/javascript" src="{% static 'feewaiver_vue/static/js/app.js' %}"></script>
+            {% endif %}
+            <!--script type="text/javascript" src="{% static 'feewaiver_vue/static/js/app.js' %}"></script-->
         {% else %}
             <script type="text/javascript" src="{{ dev_url }}"></script>
         {% endif %}

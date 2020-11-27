@@ -1,3 +1,4 @@
+import FeeWaiverForm from '../../feewaiver_form.vue'
 //import ExternalDashboard from '../dashboard.vue'
 //import Proposal from '../proposal.vue'
 //import CommercialOperatorLicence from '../commercial_operator_licence.vue'
@@ -12,6 +13,11 @@ export default
         }
     },
     children: [
+        {
+            path: '/',
+            component: FeeWaiverForm,
+            name: 'external-feewaiver-form'
+        },
         /*
         {
             path: '/',

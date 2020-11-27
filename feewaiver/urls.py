@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.conf.urls import url, include
 from django.conf.urls.static import static
 from rest_framework import routers
-from feewaiver import views, users_api
+from feewaiver import views, users_api, api
 #from commercialoperator.admin import commercialoperator_admin_site
 #from commercialoperator.components.proposals import views as proposal_views
 #from commercialoperator.components.organisations import views as organisation_views
@@ -18,6 +18,8 @@ from ledger.urls import urlpatterns as ledger_patterns
 
 # API patterns
 router = routers.DefaultRouter()
+router.register(r'feewaivers',api.FeeWaiverViewSet)
+router.register(r'feewaivers_paginated',api.FeeWaiverPaginatedViewSet)
 #router.register(r'organisations',org_api.OrganisationViewSet)
 #router.register(r'proposal',proposal_api.ProposalViewSet)
 #router.register(r'event_trail_container', main_api.TrailTabViewSet, base_name='event_trail_container')
@@ -32,7 +34,7 @@ api_patterns = [
     #url(r'^api/proposal_type$', proposal_api.GetProposalType.as_view(), name='get-proposal-type'),
     #url(r'^api/empty_list$', proposal_api.GetEmptyList.as_view(), name='get-empty-list'),
     #url(r'^api/organisation_access_group_members',org_api.OrganisationAccessGroupMembers.as_view(),name='organisation-access-group-members'),
-    #url(r'^api/',include(router.urls)),
+    url(r'^api/',include(router.urls)),
     #url(r'^api/amendment_request_reason_choices',proposal_api.AmendmentRequestReasonChoicesView.as_view(),name='amendment_request_reason_choices'),
     #url(r'^api/compliance_amendment_reason_choices',compliances_api.ComplianceAmendmentReasonChoicesView.as_view(),name='amendment_request_reason_choices'),
     #url(r'^api/search_keywords',proposal_api.SearchKeywordsView.as_view(),name='search_keywords'),
