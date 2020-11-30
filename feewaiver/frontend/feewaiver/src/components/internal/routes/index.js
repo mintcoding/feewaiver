@@ -1,5 +1,6 @@
 import InternalDashboard from '../dashboard.vue'
 //import Search from '../search.vue'
+import FeeWaiverForm from '../../feewaiver_form.vue'
 export default
 {
     path: '/internal',
@@ -15,6 +16,23 @@ export default
             path: '/',
             component: InternalDashboard
         },
+        {
+            path: 'fee_waiver',
+            component: {
+                render(c)
+                {
+                    return c('router-view')
+                }
+            },
+            children: [
+                {
+                    path: ':fee_waiver_id',
+                    component: FeeWaiverForm,
+                    name:"fee-waiver-details"
+                },
+            ]
+        },
+
         /*
         {
             path: 'approvals',

@@ -189,8 +189,9 @@
         },
         data:function () {
             let vm = this;
-            return{
+            return {
                 feeWaiver: {},
+                feeWaiverId: null,
                 contactDetails: {},
                 email_confirmation: '',
                 /*
@@ -212,7 +213,7 @@
             DeedPoll,
             */
         },
-        computed:{
+        computed: {
             /*
             showActionAvailableUnavailable: function() {
                 let show = false
@@ -604,15 +605,34 @@
 
         },
         created: function() {
-            //this.fetchDeedPollUrl()
         },
         mounted: function() {
             let vm = this;
-            this.$nextTick(() => {
+            this.$nextTick(async () => {
+            console.log("mounted")
+            if (this.feeWaiverId) {
+                console.log("mounted next")
+                const url = helpers.add_endpoint_join(
+                    api_endpoints.feewaivers,
+                    this.feeWaiverId
+                )
+                const returnVal = await this.$http.get(url);
+                console.log(url);
+                console.log(returnVal);
+                /*
+                this.contactDetails = returnVal.body.contact_details;
+                this.feeWaiver = returnVal.body.fee_waiver;
+                */
+                Object.assign(this.feeWaiver, returnVal.body);
+            }
                 vm.addEventListeners();
             });
+        },
+        beforeRouteEnter: function(to, from, next) {
+            next(vm => {
+                vm.feeWaiverId = to.params.fee_waiver_id;
+            })
         }
-
     }
 </script>
 

@@ -74,6 +74,9 @@ class ContactDetailsSerializer(serializers.ModelSerializer):
                 # participants..?
                 'organisation_description'
                 )
+        read_only_fields = (
+            'id',
+        )
 #        read_only_fields=('documents',)
 #
 #    def get_documents_url(self,obj):
@@ -120,6 +123,9 @@ class FeeWaiverSerializer(serializers.ModelSerializer):
                 'number_of_vehicles',     
                 'age_of_participants', 
                 )
+        read_only_fields = (
+            'id',
+        )
 
 
 class FeeWaiverDTSerializer(serializers.ModelSerializer):
@@ -144,4 +150,7 @@ class FeeWaiverDTSerializer(serializers.ModelSerializer):
                 #document,
                 #assigned_to,
                 )
+        read_only_fields = (
+            'id',
+        )
 
