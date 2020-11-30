@@ -1,69 +1,126 @@
 <template lang="html">
-    <div>
+    <div class="container">
         <!--strong> fill in form</strong-->
         <!--a class="navbar-brand" href="{% url 'ds_home' %}"><div style="inline"><img src="{% static 'feewaiver/img/dpaw_small.png' %}">Staff login</div></a-->
         <!--a class="navbar-brand pull-right" href="/"><div style="inline"><img src="/static/feewaiver/img/dpaw_small.png">Staff login</div></a-->
         <FormSection :formCollapse="false" label="Contact Details" Index="contact_details">
             <div class="col-md-12">
-                <div class="row">
-                  <div class="form-group">
-                    <label for="organisation" class="col-sm-5 control-label">Organisation
+                <div class="form-group">
+                    <div class="row">
+                    <label for="" class="col-sm-2 control-label">Organisation</label>
+                    <div class="col-sm-4">
                         <input type="text" class="form-control" name="organisation" placeholder="" v-model="contactDetails.organisation">
-                    </label>
-                    <label for="contact_name" class="col-sm-5 control-label">Contact
+                    </div>
+                    <label for="" class="col-sm-2 control-label">Contact</label>
+                    <div class="col-sm-4">
                         <input type="text" class="form-control" name="contact_name" placeholder="" v-model="contactDetails.contact_name">
-                    </label>
-                  </div>
+                    </div>
+                    </div>
                 </div>
-                <div class="row">
-                  <div class="form-group">
-                    <label for="postal_address" class="col-sm-5 control-label">Postal Address
+                <div class="form-group">
+                    <div class="row">
+                    <label for="" class="col-sm-2 control-label">Postal Address</label>
+                    <div class="col-sm-4">
                         <input type="text" class="form-control" name="postal_address" placeholder="" v-model="contactDetails.postal_address">
-                    </label>
-                  </div>
+                    </div>
+                    </div>
                 </div>
-                <div class="row">
-                  <div class="form-group">
-                    <label for="suburb" class="col-sm-4 control-label">Suburb
+                <div class="form-group">
+                    <div class="row">
+                    <label for="suburb" class="col-sm-2 control-label">Suburb</label>
+                    <div class="col-sm-4">
                         <input type="text" class="form-control" name="suburb" placeholder="" v-model="contactDetails.suburb">
-                    </label>
-                    <label for="state" class="col-sm-1 control-label">State
+                    </div>
+                    <label for="state" class="col-sm-1 control-label">State</label>
+                    <div class="col-sm-2">
                         <input type="text" class="form-control" name="state" placeholder="" v-model="contactDetails.state">
-                    </label>
-                    <label for="postcode" class="col-sm-1 control-label">Postcode
+                    </div>
+                    <label for="postcode" class="col-sm-1 control-label">Postcode</label>
+                    <div class="col-sm-2">
                         <input type="text" class="form-control" name="postcode" placeholder="" v-model="contactDetails.postcode">
-                    </label>
-                  </div>
+                    </div>
+                    </div>
                 </div>
-                <div class="row">
-                  <div class="form-group">
-                    <label for="phone" class="col-sm-5 control-label">Phone
-                        <input type="text" class="form-control" name="phone" placeholder="" v-model="contactDetails.phone">
-                    </label>
-                  </div>
+                <div class="form-group">
+                    <div class="row">
+                    <label for="phone" class="col-sm-2 control-label">Phone</label>
+                    <div class="col-sm-4">
+                    <input type="text" class="form-control" name="phone" placeholder="" v-model="contactDetails.phone">
+                    </div>
+                    </div>
                 </div>
-                <div class="row">
-                  <div class="form-group">
-                    <label for="email" class="col-sm-5 control-label">Email
+                <div class="form-group">
+                    <div class="row">
+                    <label for="email" class="col-sm-2 control-label">Email</label>
+                    <div class="col-sm-4">
                         <input type="text" class="form-control" name="email" placeholder="" v-model="contactDetails.email">
-                    </label>
-                    <label for="email_confirmation" class="col-sm-5 control-label">Confirm Email
-                        <input type="text" class="form-control" name="email_confirmation" placeholder="" v-model="email_confirmation">
-                    </label>
-                  </div>
+                    </div>
+                    <label for="email_confirmation" class="col-sm-2 control-label">Confirm Email</label>
+                    <div class="col-sm-4">
+                    <input type="text" class="form-control" name="email_confirmation" placeholder="" v-model="email_confirmation">
+                    </div>
+                    </div>
                 </div>
             </div>
         </FormSection>
         <FormSection :formCollapse="false" label="Fee Waiver Request" Index="fee_waiver_request">
-            <div class="col-md-12">
-                <div class="row">
-                  <div class="form-group">
-                    <label for="number_of_vehicles" class="col-sm-2 control-label">Number of vehicles used for visit
-                        <input type="number" class="form-control" name="number_of_vehicles" min="0" step="1" v-model="feeWaiver.number_of_vehicles">
-                    </label>
-                  </div>
+            <div class="col-sm-10">
+                <div class="form-group">
+                    <div class="row">
+                      <label for="fee_waiver_purpose" class="col-sm-4 control-label">Describe the purpose of the visit(s)</label>
+                      <div class="col-sm-8">
+                          <textarea class="form-control" name="fee_waiver_purpose" v-model="feeWaiver.fee_waiver_purpose"/>
+                      </div>
+                    </div>
                 </div>
             </div>
+            <div class="col-sm-10">
+                <div class="form-group">
+                    <div class="row">
+                        <label for="fee_waiver_description" class="col-sm-4 control-label">Provide the details of your visit</label>
+                        <div class="col-sm-8">
+                            <textarea class="form-control" name="fee_waiver_description" v-model="feeWaiver.fee_waiver_description"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-10">
+                <div class="form-group">
+                    <div class="row">
+                        <label for="date_from" class="col-sm-4 control-label">Date from</label>
+                        <div class="col-sm-4">
+                            <div class="input-group date" ref="dateFromPicker">
+                                    <input name="date_from" type="text" class="form-control" placeholder="DD/MM/YYYY" v-model="feeWaiver.date_from" />
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label for="date_to" class="col-sm-4 control-label">Date to</label>
+                        <div class="col-sm-4">
+                            <div class="input-group date" ref="dateToPicker">
+                                    <input name="date_to" type="text" class="form-control" placeholder="DD/MM/YYYY" v-model="feeWaiver.date_to" />
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label for="number_of_vehicles" class="col-sm-4 control-label">Number of vehicles used for visit</label>
+                        <div class="col-sm-4">
+                            <input type="number" class="form-control" name="number_of_vehicles" min="0" step="1" v-model="feeWaiver.number_of_vehicles">
+                        </div>
+                    </div>
+                </div>
+            </div>
+ 
         </FormSection>
 
         <input type="button" @click.prevent="submit" class="btn btn-primary pull-right" value="Submit"/>
@@ -83,6 +140,10 @@
     */
     import { api_endpoints, helpers }from '@/utils/hooks'
     import FormSection from "@/components/forms/section_toggle.vue"
+    import 'bootstrap/dist/css/bootstrap.css';
+    import 'eonasdan-bootstrap-datetimepicker';
+    require("select2/dist/css/select2.min.css");
+    require("select2-bootstrap-theme/dist/select2-bootstrap.min.css");
 
     export default {
         name: 'FeeWaiverForm',
@@ -336,6 +397,12 @@
                     swalText = "Are you sure you want to submit this application?";
                 }
                 */
+                if (this.feeWaiver.date_from) {
+                    this.feeWaiver.date_from = moment(this.feeWaiver.date_from, 'DD/MM/YYYY').format('YYYY-MM-DD');
+                }
+                if (this.feeWaiver.date_to) {
+                    this.feeWaiver.date_to = moment(this.feeWaiver.date_to, 'DD/MM/YYYY').format('YYYY-MM-DD');
+                }
                 const payload = {
                     'contact_details': this.contactDetails,
                     'fee_waiver': this.feeWaiver,
@@ -347,7 +414,12 @@
                     showCancelButton: true,
                     confirmButtonText: 'Submit'
                 })
-                await this.$http.post(api_endpoints.feewaivers,payload)
+                const returnedFeeWaiver = await this.$http.post(api_endpoints.feewaivers,payload);
+                this.$router.push({
+                    name: 'submit_feewaiver',
+                    params: { fee_waiver: returnedFeeWaiver.body}
+                });
+
                 /*
                     .then(() => {
                     console.log('in then()');
@@ -379,19 +451,45 @@
                 //vm.submittingProposal= false;
                 */
             },
+            addEventListeners: function() {
+              let vm = this;
+              let el_fr_date = $(vm.$refs.dateFromPicker);
+              let el_to_date = $(vm.$refs.dateToPicker);
+
+              // "From" field
+              el_fr_date.datetimepicker({
+                format: "DD/MM/YYYY",
+                maxDate: "now",
+                showClear: true
+              });
+              el_fr_date.on("dp.change", function(e) {
+                if (el_fr_date.data("DateTimePicker").date()) {
+                  vm.feeWaiver.date_from = e.date.format("DD/MM/YYYY");
+                } else if (el_fr_date.data("date") === "") {
+                  vm.feeWaiver.date_from = "";
+                }
+              });
+
+              // "To" field
+              el_to_date.datetimepicker({
+                format: "DD/MM/YYYY",
+                minDate: "now",
+                showClear: true
+              });
+              el_to_date.on("dp.change", function(e) {
+                if (el_to_date.data("DateTimePicker").date()) {
+                  vm.feeWaiver.date_to = e.date.format("DD/MM/YYYY");
+                } else if (el_to_date.data("date") === "") {
+                  vm.feeWaiver.date_to = "";
+                }
+              });
+                /*
+              window.addEventListener('beforeunload', this.leaving);
+              window.addEventListener('onblur', this.leaving);
+              */
+            },
 
             /*
-            fetchDeedPollUrl: function(){
-                let vm = this;
-                vm.$http.get('/api/deed_poll_url').then((response) => {
-                    vm.deed_poll_url = response.body;
-                },(error) => {
-                    console.log(error);
-                });
-            },
-            total_num_of_sites_on_map: function(value){
-                this.$emit('total_num_of_sites_on_map', value)
-            },
             addEventListeners: function () {
                 let vm = this;
                 let el_fr = $(vm.$refs.expiryDatePicker);
@@ -509,13 +607,10 @@
             //this.fetchDeedPollUrl()
         },
         mounted: function() {
-            /*
             let vm = this;
-            this.component_site_selection_key = uuid()
             this.$nextTick(() => {
                 vm.addEventListeners();
             });
-            */
         }
 
     }

@@ -15,7 +15,7 @@ class ContactDetails(models.Model):
     organisation_description = models.TextField(blank=True)
 
     def __str__(self):
-        return '{} - v{}'.format(self.organisation, self.contact_name)
+        return 'Organisation: {}, Contact: {}'.format(self.organisation, self.contact_name)
 
     class Meta:
         app_label = 'feewaiver'
@@ -23,6 +23,8 @@ class ContactDetails(models.Model):
 
 class FeeWaiver(models.Model):
     #contact_details = models.ForeignKey(ContactDetails, null=True, blank=False, related_name='fee_waivers')
+    lodgement_number = models.CharField(max_length=12, blank=True, default='')
+    lodgement_date = models.DateTimeField(auto_now_add=True)
     contact_details = models.OneToOneField(ContactDetails, related_name="fee_waiver")
     fee_waiver_purpose = models.TextField(blank=True)
     fee_waiver_description = models.TextField(blank=True)
@@ -42,10 +44,23 @@ class FeeWaiver(models.Model):
 
 
     def __str__(self):
-        return '{} - v{}'.format(self.organisation, self.contact_name)
+        return 'Contact details: {}, Number of vehicles: {}'.format(self.contact_details, self.number_of_vehicles)
 
     class Meta:
         app_label = 'feewaiver'
+
+    #def save(self, *args, **kwargs):
+    #    super(FeeWaiver, self).save(*args,**kwargs)
+    #    if self.lodgement_number == '':
+    #        self.lodgement_number = 'EFWR{0:06d}'.format(self.next_id)
+    #        self.save()
+
+    def save(self, *args, **kwargs):
+        super(FeeWaiver, self).save(*args,**kwargs)
+        if self.lodgement_number == '':
+            new_lodgment_id = 'EFWR{0:06d}'.format(self.pk)
+            self.lodgement_number = new_lodgment_id
+            self.save()
 
 
 class ContactDetailsDocument(Document):

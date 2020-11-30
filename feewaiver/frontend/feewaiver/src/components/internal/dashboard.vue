@@ -14,7 +14,7 @@
                         <div v-if="!apiaryTemplateGroup">
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="">Region</label>
+                                    <label for="">Lodged From</label>
                                     <select class="form-control" v-model="filterProposalRegion">
                                         <option value="All">All</option>
                                         <option v-for="r in proposal_regions" :value="r">{{r}}</option>
@@ -23,7 +23,7 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="">Activity</label>
+                                    <label for="">Lodged To</label>
                                     <select class="form-control" v-model="filterProposalActivity">
                                         <option value="All">All</option>
                                         <option v-for="a in proposal_activityTitles" :value="a">{{a}}</option>
@@ -41,7 +41,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
+                    <!--div class="row">
                         <div class="col-md-3">
                             <label for="">Expiry From</label>
                             <div class="input-group date" ref="proposalDateFromPicker">
@@ -60,10 +60,10 @@
                                 </span>
                             </div>
                         </div>
-                    </div>
+                    </div-->
                     <div class="row">
                         <div class="col-lg-12" style="margin-top:25px;">
-                            <datatable ref="proposal_datatable" :id="datatable_id" :dtOptions="proposal_options" :dtHeaders="proposal_headers"/>
+                            <datatable ref="feewaiver_datatable" :id="datatable_id" :dtOptions="feewaiver_options" :dtHeaders="feewaiver_headers"/>
                         </div>
                     </div>
                 </div>
@@ -110,17 +110,19 @@ export default {
             datatable_id: 'proposal-datatable-'+vm._uid,
             //Profile to check if user has access to process Proposal
             profile: {},
+            /*
             approval_history: {
                 isModalOpen: false,
                 approval_history_id: null,
             },
+            */
             // Filters for Proposals
-            filterProposalRegion: 'All',
-            filterProposalActivity: 'All',
-            filterProposalStatus: 'All',
-            filterProposalLodgedFrom: '',
-            filterProposalLodgedTo: '',
-            filterProposalSubmitter: 'All',
+            //filterProposalRegion: 'All',
+            //filterProposalActivity: 'All',
+            filterFeeWaiverStatus: 'All',
+            filterFeeWaiverLodgedFrom: '',
+            filterFeeWaiverLodgedTo: '',
+            //filterProposalSubmitter: 'All',
             dashboardTitle: '',
             dashboardDescription: '',
             dateFormat: 'DD/MM/YYYY',
@@ -131,6 +133,7 @@ export default {
                 keepInvalid:true,
                 allowInputToggle:true
             },
+            /*
             approval_status:[],
             proposal_activityTitles : [],
             proposal_regions: [],
@@ -138,9 +141,9 @@ export default {
             //template_group: '',
             dasTemplateGroup: false,
             apiaryTemplateGroup: false,
-            /*
-            proposal_headers:["Number","Region","Activity","Title","Holder","Status","Start Date","Expiry Date","Approval","Action",""],
-            proposal_options:{
+            */
+            feewaiver_headers:["Number","Submitter","Status","Lodged On","Document","Assigned To","Action"],
+            feewaiver_options:{
                 language: {
                     processing: "<i class='fa fa-4x fa-spinner fa-spin'></i>"
                 },
@@ -363,7 +366,6 @@ export default {
                     }
                 },
             }
-            */
         }
     },
     components:{

@@ -86,6 +86,8 @@ class FeeWaiverRoutingView(TemplateView):
             if is_internal(self.request):
                 return redirect('internal')
             return redirect('external')
+        else:
+            return redirect('external')
         kwargs['form'] = LoginForm
         return super(FeeWaiverRoutingView, self).get(*args, **kwargs)
 
@@ -172,5 +174,14 @@ class ManagementCommandsView(LoginRequiredMixin, TemplateView):
             data.update({command_script: 'true'})
 
         return render(request, self.template_name, data)
+
+
+#class FeeWaiverSubmitSuccessView(TemplateView):
+#    template_name = 'feewaiver/fee_waiver_submit_success.html'
+#
+#    def get(self, request):
+#        import ipdb; ipdb.set_trace()
+#
+#        return render(request, self.template_name, data)
 
 

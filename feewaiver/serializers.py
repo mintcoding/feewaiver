@@ -62,6 +62,7 @@ class ContactDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactDetails
         fields = (
+                'id',
                 'organisation',
                 'contact_name',
                 'postal_address',
@@ -100,11 +101,16 @@ class FeeWaiverSerializer(serializers.ModelSerializer):
 #    allowed_assessors = EmailUserSerializer(many=True)
 #
 #    get_history = serializers.ReadOnlyField()
+    contact_details_id = serializers.IntegerField(
+            required=True, write_only=True, allow_null=False)
 
 
     class Meta:
         model = FeeWaiver
         fields = (
+                'id',
+                'lodgement_number',
+                'lodgement_date',
                 'contact_details_id',     
                 'fee_waiver_purpose',     
                 'fee_waiver_description',     
@@ -114,4 +120,28 @@ class FeeWaiverSerializer(serializers.ModelSerializer):
                 'number_of_vehicles',     
                 'age_of_participants', 
                 )
-                    
+
+
+class FeeWaiverDTSerializer(serializers.ModelSerializer):
+#    readonly = serializers.SerializerMethodField(read_only=True)
+#    documents_url = serializers.SerializerMethodField()
+#    proposal_type = serializers.SerializerMethodField()
+#    allowed_assessors = EmailUserSerializer(many=True)
+#
+#    get_history = serializers.ReadOnlyField()
+    #contact_details_id = serializers.IntegerField(
+     #       required=True, write_only=True, allow_null=False)
+
+
+    class Meta:
+        model = FeeWaiver
+        fields = (
+                'id',
+                'lodgement_number',
+                #'submitter',
+                #'status',
+                'lodgement_date',
+                #document,
+                #assigned_to,
+                )
+
