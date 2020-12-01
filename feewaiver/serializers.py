@@ -6,6 +6,7 @@ from feewaiver.models import (
         FeeWaiver,
         FeeWaiverUserAction,
         FeeWaiverLogEntry,
+        Participants,
         )
 #from disturbance.components.organisations.models import (
  #                               Organisation
@@ -64,6 +65,7 @@ class ContactDetailsSerializer(serializers.ModelSerializer):
         fields = (
                 'id',
                 'organisation',
+                'organisation_description',
                 'contact_name',
                 'postal_address',
                 'suburb',                     
@@ -71,7 +73,7 @@ class ContactDetailsSerializer(serializers.ModelSerializer):
                 'postcode',                     
                 'phone',
                 'email',
-                # participants..?
+                'participants_id',
                 'organisation_description'
                 )
         read_only_fields = (
@@ -149,6 +151,19 @@ class FeeWaiverDTSerializer(serializers.ModelSerializer):
                 'lodgement_date',
                 #document,
                 #assigned_to,
+                )
+        read_only_fields = (
+            'id',
+        )
+
+
+class ParticipantsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Participants
+        fields = (
+                'id',
+                'name',
                 )
         read_only_fields = (
             'id',

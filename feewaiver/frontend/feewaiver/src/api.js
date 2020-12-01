@@ -7,6 +7,7 @@ var event='Event'
 
 module.exports = {
     feewaivers: '/api/feewaivers/',
+    participants: '/api/participants/participants_list',
     /*
     organisations: '/api/organisations.json',
     filtered_organisations: '/api/filtered_organisations',

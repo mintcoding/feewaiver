@@ -61,6 +61,25 @@
                     </div>
                     </div>
                 </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="col-sm-4 control-label">Participants</label>
+                        <div class="col-sm-6">
+                            <select ref="participants" class="form-control" v-model="contactDetails.participants_id">
+                                <option value="null"></option>
+                                <option v-for="group in participantGroupList" :value="group.id">{{group.name}}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                      <label class="col-sm-4 control-label">Provide a brief explanation of your organisation</label>
+                      <div class="col-sm-8">
+                          <textarea class="form-control" v-model="contactDetails.organisation_details"/>
+                      </div>
+                    </div>
+                </div>
             </div>
         </FormSection>
         <FormSection :formCollapse="false" label="Fee Waiver Request" Index="fee_waiver_request">
@@ -194,6 +213,7 @@
                 feeWaiverId: null,
                 contactDetails: {},
                 email_confirmation: '',
+                participantGroupList: [],
                 /*
                 values:null,
                 pBody: 'pBody'+vm._uid,
@@ -390,8 +410,8 @@
                 */
                 // remove the confirm prompt when navigating away from window (on button 'Submit' click)
                 //vm.submitting = true;
-                let swalTitle = "Submit Proposal";
-                let swalText = "Are you sure you want to submit this proposal?";
+                let swalTitle = "Submit Request";
+                let swalText = "Are you sure you want to submit this request?";
                 /*
                 if (this.apiaryTemplateGroup) {
                     swalTitle = "Submit Application";
@@ -416,6 +436,7 @@
                     confirmButtonText: 'Submit'
                 })
                 const returnedFeeWaiver = await this.$http.post(api_endpoints.feewaivers,payload);
+                console.log(returnedFeeWaiver);
                 this.$router.push({
                     name: 'submit_feewaiver',
                     params: { fee_waiver: returnedFeeWaiver.body}
@@ -460,12 +481,13 @@
               // "From" field
               el_fr_date.datetimepicker({
                 format: "DD/MM/YYYY",
-                maxDate: "now",
+                minDate: "now",
                 showClear: true
               });
               el_fr_date.on("dp.change", function(e) {
                 if (el_fr_date.data("DateTimePicker").date()) {
                   vm.feeWaiver.date_from = e.date.format("DD/MM/YYYY");
+                  el_to_date.data("DateTimePicker").minDate(e.date);
                 } else if (el_fr_date.data("date") === "") {
                   vm.feeWaiver.date_from = "";
                 }
@@ -474,7 +496,8 @@
               // "To" field
               el_to_date.datetimepicker({
                 format: "DD/MM/YYYY",
-                minDate: "now",
+                //minDate: "now",
+                //minDate: el_fr_date,
                 showClear: true
               });
               el_to_date.on("dp.change", function(e) {
@@ -488,6 +511,22 @@
               window.addEventListener('beforeunload', this.leaving);
               window.addEventListener('onblur', this.leaving);
               */
+            },
+            fetchParticipantsGroupList: async function() {
+                //this.loading.push('Loading Apiary Referral Groups');
+                this.participantGroupList = [];
+                const response = await this.$http.get(api_endpoints.participants)
+                for (let group of response.body) {
+                    this.participantGroupList.push(group)
+                }
+                /*
+                    this.loading.splice('Loading Apiary Referral Groups',1);
+                },(error) => {
+                    console.log(error);
+                    this.loading.splice('Loading Apiary Referral Groups',1);
+                })
+                */
+
             },
 
             /*
@@ -607,15 +646,20 @@
         created: function() {
         },
         mounted: function() {
-            let vm = this;
+            //let vm = this;
             this.$nextTick(async () => {
             console.log("mounted")
             if (this.feeWaiverId) {
                 console.log("mounted next")
+                /*
                 const url = helpers.add_endpoint_join(
                     api_endpoints.feewaivers,
-                    this.feeWaiverId
+                    this.feeWaiverId,
+                    '/feewaiver_contactdetails_pack/'
                 )
+                */
+                const url = api_endpoints.feewaivers + this.feeWaiverId + '/feewaiver_contactdetails_pack/';
+
                 const returnVal = await this.$http.get(url);
                 console.log(url);
                 console.log(returnVal);
@@ -623,11 +667,20 @@
                 this.contactDetails = returnVal.body.contact_details;
                 this.feeWaiver = returnVal.body.fee_waiver;
                 */
-                Object.assign(this.feeWaiver, returnVal.body);
+                //Object.assign(this.feeWaiver, returnVal.body);
+                let feeWaiverUpdate = Object.assign({}, returnVal.body.fee_waiver)
+                feeWaiverUpdate.date_to = moment(feeWaiverUpdate.date_to, 'YYYY-MM-DD').format('DD/MM/YYYY');
+                feeWaiverUpdate.date_from = moment(feeWaiverUpdate.date_from, 'YYYY-MM-DD').format('DD/MM/YYYY');
+                feeWaiverUpdate.number_of_vehicles = feeWaiverUpdate.number_of_vehicles.toString()
+                this.feeWaiver = Object.assign({}, feeWaiverUpdate);
+
+                this.contactDetails = Object.assign({}, returnVal.body.contact_details);
             }
-                vm.addEventListeners();
+                this.addEventListeners();
+                this.fetchParticipantsGroupList();
             });
         },
+        // this needs to go into the internal wrapper form, which will then pass feeWaiverId to this component as a prop
         beforeRouteEnter: function(to, from, next) {
             next(vm => {
                 vm.feeWaiverId = to.params.fee_waiver_id;

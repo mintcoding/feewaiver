@@ -63,7 +63,9 @@ export default {
   },
   beforeRouteEnter: function(to, from, next) {
     next(vm => {
-        vm.feeWaiver = to.params.fee_waiver;
+        console.log("submit component")
+        //vm.feeWaiver = to.params.fee_waiver;
+        vm.feeWaiver = Object.assign({}, to.params.fee_waiver);
     })
   }
 }

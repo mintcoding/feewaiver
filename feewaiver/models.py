@@ -2,8 +2,32 @@ from django.db import models
 from feewaiver.main_models import CommunicationsLogEntry, UserAction, Document
 
 
+class Participants(models.Model):
+    name = models.CharField(max_length=256, blank=True, default='')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        app_label = 'feewaiver'
+        verbose_name_plural = 'Participants'
+
+
+class Park(models.Model):
+    name = models.CharField(max_length=256, blank=True, default='')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        app_label = 'feewaiver'
+
+
+
 class ContactDetails(models.Model):
+    participants = models.ForeignKey(Participants, null=True, blank=True)
     organisation = models.CharField(max_length=256, blank=True, null=True)
+    organisation_description = models.TextField(blank=True)
     contact_name = models.CharField(max_length=256, blank=True, null=True)
     postal_address = models.CharField(max_length=256, blank=True, null=True)
     suburb = models.CharField(max_length=256, blank=True, null=True)
@@ -19,6 +43,7 @@ class ContactDetails(models.Model):
 
     class Meta:
         app_label = 'feewaiver'
+        verbose_name_plural = 'Contact Details'
 
 
 class FeeWaiver(models.Model):

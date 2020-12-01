@@ -20,6 +20,7 @@ from ledger.urls import urlpatterns as ledger_patterns
 router = routers.DefaultRouter()
 router.register(r'feewaivers',api.FeeWaiverViewSet)
 router.register(r'feewaivers_paginated',api.FeeWaiverPaginatedViewSet)
+router.register(r'participants',api.ParticipantsViewSet)
 #router.register(r'organisations',org_api.OrganisationViewSet)
 #router.register(r'proposal',proposal_api.ProposalViewSet)
 #router.register(r'event_trail_container', main_api.TrailTabViewSet, base_name='event_trail_container')

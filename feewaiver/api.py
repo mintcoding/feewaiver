@@ -28,12 +28,14 @@ from feewaiver.serializers import (
         FeeWaiverSerializer,
         FeeWaiverLogEntrySerializer,
         FeeWaiverUserActionSerializer,
+        ParticipantsSerializer,
 )
 from feewaiver.models import (
         ContactDetails,
         FeeWaiver,
         FeeWaiverLogEntry,
         FeeWaiverUserAction,
+        Participants,
 )
 from feewaiver.helpers import is_customer, is_internal, is_feewaiver_admin
 from django.core.files.base import ContentFile
@@ -760,6 +762,26 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
             print(traceback.print_exc())
             raise serializers.ValidationError(str(e))
 
+    @detail_route(methods=['get'])
+    @renderer_classes((JSONRenderer,))
+    def feewaiver_contactdetails_pack(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            contact_serializer = ContactDetailsSerializer(instance.contact_details)
+            waiver_serializer = FeeWaiverSerializer(instance)
+            return Response({
+                "contact_details": contact_serializer.data,
+                "fee_waiver": waiver_serializer.data,
+                })
+        except serializers.ValidationError:
+            print(traceback.print_exc())
+            raise
+        except ValidationError as e:
+            raise serializers.ValidationError(repr(e.error_dict))
+        except Exception as e:
+            print(traceback.print_exc())
+            raise serializers.ValidationError(str(e))
+
     def create(self, request, *args, **kwargs):
         try:
             with transaction.atomic():
@@ -879,4 +901,25 @@ class SearchReferenceView(views.APIView):
         except Exception as e:
             print(traceback.print_exc())
             raise serializers.ValidationError(str(e))
+
+
+class ParticipantsViewSet(viewsets.ModelViewSet):
+    #import ipdb; ipdb.set_trace()
+    #queryset = Proposal.objects.all()
+    queryset = Participants.objects.none()
+    serializer_class = ParticipantsSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        #import ipdb; ipdb.set_trace()
+        if is_internal(self.request): #user.is_authenticated():
+            return Participants.objects.all()
+        return Participants.objects.none()
+
+    @list_route(methods=['GET',])
+    def participants_list(self, request, *args, **kwargs):
+        #qs = Participants.objects.filter().values_list('name', flat=True)
+        serializer = ParticipantsSerializer(Participants.objects.all(), many=True)
+        return Response(serializer.data)
+
 
