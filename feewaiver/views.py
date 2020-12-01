@@ -82,14 +82,17 @@ class FeeWaiverRoutingView(TemplateView):
     template_name = 'feewaiver/index.html'
 
     def get(self, *args, **kwargs):
+        #import ipdb; ipdb.set_trace()
+        web_url = self.request.META.get('HTTP_HOST', None)
+        # only send internal users to login page
         if self.request.user.is_authenticated():
             if is_internal(self.request):
                 return redirect('internal')
-            return redirect('external')
+        elif web_url and '-internal' in web_url:
+            kwargs['form'] = LoginForm
+            return super(FeeWaiverRoutingView, self).get(*args, **kwargs)
         else:
             return redirect('external')
-        kwargs['form'] = LoginForm
-        return super(FeeWaiverRoutingView, self).get(*args, **kwargs)
 
 class FeeWaiverContactView(TemplateView):
     template_name = 'feewaiver/contact.html'
