@@ -54,12 +54,14 @@ export default {
         }
   },
   mounted: function() {
-      if (!this.fee_waiver) {
-          this.$router.push({
-              name: 'external-feewaiver-form',
-              //params: { fee_waiver: returnedFeeWaiver.body}
-          });
-      }
+      this.$nextTick(() => {
+          if (!this.feeWaiver) {
+              this.$router.push({
+                  name: 'external-feewaiver-form',
+                  //params: { fee_waiver: returnedFeeWaiver.body}
+              });
+          }
+      });
   },
   beforeRouteEnter: function(to, from, next) {
     next(vm => {
