@@ -132,6 +132,17 @@
                 </div>
                 <div class="form-group">
                     <div class="row">
+                        <label class="col-sm-4 control-label">Park/s</label>
+                        <div class="col-sm-6">
+                            <select ref="parks" class="form-control" multiple="multiple">
+                                <option value="null"></option>
+                                <option v-for="park in parksList" :value="park.id">{{park.name}}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
                         <label for="number_of_vehicles" class="col-sm-4 control-label">Number of vehicles used for visit</label>
                         <div class="col-sm-4">
                             <input type="number" class="form-control" name="number_of_vehicles" min="0" step="1" v-model="feeWaiver.number_of_vehicles">
@@ -163,6 +174,7 @@
     import 'eonasdan-bootstrap-datetimepicker';
     require("select2/dist/css/select2.min.css");
     require("select2-bootstrap-theme/dist/select2-bootstrap.min.css");
+    require("select2");
 
     export default {
         name: 'FeeWaiverForm',
@@ -214,6 +226,8 @@
                 contactDetails: {},
                 email_confirmation: '',
                 participantGroupList: [],
+                parksList: [],
+                selectedParkIds: [],
                 /*
                 values:null,
                 pBody: 'pBody'+vm._uid,
@@ -436,7 +450,6 @@
                     confirmButtonText: 'Submit'
                 })
                 const returnedFeeWaiver = await this.$http.post(api_endpoints.feewaivers,payload);
-                console.log(returnedFeeWaiver);
                 this.$router.push({
                     name: 'submit_feewaiver',
                     params: { fee_waiver: returnedFeeWaiver.body}
@@ -507,26 +520,45 @@
                   vm.feeWaiver.date_to = "";
                 }
               });
+              // Parks multi select
+
+              let el_parks = $(vm.$refs.parks);
+              el_parks.select2();
+              el_parks.on('select2:select', function(e) {
+                  //console.log(e);
+                  let val = e.params.data;
+                  if (!vm.selectedParkIds.includes(val.id)) {
+                      vm.selectedParkIds.push(val.id);
+                  }
+              }).
+              on("select2:unselect",function (e) {
+                  //console.log(e);
+                  let val = e.params.data;
+                  if (vm.selectedParkIds.includes(val.id)) {
+                      let index = vm.selectedParkIds.indexOf(val.id);
+                      vm.selectedParkIds.splice(index, 1);
+                  }
+              });
+
+              
                 /*
               window.addEventListener('beforeunload', this.leaving);
               window.addEventListener('onblur', this.leaving);
               */
             },
             fetchParticipantsGroupList: async function() {
-                //this.loading.push('Loading Apiary Referral Groups');
                 this.participantGroupList = [];
                 const response = await this.$http.get(api_endpoints.participants)
                 for (let group of response.body) {
                     this.participantGroupList.push(group)
                 }
-                /*
-                    this.loading.splice('Loading Apiary Referral Groups',1);
-                },(error) => {
-                    console.log(error);
-                    this.loading.splice('Loading Apiary Referral Groups',1);
-                })
-                */
-
+            },
+            fetchParksList: async function() {
+                this.parksList = [];
+                const response = await this.$http.get(api_endpoints.parks)
+                for (let group of response.body) {
+                    this.parksList.push(group)
+                }
             },
 
             /*
@@ -648,9 +680,7 @@
         mounted: function() {
             //let vm = this;
             this.$nextTick(async () => {
-            console.log("mounted")
             if (this.feeWaiverId) {
-                console.log("mounted next")
                 /*
                 const url = helpers.add_endpoint_join(
                     api_endpoints.feewaivers,
@@ -678,6 +708,7 @@
             }
                 this.addEventListeners();
                 this.fetchParticipantsGroupList();
+                this.fetchParksList();
             });
         },
         // this needs to go into the internal wrapper form, which will then pass feeWaiverId to this component as a prop

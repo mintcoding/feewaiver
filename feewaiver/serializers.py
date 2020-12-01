@@ -7,6 +7,7 @@ from feewaiver.models import (
         FeeWaiverUserAction,
         FeeWaiverLogEntry,
         Participants,
+        Park,
         )
 #from disturbance.components.organisations.models import (
  #                               Organisation
@@ -99,6 +100,20 @@ class ContactDetailsSerializer(serializers.ModelSerializer):
 #    def get_proposal_type(self,obj):
 #        return obj.get_proposal_type_display()
 #
+
+class ParkSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Park
+        fields = (
+                'id',
+                'name',
+                )
+        read_only_fields = (
+            'id',
+        )
+
+
 class FeeWaiverSerializer(serializers.ModelSerializer):
 #    readonly = serializers.SerializerMethodField(read_only=True)
 #    documents_url = serializers.SerializerMethodField()
@@ -106,6 +121,7 @@ class FeeWaiverSerializer(serializers.ModelSerializer):
 #    allowed_assessors = EmailUserSerializer(many=True)
 #
 #    get_history = serializers.ReadOnlyField()
+    parks = ParkSerializer(read_only=True, many=True)
     contact_details_id = serializers.IntegerField(
             required=True, write_only=True, allow_null=False)
 
@@ -121,7 +137,7 @@ class FeeWaiverSerializer(serializers.ModelSerializer):
                 'fee_waiver_description',     
                 'date_from',     
                 'date_to',     
-                # park,    
+                'parks',    
                 'number_of_vehicles',     
                 'age_of_participants', 
                 )
@@ -168,4 +184,5 @@ class ParticipantsSerializer(serializers.ModelSerializer):
         read_only_fields = (
             'id',
         )
+
 

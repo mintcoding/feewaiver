@@ -29,6 +29,7 @@ from feewaiver.serializers import (
         FeeWaiverLogEntrySerializer,
         FeeWaiverUserActionSerializer,
         ParticipantsSerializer,
+        ParkSerializer,
 )
 from feewaiver.models import (
         ContactDetails,
@@ -36,6 +37,7 @@ from feewaiver.models import (
         FeeWaiverLogEntry,
         FeeWaiverUserAction,
         Participants,
+        Park,
 )
 from feewaiver.helpers import is_customer, is_internal, is_feewaiver_admin
 from django.core.files.base import ContentFile
@@ -922,4 +924,23 @@ class ParticipantsViewSet(viewsets.ModelViewSet):
         serializer = ParticipantsSerializer(Participants.objects.all(), many=True)
         return Response(serializer.data)
 
+
+class ParkViewSet(viewsets.ModelViewSet):
+    #import ipdb; ipdb.set_trace()
+    #queryset = Proposal.objects.all()
+    queryset = Park.objects.none()
+    serializer_class = ParkSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        #import ipdb; ipdb.set_trace()
+        if is_internal(self.request): #user.is_authenticated():
+            return Park.objects.all()
+        return Park.objects.none()
+
+    @list_route(methods=['GET',])
+    def parks_list(self, request, *args, **kwargs):
+        #qs = Participants.objects.filter().values_list('name', flat=True)
+        serializer = ParkSerializer(Park.objects.all(), many=True)
+        return Response(serializer.data)
 

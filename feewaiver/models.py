@@ -55,7 +55,7 @@ class FeeWaiver(models.Model):
     fee_waiver_description = models.TextField(blank=True)
     date_from = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=False,verbose_name="Date from", help_text='')
     date_to = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=False,verbose_name="Date to", help_text='')
-    # park
+    parks = models.ManyToManyField(Park)
     number_of_vehicles = models.IntegerField(default=0)
     AGE_CHOICES = (
         ('15', 'Under 15 yrs'),

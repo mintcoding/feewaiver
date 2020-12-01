@@ -55,7 +55,7 @@ export default {
   },
   mounted: function() {
       this.$nextTick(() => {
-          if (!this.feeWaiver) {
+          if (!Object.keys(this.feeWaiver).length) {
               this.$router.push({
                   name: 'external-feewaiver-form',
                   //params: { fee_waiver: returnedFeeWaiver.body}
@@ -65,7 +65,6 @@ export default {
   },
   beforeRouteEnter: function(to, from, next) {
     next(vm => {
-        console.log("submit component")
         //vm.feeWaiver = to.params.fee_waiver;
         vm.feeWaiver = Object.assign({}, to.params.fee_waiver);
     })
