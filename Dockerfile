@@ -32,7 +32,7 @@ RUN rm /app/libgeos.py.patch
 # Install the project (ensure that frontend projects have been built prior to this step).
 FROM python_libs_feewaiver
 
-COPY gunicorn.ini manage_mo.py ./
+COPY gunicorn.ini manage_fw.py ./
 #COPY ledger ./ledger
 COPY timezone /etc/timezone
 ENV TZ=Australia/Perth
@@ -44,15 +44,15 @@ RUN python manage_mo.py collectstatic --noinput
 RUN mkdir /app/tmp/
 RUN chmod 777 /app/tmp/
 
-COPY cron /etc/cron.d/dockercron
-COPY startup.sh /
-# Cron start
-RUN service rsyslog start
-RUN chmod 0644 /etc/cron.d/dockercron
-RUN crontab /etc/cron.d/dockercron
-RUN touch /var/log/cron.log
-RUN service cron start
-RUN chmod 755 /startup.sh
+#COPY cron /etc/cron.d/dockercron
+#COPY startup.sh /
+## Cron start
+#RUN service rsyslog start
+#RUN chmod 0644 /etc/cron.d/dockercron
+#RUN crontab /etc/cron.d/dockercron
+#RUN touch /var/log/cron.log
+#RUN service cron start
+#RUN chmod 755 /startup.sh
 # cron end
 EXPOSE 8080
 HEALTHCHECK --interval=1m --timeout=5s --start-period=10s --retries=3 CMD ["wget", "-q", "-O", "-", "http://localhost:8080/"]
