@@ -153,8 +153,8 @@ DEV_APP_BUILD_URL = env('DEV_APP_BUILD_URL')  # URL of the Dev app.js served by 
 # Department details
 SYSTEM_NAME = env('SYSTEM_NAME', 'Fee waiver')
 SYSTEM_NAME_SHORT = env('SYSTEM_NAME_SHORT', 'COLS')
-SITE_PREFIX = env('SITE_PREFIX')
-SITE_DOMAIN = env('SITE_DOMAIN')
+SITE_PREFIX = env('SITE_PREFIX', '')
+SITE_DOMAIN = env('SITE_DOMAIN', '')
 SUPPORT_EMAIL = env('SUPPORT_EMAIL', 'feewaiver@' + SITE_DOMAIN).lower()
 #SUPPORT_EMAIL_FILMING = env('SUPPORT_EMAIL_FILMING', 'filming@' + SITE_DOMAIN).lower()
 DEP_URL = env('DEP_URL','www.' + SITE_DOMAIN)

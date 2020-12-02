@@ -39,7 +39,7 @@ ENV TZ=Australia/Perth
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN touch /app/.env
 COPY feewaiver ./feewaiver
-RUN python manage_mo.py collectstatic --noinput
+RUN python manage_fw.py collectstatic --noinput
 
 RUN mkdir /app/tmp/
 RUN chmod 777 /app/tmp/
