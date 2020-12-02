@@ -40,6 +40,7 @@ class FeeWaiverUserActionSerializer(serializers.ModelSerializer):
         model = FeeWaiverUserAction
         fields = '__all__'
 
+
 class FeeWaiverLogEntrySerializer(CommunicationLogEntrySerializer):
     documents = serializers.SerializerMethodField()
     class Meta:
@@ -52,14 +53,11 @@ class FeeWaiverLogEntrySerializer(CommunicationLogEntrySerializer):
     def get_documents(self,obj):
         return [[d.name,d._file.url] for d in obj.documents.all()]
 
-class ContactDetailsSerializer(serializers.ModelSerializer):
-#    readonly = serializers.SerializerMethodField(read_only=True)
-#    documents_url = serializers.SerializerMethodField()
-#    proposal_type = serializers.SerializerMethodField()
-#    allowed_assessors = EmailUserSerializer(many=True)
-#
-#    get_history = serializers.ReadOnlyField()
 
+class ContactDetailsSerializer(serializers.ModelSerializer):
+    participants_id = serializers.IntegerField(write_only=True)
+    participants_code = serializers.SerializerMethodField()
+    #        required=True, write_only=True, allow_null=False)
 
     class Meta:
         model = ContactDetails
@@ -75,31 +73,15 @@ class ContactDetailsSerializer(serializers.ModelSerializer):
                 'phone',
                 'email',
                 'participants_id',
+                'participants_code',
                 'organisation_description'
                 )
         read_only_fields = (
             'id',
         )
-#        read_only_fields=('documents',)
-#
-#    def get_documents_url(self,obj):
-#        return '/media/proposals/{}/documents/'.format(obj.id)
-#
-#    def get_readonly(self,obj):
-#        return False
-#
-#    def get_processing_status(self,obj):
-#        return obj.get_processing_status_display()
-#
-#    def get_review_status(self,obj):
-#        return obj.get_review_status_display()
-#
-#    def get_customer_status(self,obj):
-#        return obj.get_customer_status_display()
-#
-#    def get_proposal_type(self,obj):
-#        return obj.get_proposal_type_display()
-#
+
+    def get_participants_code(self,obj):
+        return obj.participants_id
 
 class ParkSerializer(serializers.ModelSerializer):
 
@@ -115,13 +97,7 @@ class ParkSerializer(serializers.ModelSerializer):
 
 
 class FeeWaiverSerializer(serializers.ModelSerializer):
-#    readonly = serializers.SerializerMethodField(read_only=True)
-#    documents_url = serializers.SerializerMethodField()
-#    proposal_type = serializers.SerializerMethodField()
-#    allowed_assessors = EmailUserSerializer(many=True)
-#
-#    get_history = serializers.ReadOnlyField()
-    parks = ParkSerializer(read_only=True, many=True)
+    park_ids = serializers.SerializerMethodField()
     contact_details_id = serializers.IntegerField(
             required=True, write_only=True, allow_null=False)
 
@@ -137,7 +113,7 @@ class FeeWaiverSerializer(serializers.ModelSerializer):
                 'fee_waiver_description',     
                 'date_from',     
                 'date_to',     
-                'parks',    
+                'park_ids',    
                 'number_of_vehicles',     
                 'age_of_participants', 
                 )
@@ -145,17 +121,14 @@ class FeeWaiverSerializer(serializers.ModelSerializer):
             'id',
         )
 
+    def get_park_ids(self, obj):
+        park_id_list = []
+        for park in obj.parks.all():
+            park_id_list.append(str(park.id))
+        return park_id_list
+
 
 class FeeWaiverDTSerializer(serializers.ModelSerializer):
-#    readonly = serializers.SerializerMethodField(read_only=True)
-#    documents_url = serializers.SerializerMethodField()
-#    proposal_type = serializers.SerializerMethodField()
-#    allowed_assessors = EmailUserSerializer(many=True)
-#
-#    get_history = serializers.ReadOnlyField()
-    #contact_details_id = serializers.IntegerField(
-     #       required=True, write_only=True, allow_null=False)
-
 
     class Meta:
         model = FeeWaiver

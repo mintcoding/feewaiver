@@ -798,8 +798,12 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
                 fee_waiver_data.update({'contact_details_id': contact_details_obj.id})
                 waiver_serializer = FeeWaiverSerializer(data=fee_waiver_data)
                 waiver_serializer.is_valid(raise_exception=True)
-                #fee_waiver_obj = serializer.save()
-                waiver_serializer.save()
+                fee_waiver_obj = waiver_serializer.save()
+                # add parks
+                parks_data = request.data.get('parks')
+                if parks_data:
+                    for park_id in parks_data:
+                        fee_waiver_obj.parks.add(Park.objects.get(id=park_id))
                 return Response(waiver_serializer.data)
         except Exception as e:
             print(traceback.print_exc())

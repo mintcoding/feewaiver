@@ -76,7 +76,7 @@
                     <div class="row">
                       <label class="col-sm-4 control-label">Provide a brief explanation of your organisation</label>
                       <div class="col-sm-8">
-                          <textarea class="form-control" v-model="contactDetails.organisation_details"/>
+                          <textarea class="form-control" v-model="contactDetails.organisation_description"/>
                       </div>
                     </div>
                 </div>
@@ -228,210 +228,31 @@
                 participantGroupList: [],
                 parksList: [],
                 selectedParkIds: [],
-                /*
-                values:null,
-                pBody: 'pBody'+vm._uid,
-                component_site_selection_key: '',
-                expiry_date_local: '',
-                deed_poll_url: '',
-                */
             }
         },
         components: {
             FormSection,
-            /*
-            SiteLocations,
-            ComponentSiteSelection,
-            FileField,
-            ApiaryChecklist,
-            DeedPoll,
-            */
         },
         computed: {
-            /*
-            showActionAvailableUnavailable: function() {
-                let show = false
-                if(this.is_external){
-                    if(this.proposal && ['approved', 'Approved'].includes(this.proposal.customer_status)){
-                        show = true
-                    }
-                }
-                return show
-            },
-            showColStatus: function() {
-                let show = false
-
-                show = true
-
-                return show
-            },
-            apiary_sections_classname: function() {
-                // For external page, we need 'col-md-9' classname
-                // but not for the internal.
-                // This is a hacky way, though...
-                if(this.is_internal){
-                    return ''
-                } else {
-                    return 'col-md-9'
-                }
-            },
-            deedPollDocumentUrl: function() {
-                let url = '';
-                if (this.proposal && this.proposal.proposal_apiary) {
-                    url = helpers.add_endpoint_join(
-                        '/api/proposal_apiary/',
-                        this.proposal.proposal_apiary.id + '/process_deed_poll_document/'
-                    )
-                }
-                return url;
-            },
-            supportingApplicationDocumentUrl: function() {
-                let url = '';
-                if (this.proposal && this.proposal.proposal_apiary) {
-                    url = helpers.add_endpoint_join(
-                        '/api/proposal_apiary/',
-                        this.proposal.proposal_apiary.id + '/process_supporting_application_document/'
-                    )
-                }
-                return url;
-            },
-            publicLiabilityInsuranceDocumentUrl: function() {
-                let url = '';
-                if (this.proposal && this.proposal.proposal_apiary) {
-                    url = helpers.add_endpoint_join(
-                        '/api/proposal_apiary/',
-                        this.proposal.proposal_apiary.id + '/process_public_liability_insurance_document/'
-                    )
-                }
-                return url;
-            },
-            readonly: function() {
-                let readonlyStatus = true;
-                if (this.proposal.customer_status === 'Draft' && !this.is_internal) {
-                    readonlyStatus = false;
-                }
-                return readonlyStatus;
-            },
-            assessorChecklistReadonly: function() {
-                let readonlyStatus = true;
-                //if (this.proposal.processing_status === 'With Assessor' && this.is_internal) {
-                if (this.is_internal && this.proposal && this.proposal.assessor_mode && this.proposal.assessor_mode.assessor_can_assess) {
-                    readonlyStatus = false;
-                }
-                return readonlyStatus;
-            },
-            assessorChecklistVisibility: function() {
-                let visibility = false;
-                //if (this.proposal.processing_status === 'With Assessor' && this.is_internal) {
-                if (this.is_internal && this.proposal && this.proposal.assessor_mode && this.proposal.assessor_mode.has_assessor_mode) {
-                    visibility = true;
-                }
-                return visibility;
-            },
-            referrerChecklistReadonly: function() {
-                let readonlyStatus = true;
-                // referrer must have access
-                if (this.is_internal && this.proposal.processing_status === 'With Referral' &&
-                    this.referral && this.referral.processing_status === 'Awaiting' &&
-                    this.referral.apiary_referral && this.referral.apiary_referral.can_process) {
-                    readonlyStatus = false;
-                }
-                return readonlyStatus;
-            },
-            referrerChecklistVisibility: function() {
-                let visibility = false;
-                // must be relevant referral
-                if ((!this.referrerChecklistReadonly && r.id === this.referral.id) || this.assessorChecklistVisibility) {
-                    visibility = true;
-                }
-                return visibility;
-            },
-            getUnansweredChecklistQuestions: function() {
-                let UnansweredChecklistQuestions = false;
-
-                if(this.applicantChecklistAnswers){
-                    let numOfAnswers = this.applicantChecklistAnswers.length;
-                    for( let i=0; i< numOfAnswers ; i ++){
-                        if(this.applicantChecklistAnswers[i].answer == null && !this.applicantChecklistAnswers[i].text_answer){
-                            UnansweredChecklistQuestions = true;
-                        }
-                    }
-                }
-                return UnansweredChecklistQuestions;
-            },
-            apiary_sites: function() {
-                if (this.proposal && this.proposal.proposal_apiary) {
-                    return this.proposal.proposal_apiary.apiary_sites;
-                }
-            },
-            draftApiaryApplication: function() {
-                let draftStatus = false;
-                if (this.is_external && this.proposal && this.proposal.application_type === 'Apiary' && this.proposal.customer_status === 'Draft') {
-                    draftStatus = true;
-                }
-                return draftStatus;
-            },
-            applicantChecklistAnswers: function() {
-                if (this.proposal && this.proposal.proposal_apiary && this.proposal.proposal_apiary.applicant_checklist_answers &&
-                    this.proposal.proposal_apiary.applicant_checklist_answers.length > 0) {
-                    return this.proposal.proposal_apiary.applicant_checklist_answers;
-                }
-            },
-            assessorChecklistAnswers: function() {
-                if (this.proposal && this.proposal.proposal_apiary && this.proposal.proposal_apiary.assessor_checklist_answers &&
-                    this.proposal.proposal_apiary.assessor_checklist_answers.length > 0) {
-                    return this.proposal.proposal_apiary.assessor_checklist_answers;
-                }
-            },
-            referrerChecklistAnswers: function() {
-                if (this.proposal && this.proposal.proposal_apiary && this.proposal.proposal_apiary.referrer_checklist_answers &&
-                    this.proposal.proposal_apiary.referrer_checklist_answers.length > 0) {
-                    return this.proposal.proposal_apiary.referrer_checklist_answers;
-                }
-            },
-            */
         },
         methods:{
+            updateSelectedParks: function() {
+                if (this.feeWaiver && this.feeWaiver.park_ids && this.feeWaiver.park_ids.length > 0) {
+                    //this.selectedParkIds = [];
+                    console.log(this.feeWaiver.park_ids);
+                    $(this.$refs.parks).val(this.feeWaiver.park_ids);
+                    $(this.$refs.parks).trigger('change');
+                    /*
+                    for (let parkId of this.feeWaiver.park_ids) {
+                        this.selectedParkIds.push(parkId);
+                        $(this.$refs.parks).val(parkId);
+                    }
+                    */
+                }
+            },
             submit: async function(){
-                console.log('in submit');
-
-                //let vm = this;
-                //vm.form=document.forms.new_proposal;
-                //let formData = new FormData(vm.form);
-                // Add apiary_sites data if needed
-                //formData = this.attach_apiary_sites_data(formData)
-                /*
-                let missing_data = vm.can_submit();
-                if(missing_data!=true){
-                  swal({
-                    title: "Please fix following errors before submitting",
-                    text: missing_data,
-                    type:'error'
-                  })
-                //vm.paySubmitting=false;
-                return false;
-                }
-
-                var num_missing_fields = vm.validate()
-                if (num_missing_fields > 0) {
-                    vm.highlight_missing_fields()
-                    var top = ($('#error').offset() || { "top": NaN }).top;
-                    $('html, body').animate({
-                        scrollTop: top
-                    }, 1);
-                    return false;
-                }
-                */
-                // remove the confirm prompt when navigating away from window (on button 'Submit' click)
-                //vm.submitting = true;
                 let swalTitle = "Submit Request";
                 let swalText = "Are you sure you want to submit this request?";
-                /*
-                if (this.apiaryTemplateGroup) {
-                    swalTitle = "Submit Application";
-                    swalText = "Are you sure you want to submit this application?";
-                }
-                */
                 if (this.feeWaiver.date_from) {
                     this.feeWaiver.date_from = moment(this.feeWaiver.date_from, 'DD/MM/YYYY').format('YYYY-MM-DD');
                 }
@@ -441,6 +262,7 @@
                 const payload = {
                     'contact_details': this.contactDetails,
                     'fee_waiver': this.feeWaiver,
+                    'parks': this.selectedParkIds,
                 }
                 await swal({
                     title: swalTitle,
@@ -455,36 +277,6 @@
                     params: { fee_waiver: returnedFeeWaiver.body}
                 });
 
-                /*
-                    .then(() => {
-                    console.log('in then()');
-                    vm.submittingProposal = true;
-                    // Only Apiary has an application fee
-                    if (!vm.proposal.fee_paid || ['Apiary', 'Site Transfer'].includes(vm.proposal.application_type)) {
-                    //if (this.submit_button_text === 'Pay and submit' && ['Apiary', 'Site Transfer'].includes(vm.proposal.application_type)) {
-                        vm.save_and_redirect();
-                    } else {
-                        //vm.save_wo_confirm()
-                        vm.save(false)
-                        vm.$http.post(helpers.add_endpoint_json(api_endpoints.proposals,vm.proposal.id+'/submit'),formData).then(res=>{
-                            vm.proposal = res.body;
-                            vm.$router.push({
-                                name: 'submit_proposal',
-                                params: { proposal: vm.proposal}
-                            });
-                        },err=>{
-                            swal(
-                                'Submit Error',
-                                helpers.apiVueResourceError(err),
-                                'error'
-                            )
-                        });
-                    }
-                },(error) => {
-                  vm.paySubmitting=false;
-                });
-                //vm.submittingProposal= false;
-                */
             },
             addEventListeners: function() {
               let vm = this;
@@ -540,7 +332,6 @@
                   }
               });
 
-              
                 /*
               window.addEventListener('beforeunload', this.leaving);
               window.addEventListener('onblur', this.leaving);
@@ -561,118 +352,6 @@
                 }
             },
 
-            /*
-            addEventListeners: function () {
-                let vm = this;
-                let el_fr = $(vm.$refs.expiryDatePicker);
-                let options = {
-                    format: "DD/MM/YYYY",
-                    showClear: true ,
-                    useCurrent: false,
-                };
-
-                el_fr.datetimepicker(options);
-
-                el_fr.on("dp.change", function(e) {
-                    if (e.date){
-                        // Date selected
-                        vm.expiry_date_local= e.date.format('DD/MM/YYYY')  // e.date is moment object
-                    } else {
-                        // Date not selected
-                        vm.expiry_date_local = null;
-                    }
-                    vm.$emit('expiry_date_changed', vm.expiry_date_local)
-                });
-
-                //***
-                // Set dates in case they are passed from the parent component
-                //***
-                let searchPattern = /^[0-9]{4}/
-
-                let expiry_date_passed = vm.proposal.proposal_apiary.public_liability_insurance_expiry_date;
-                console.log('passed')
-                console.log(expiry_date_passed)
-                if (expiry_date_passed) {
-                    // If date passed
-                    if (searchPattern.test(expiry_date_passed)) {
-                        // Convert YYYY-MM-DD to DD/MM/YYYY
-                        expiry_date_passed = moment(expiry_date_passed, 'YYYY-MM-DD').format('DD/MM/YYYY');
-                    }
-                    $('#expiry_date_input_element').val(expiry_date_passed);
-                }
-            },
-            assessorChecklistAnswersPerSite: function(siteId) {
-                let siteList = []
-                if (this.proposal && this.proposal.proposal_apiary && this.proposal.proposal_apiary.assessor_checklist_answers_per_site &&
-                    this.proposal.proposal_apiary.assessor_checklist_answers_per_site.length > 0) {
-                    for (let answer of this.proposal.proposal_apiary.assessor_checklist_answers_per_site) {
-                        if (answer.apiary_site_id === siteId) {
-                            siteList.push(answer)
-                        }
-                    }
-                }
-                return siteList;
-            },
-            referrerChecklistAnswersPerSite: function(referralId, siteId) {
-                let siteList = []
-                if (this.proposal.proposal_apiary && this.proposal.proposal_apiary.referrer_checklist_answers_per_site) {
-                    for (let referral of this.proposal.proposal_apiary.referrer_checklist_answers_per_site) {
-                        if (referral.referral_data && referral.referral_data.length > 0) {
-                            for (let answer of referral.referral_data) {
-                                if (answer.site && answer.apiary_site_id === siteId && answer.apiary_referral_id === referralId) {
-                                    siteList.push(answer)
-                                }
-                            }
-                        }
-                    }
-                }
-                console.log(siteList)
-                return siteList;
-            },
-
-            num_of_sites_south_west_to_add_as_remainder: function(value){
-                this.$emit('num_of_sites_south_west_to_add_as_remainder', value)
-            },
-            num_of_sites_remote_to_add_as_remainder: function(value){
-                this.$emit('num_of_sites_remote_to_add_as_remainder', value)
-            },
-            num_of_sites_south_west_renewal_to_add_as_remainder: function(value){
-                this.$emit('num_of_sites_south_west_renewal_to_add_as_remainder', value)
-            },
-            num_of_sites_remote_renewal_to_add_as_remainder: function(value){
-                this.$emit('num_of_sites_remote_renewal_to_add_as_remainder', value)
-            },
-            button_text: function(button_text) {
-                this.$emit('button_text', button_text)
-            },
-            total_fee_south_west: function(total_fee){
-                this.$emit('total_fee_south_west', total_fee)
-            },
-            total_fee_remote: function(total_fee){
-                this.$emit('total_fee_remote', total_fee)
-            },
-            total_fee_south_west_renewal: function(total_fee){
-                this.$emit('total_fee_south_west_renewal', total_fee)
-            },
-            total_fee_remote_renewal: function(total_fee){
-                this.$emit('total_fee_remote_renewal', total_fee)
-            },
-            num_of_sites_remain_south_west: function(value){
-                this.$emit('num_of_sites_remain_south_west', value)
-            },
-            num_of_sites_remain_remote: function(value){
-                this.$emit('num_of_sites_remain_remote', value)
-            },
-            num_of_sites_remain_south_west_renewal: function(value){
-                this.$emit('num_of_sites_remain_south_west_renewal', value)
-            },
-            num_of_sites_remain_remote_renewal: function(value){
-                this.$emit('num_of_sites_remain_remote_renewal', value)
-            },
-            remove_apiary_site: function(apiary_site_id){
-                this.$refs.apiary_site_locations.removeApiarySiteById(apiary_site_id)
-            },
-            */
 
         },
         created: function() {
@@ -680,35 +359,41 @@
         mounted: function() {
             //let vm = this;
             this.$nextTick(async () => {
-            if (this.feeWaiverId) {
-                /*
-                const url = helpers.add_endpoint_join(
-                    api_endpoints.feewaivers,
-                    this.feeWaiverId,
-                    '/feewaiver_contactdetails_pack/'
-                )
-                */
-                const url = api_endpoints.feewaivers + this.feeWaiverId + '/feewaiver_contactdetails_pack/';
-
-                const returnVal = await this.$http.get(url);
-                console.log(url);
-                console.log(returnVal);
-                /*
-                this.contactDetails = returnVal.body.contact_details;
-                this.feeWaiver = returnVal.body.fee_waiver;
-                */
-                //Object.assign(this.feeWaiver, returnVal.body);
-                let feeWaiverUpdate = Object.assign({}, returnVal.body.fee_waiver)
-                feeWaiverUpdate.date_to = moment(feeWaiverUpdate.date_to, 'YYYY-MM-DD').format('DD/MM/YYYY');
-                feeWaiverUpdate.date_from = moment(feeWaiverUpdate.date_from, 'YYYY-MM-DD').format('DD/MM/YYYY');
-                feeWaiverUpdate.number_of_vehicles = feeWaiverUpdate.number_of_vehicles.toString()
-                this.feeWaiver = Object.assign({}, feeWaiverUpdate);
-
-                this.contactDetails = Object.assign({}, returnVal.body.contact_details);
-            }
+                await this.fetchParticipantsGroupList();
+                await this.fetchParksList();
                 this.addEventListeners();
-                this.fetchParticipantsGroupList();
-                this.fetchParksList();
+                if (this.feeWaiverId) {
+                    console.log(this.feeWaiverId);
+                    /*
+                    const url = helpers.add_endpoint_join(
+                        api_endpoints.feewaivers,
+                        this.feeWaiverId,
+                        '/feewaiver_contactdetails_pack/'
+                    )
+                    */
+                    const url = api_endpoints.feewaivers + this.feeWaiverId + '/feewaiver_contactdetails_pack/';
+
+                    const returnVal = await this.$http.get(url);
+                    console.log(url);
+                    console.log(returnVal);
+                    /*
+                    this.contactDetails = returnVal.body.contact_details;
+                    this.feeWaiver = returnVal.body.fee_waiver;
+                    */
+                    //Object.assign(this.feeWaiver, returnVal.body);
+                    let feeWaiverUpdate = Object.assign({}, returnVal.body.fee_waiver);
+                    feeWaiverUpdate.date_to = moment(feeWaiverUpdate.date_to, 'YYYY-MM-DD').format('DD/MM/YYYY');
+                    feeWaiverUpdate.date_from = moment(feeWaiverUpdate.date_from, 'YYYY-MM-DD').format('DD/MM/YYYY');
+                    feeWaiverUpdate.number_of_vehicles = feeWaiverUpdate.number_of_vehicles.toString()
+                    this.feeWaiver = Object.assign({}, feeWaiverUpdate);
+
+                    this.contactDetails = Object.assign({}, returnVal.body.contact_details);
+                    // TODO: try to improve this
+                    if (this.contactDetails.participants_code) {
+                        this.contactDetails.participants_id = this.contactDetails.participants_code;
+                    }
+                    this.updateSelectedParks();
+                }
             });
         },
         // this needs to go into the internal wrapper form, which will then pass feeWaiverId to this component as a prop
