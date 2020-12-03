@@ -47,6 +47,7 @@
         {% block menu %}
             <div class="container-fluid">
                 <div class="row">
+                    {% if is_internal_login %}
                     <nav class="navbar navbar-default">
                         <div class="container">
                             <div class="navbar-header">
@@ -147,6 +148,7 @@
                             </div>
                         </div>
                     </nav>
+                    {% endif %}
                 </div>
 
             </div>

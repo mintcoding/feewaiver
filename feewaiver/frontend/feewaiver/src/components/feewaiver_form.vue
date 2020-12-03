@@ -3,6 +3,13 @@
         <!--strong> fill in form</strong-->
         <!--a class="navbar-brand" href="{% url 'ds_home' %}"><div style="inline"><img src="{% static 'feewaiver/img/dpaw_small.png' %}">Staff login</div></a-->
         <!--a class="navbar-brand pull-right" href="/"><div style="inline"><img src="/static/feewaiver/img/dpaw_small.png">Staff login</div></a-->
+        <div class="panel panel-default headerbox">
+            <strong>
+            Welcome to the Entry Fee Request Waiver form.
+
+            Please fill out the details in the form below and submit the form to the Department.  You will be notified of the outcome of your request by email.
+            </strong>
+        </div>
         <FormSection :formCollapse="false" label="Contact Details" Index="contact_details">
             <div class="col-md-12">
                 <div class="form-group">
@@ -406,6 +413,9 @@
 </script>
 
 <style lang="css" scoped>
+    .headerbox {
+        padding: 50px;
+    }
     .section{
         text-transform: capitalize;
     }
