@@ -1,0 +1,6 @@
+{%  extends 'feewaiver/email/base_email.txt' %}
+
+{%  block content %}
+    This is to confirm that Fee Waiver Request <strong>{{proposal.lodgement_number}}</strong> has been received by the dept.
+
+{%  endblock %}

@@ -108,16 +108,16 @@ class ContactDetailsDocument(Document):
 
 
 class FeeWaiverLogEntry(CommunicationsLogEntry):
-    approval = models.ForeignKey(FeeWaiver, related_name='comms_logs')
+    fee_waiver = models.ForeignKey(FeeWaiver, related_name='comms_logs')
 
     class Meta:
         app_label = 'feewaiver'
 
-    def save(self, **kwargs):
-        # save the application reference if the reference not provided
-        if not self.reference:
-            self.reference = self.approval.id
-        super(FeeWaiverLogEntry, self).save(**kwargs)
+    #def save(self, **kwargs):
+    #    # save the application reference if the reference not provided
+    #    if not self.reference:
+    #        self.reference = self.approval.id
+    #    super(FeeWaiverLogEntry, self).save(**kwargs)
 
 class FeeWaiverLogDocument(Document):
     log_entry = models.ForeignKey(FeeWaiverLogEntry,related_name='documents', null=True,)

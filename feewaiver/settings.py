@@ -107,8 +107,8 @@ REST_FRAMEWORK = {
 #]
 
 TEMPLATES[0]['DIRS'].append(os.path.join(BASE_DIR, 'feewaiver', 'templates'))
-TEMPLATES[0]['DIRS'].append(os.path.join(BASE_DIR, 'feewaiver','components','organisations', 'templates'))
-TEMPLATES[0]['DIRS'].append(os.path.join(BASE_DIR, 'feewaiver','components','emails', 'templates'))
+#TEMPLATES[0]['DIRS'].append(os.path.join(BASE_DIR, 'feewaiver','components','organisations', 'templates'))
+#TEMPLATES[0]['DIRS'].append(os.path.join(BASE_DIR, 'feewaiver','components','emails', 'templates'))
 #BOOTSTRAP3 = {
 #    'jquery_url': '//static.dpaw.wa.gov.au/static/libs/jquery/2.2.1/jquery.min.js',
 #    'base_url': '//static.dpaw.wa.gov.au/static/libs/twitter-bootstrap/3.3.6/',
@@ -152,7 +152,7 @@ DEV_APP_BUILD_URL = env('DEV_APP_BUILD_URL')  # URL of the Dev app.js served by 
 
 # Department details
 SYSTEM_NAME = env('SYSTEM_NAME', 'Fee waiver')
-SYSTEM_NAME_SHORT = env('SYSTEM_NAME_SHORT', 'COLS')
+SYSTEM_NAME_SHORT = env('SYSTEM_NAME_SHORT', 'FW')
 SITE_PREFIX = env('SITE_PREFIX', '')
 SITE_DOMAIN = env('SITE_DOMAIN', '')
 SUPPORT_EMAIL = env('SUPPORT_EMAIL', 'feewaiver@' + SITE_DOMAIN).lower()
@@ -220,3 +220,5 @@ CKEDITOR_CONFIGS = {
 #            'level': 'INFO'
 #        }
 
+if env('CONSOLE_EMAIL_BACKEND', False):
+   EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

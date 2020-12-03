@@ -50,6 +50,7 @@ from feewaiver.process_document import (
         process_generic_document, 
         )
 import logging
+from feewaiver.emails import send_fee_waiver_received_notification
 logger = logging.getLogger(__name__)
 
 
@@ -804,6 +805,8 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
                 if parks_data:
                     for park_id in parks_data:
                         fee_waiver_obj.parks.add(Park.objects.get(id=park_id))
+                # send email
+                send_fee_waiver_received_notification(fee_waiver_obj,request)
                 return Response(waiver_serializer.data)
         except Exception as e:
             print(traceback.print_exc())
