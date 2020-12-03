@@ -45,14 +45,14 @@ RUN mkdir /app/tmp/
 RUN chmod 777 /app/tmp/
 
 #COPY cron /etc/cron.d/dockercron
-#COPY startup.sh /
+COPY startup.sh /
 ## Cron start
 #RUN service rsyslog start
 #RUN chmod 0644 /etc/cron.d/dockercron
 #RUN crontab /etc/cron.d/dockercron
 #RUN touch /var/log/cron.log
 #RUN service cron start
-#RUN chmod 755 /startup.sh
+RUN chmod 755 /startup.sh
 # cron end
 EXPOSE 8080
 HEALTHCHECK --interval=1m --timeout=5s --start-period=10s --retries=3 CMD ["wget", "-q", "-O", "-", "http://localhost:8080/"]
