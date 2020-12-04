@@ -1,5 +1,6 @@
 from django.db import models
 from feewaiver.main_models import CommunicationsLogEntry, UserAction, Document
+from ledger.accounts.models import EmailUser, RevisionedMixin
 
 
 class Participants(models.Model):
@@ -24,7 +25,7 @@ class Park(models.Model):
 
 
 
-class ContactDetails(models.Model):
+class ContactDetails(RevisionedMixin):
     participants = models.ForeignKey(Participants, null=True, blank=True)
     organisation = models.CharField(max_length=256, blank=True, null=True)
     organisation_description = models.TextField(blank=True)
@@ -46,7 +47,7 @@ class ContactDetails(models.Model):
         verbose_name_plural = 'Contact Details'
 
 
-class FeeWaiver(models.Model):
+class FeeWaiver(RevisionedMixin):
     #contact_details = models.ForeignKey(ContactDetails, null=True, blank=False, related_name='fee_waivers')
     lodgement_number = models.CharField(max_length=12, blank=True, default='')
     lodgement_date = models.DateTimeField(auto_now_add=True)
@@ -155,4 +156,52 @@ class FeeWaiverUserAction(UserAction):
         )
 
     contact_details = models.ForeignKey(FeeWaiver, related_name='action_logs')
+
+
+class AssessorsGroup(models.Model):
+    #site = models.OneToOneField(Site, default='1') 
+    members = models.ManyToManyField(EmailUser)
+
+    def __str__(self):
+        return 'Assessors Group'
+
+    @property
+    def all_members(self):
+        all_members = []
+        all_members.extend(self.members.all())
+        member_ids = [m.id for m in self.members.all()]
+        #all_members.extend(EmailUser.objects.filter(is_superuser=True,is_staff=True,is_active=True).exclude(id__in=member_ids))
+        return all_members
+
+    @property
+    def filtered_members(self):
+        return self.members.all()
+
+    class Meta:
+        app_label = 'feewaiver'
+        verbose_name_plural = "Assessors group"
+
+
+class ApproversGroup(models.Model):
+    #site = models.OneToOneField(Site, default='1') 
+    members = models.ManyToManyField(EmailUser)
+
+    def __str__(self):
+        return 'Approvers Group'
+
+    @property
+    def all_members(self):
+        all_members = []
+        all_members.extend(self.members.all())
+        member_ids = [m.id for m in self.members.all()]
+        #all_members.extend(EmailUser.objects.filter(is_superuser=True,is_staff=True,is_active=True).exclude(id__in=member_ids))
+        return all_members
+
+    @property
+    def filtered_members(self):
+        return self.members.all()
+
+    class Meta:
+        app_label = 'feewaiver'
+        verbose_name_plural = "Approvers group"
 
