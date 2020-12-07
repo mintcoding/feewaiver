@@ -26,6 +26,7 @@ from django.shortcuts import redirect, get_object_or_404
 from feewaiver.serializers import (
         ContactDetailsSerializer,
         FeeWaiverSerializer,
+        FeeWaiverVisitSerializer,
         FeeWaiverLogEntrySerializer,
         FeeWaiverUserActionSerializer,
         ParticipantsSerializer,
@@ -34,6 +35,7 @@ from feewaiver.serializers import (
 from feewaiver.models import (
         ContactDetails,
         FeeWaiver,
+        FeeWaiverVisit,
         FeeWaiverLogEntry,
         FeeWaiverUserAction,
         Participants,
@@ -789,7 +791,6 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
         try:
             with transaction.atomic():
                 #http_status = status.HTTP_200_OK
-                #import ipdb; ipdb.set_trace();
                 contact_details_data = request.data.get('contact_details')
                 contact_serializer = ContactDetailsSerializer(data=contact_details_data)
                 contact_serializer.is_valid(raise_exception=True)
@@ -800,11 +801,19 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
                 waiver_serializer = FeeWaiverSerializer(data=fee_waiver_data)
                 waiver_serializer.is_valid(raise_exception=True)
                 fee_waiver_obj = waiver_serializer.save()
-                # add parks
-                parks_data = request.data.get('parks')
-                if parks_data:
-                    for park_id in parks_data:
-                        fee_waiver_obj.parks.add(Park.objects.get(id=park_id))
+                # add visits
+                #import ipdb; ipdb.set_trace();
+                visits_data = request.data.get('visits')
+                for visit in visits_data:
+                    visit['fee_waiver_id'] = fee_waiver_obj.id
+                    visit_serializer = FeeWaiverVisitSerializer(data=visit)
+                    visit_serializer.is_valid(raise_exception=True)
+                    visit_obj = visit_serializer.save()
+                    # add parks
+                    parks_data = visit.get('selected_park_ids')
+                    if parks_data:
+                        for park_id in parks_data:
+                            visit_obj.parks.add(Park.objects.get(id=park_id))
                 # send email
                 send_fee_waiver_received_notification(fee_waiver_obj,request)
                 return Response(waiver_serializer.data)

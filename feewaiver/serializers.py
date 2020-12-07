@@ -4,6 +4,7 @@ from rest_framework import serializers
 from feewaiver.models import (
         ContactDetails, 
         FeeWaiver,
+        FeeWaiverVisit,
         FeeWaiverUserAction,
         FeeWaiverLogEntry,
         Participants,
@@ -96,21 +97,20 @@ class ParkSerializer(serializers.ModelSerializer):
         )
 
 
-class FeeWaiverSerializer(serializers.ModelSerializer):
+class FeeWaiverVisitSerializer(serializers.ModelSerializer):
+    #fee_waiver = FeeWaiverSerializer()
     park_ids = serializers.SerializerMethodField()
-    contact_details_id = serializers.IntegerField(
+    fee_waiver_id = serializers.IntegerField(
             required=True, write_only=True, allow_null=False)
 
 
     class Meta:
-        model = FeeWaiver
+        model = FeeWaiverVisit
         fields = (
                 'id',
-                'lodgement_number',
-                'lodgement_date',
-                'contact_details_id',     
-                'fee_waiver_purpose',     
-                'fee_waiver_description',     
+                'fee_waiver_id',
+                'description',     
+                'camping_requested',
                 'date_from',     
                 'date_to',     
                 'park_ids',    
@@ -126,6 +126,35 @@ class FeeWaiverSerializer(serializers.ModelSerializer):
         for park in obj.parks.all():
             park_id_list.append(str(park.id))
         return park_id_list
+
+
+class FeeWaiverSerializer(serializers.ModelSerializer):
+    visits = serializers.SerializerMethodField()
+    contact_details_id = serializers.IntegerField(
+            required=True, write_only=True, allow_null=False)
+
+
+    class Meta:
+        model = FeeWaiver
+        fields = (
+                'id',
+                'lodgement_number',
+                'lodgement_date',
+                'contact_details_id',     
+                'fee_waiver_purpose',     
+                'visits',
+                )
+        read_only_fields = (
+            'id',
+            'lodgement_number',
+            'lodgement_date',
+        )
+
+    def get_visits(self, obj):
+        visits = []
+        for visit in obj.visit.all():
+            visits.append(FeeWaiverVisitSerializer(visit).data)
+        return visits
 
 
 class FeeWaiverDTSerializer(serializers.ModelSerializer):

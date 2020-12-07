@@ -100,67 +100,72 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-10">
-                <div class="form-group">
-                    <div class="row">
-                        <label for="fee_waiver_description" class="col-sm-4 control-label">Provide the details of your visit</label>
-                        <div class="col-sm-8">
-                            <textarea class="form-control" name="fee_waiver_description" v-model="feeWaiver.fee_waiver_description"/>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-10">
-                <div class="form-group">
-                    <div class="row">
-                        <label for="date_from" class="col-sm-4 control-label">Date from</label>
-                        <div class="col-sm-4">
-                            <div class="input-group date" ref="dateFromPicker">
-                                    <input name="date_from" type="text" class="form-control" placeholder="DD/MM/YYYY" v-model="feeWaiver.date_from" />
-                                    <span class="input-group-addon">
-                                        <span class="glyphicon glyphicon-calendar"></span>
-                                    </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="row">
-                        <label for="date_to" class="col-sm-4 control-label">Date to</label>
-                        <div class="col-sm-4">
-                            <div class="input-group date" ref="dateToPicker">
-                                    <input name="date_to" type="text" class="form-control" placeholder="DD/MM/YYYY" v-model="feeWaiver.date_to" />
-                                    <span class="input-group-addon">
-                                        <span class="glyphicon glyphicon-calendar"></span>
-                                    </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="row">
-                        <label class="col-sm-4 control-label">Park/s</label>
-                        <div class="col-sm-6">
-                            <select ref="parks" class="form-control" multiple="multiple">
-                                <option value="null"></option>
-                                <option v-for="park in parksList" :value="park.id">{{park.name}}</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="row">
-                        <label for="number_of_vehicles" class="col-sm-4 control-label">Number of vehicles used for visit</label>
-                        <div class="col-sm-4">
-                            <input type="number" class="form-control" name="number_of_vehicles" min="0" step="1" v-model="feeWaiver.number_of_vehicles">
-                        </div>
-                    </div>
-                </div>
-            </div>
- 
         </FormSection>
+        <div v-for="visit in visits">
+            <FormSection :formCollapse="false" label="Visit" Index="visit.index">
+                <div class="col-sm-10">
+                    <div class="form-group">
+                        <div class="row">
+                            <label for="visit_description" class="col-sm-4 control-label">Provide the details of your visit</label>
+                            <div class="col-sm-8">
+                                <textarea class="form-control" name="visit_description" v-model="visit.description"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-10">
+                    <div class="form-group">
+                        <div class="row">
+                            <label for="date_from" class="col-sm-4 control-label">Date from</label>
+                            <div class="col-sm-4">
+                                <div class="input-group date" :id="'dateFromPicker_' + visit.index">
+                                        <input name="date_from" type="text" class="form-control" placeholder="DD/MM/YYYY" v-model="visit.date_from" />
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <label for="date_to" class="col-sm-4 control-label">Date to</label>
+                            <div class="col-sm-4">
+                                <div class="input-group date" :id="'dateToPicker_' + visit.index">
+                                        <input name="date_to" type="text" class="form-control" placeholder="DD/MM/YYYY" v-model="visit.date_to" />
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <label class="col-sm-4 control-label">Park/s</label>
+                            <div class="col-sm-6">
+                                <select :id="'parks_' + visit.index" class="form-control" multiple="multiple">
+                                    <option value="null"></option>
+                                    <option v-for="park in parksList" :value="park.id">{{park.name}}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <label for="number_of_vehicles" class="col-sm-4 control-label">Number of vehicles used for visit</label>
+                            <div class="col-sm-4">
+                                <input type="number" class="form-control" name="number_of_vehicles" min="0" step="1" v-model="visit.number_of_vehicles">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+     
+            </FormSection>
+        </div>
 
         <input type="button" @click.prevent="submit" class="btn btn-primary pull-right" value="Submit"/>
+        <input type="button" @click.prevent="addVisit" class="btn btn-primary pull-right" value="Add another visit"/>
         <!--button v-else disabled class="btn btn-primary"><i class="fa fa-spin fa-spinner"></i>&nbsp;Submitting</button-->
     </div>
 </template>
@@ -234,7 +239,14 @@
                 email_confirmation: '',
                 participantGroupList: [],
                 parksList: [],
-                selectedParkIds: [],
+                //selected_park_ids: [],
+                visitIdx: 0,
+                visits: [
+                    {
+                        index: 0,
+                        selected_park_ids: [],
+                    },
+                ],
             }
         },
         components: {
@@ -243,15 +255,33 @@
         computed: {
         },
         methods:{
+            addVisit: function() {
+                /*
+                let visit = {};
+                visit.index = ++this.visitIdx;
+                //visit.selected_park_ids = [];
+                this.$set(visit, selected_park_ids, []);
+                */
+                let visit = {
+                    index: ++this.visitIdx,
+                    selected_park_ids: []
+                }
+
+                this.visits.push(visit);
+                this.$nextTick(() => {
+                    this.addEventListeners();
+                });
+                //this.visits.push({});
+            },
             updateSelectedParks: function() {
                 if (this.feeWaiver && this.feeWaiver.park_ids && this.feeWaiver.park_ids.length > 0) {
-                    //this.selectedParkIds = [];
+                    //this.selected_park_ids = [];
                     console.log(this.feeWaiver.park_ids);
                     $(this.$refs.parks).val(this.feeWaiver.park_ids);
                     $(this.$refs.parks).trigger('change');
                     /*
                     for (let parkId of this.feeWaiver.park_ids) {
-                        this.selectedParkIds.push(parkId);
+                        this.selected_park_ids.push(parkId);
                         $(this.$refs.parks).val(parkId);
                     }
                     */
@@ -260,17 +290,25 @@
             submit: async function(){
                 let swalTitle = "Submit Request";
                 let swalText = "Are you sure you want to submit this request?";
-                if (this.feeWaiver.date_from) {
-                    this.feeWaiver.date_from = moment(this.feeWaiver.date_from, 'DD/MM/YYYY').format('YYYY-MM-DD');
-                }
-                if (this.feeWaiver.date_to) {
-                    this.feeWaiver.date_to = moment(this.feeWaiver.date_to, 'DD/MM/YYYY').format('YYYY-MM-DD');
-                }
-                const payload = {
+                let payload = {
                     'contact_details': this.contactDetails,
                     'fee_waiver': this.feeWaiver,
-                    'parks': this.selectedParkIds,
+                    //'parks': this.selected_park_ids,
+                    'visits': [],
                 }
+                for (let visitData of this.visits) {
+                    let visit = Object.assign({}, visitData);
+                    // convert date strings
+                    if (visit.date_from) {
+                        visit.date_from = moment(visit.date_from, 'DD/MM/YYYY').format('YYYY-MM-DD');
+                    }
+                    if (visit.date_to) {
+                        visit.date_to = moment(visit.date_to, 'DD/MM/YYYY').format('YYYY-MM-DD');
+                    }
+                    // add to payload
+                    payload.visits.push(visit)
+                }
+
                 await swal({
                     title: swalTitle,
                     text: swalText,
@@ -287,6 +325,7 @@
             },
             addEventListeners: function() {
               let vm = this;
+                /*
               let el_fr_date = $(vm.$refs.dateFromPicker);
               let el_to_date = $(vm.$refs.dateToPicker);
 
@@ -319,25 +358,70 @@
                   vm.feeWaiver.date_to = "";
                 }
               });
+              */
               // Parks multi select
+              let i;
+              for (i=0; i <= vm.visitIdx; i++) {
+                  //console.log(refLabel);
+                  //console.log(vm.$refs)
+                  let visit = vm.visits[i];
+                  // Dates 
+                  //let parkLabel = 'parks_' + i;
+                  //let el_fr_date = $(vm.$refs.dateFromPicker);
+                  //let el_to_date = $(vm.$refs.dateToPicker);
+                  let el_fr_date = $('#dateFromPicker_' + i);
+                  let el_to_date = $('#dateToPicker_' + i);
 
-              let el_parks = $(vm.$refs.parks);
-              el_parks.select2();
-              el_parks.on('select2:select', function(e) {
-                  //console.log(e);
-                  let val = e.params.data;
-                  if (!vm.selectedParkIds.includes(val.id)) {
-                      vm.selectedParkIds.push(val.id);
-                  }
-              }).
-              on("select2:unselect",function (e) {
-                  //console.log(e);
-                  let val = e.params.data;
-                  if (vm.selectedParkIds.includes(val.id)) {
-                      let index = vm.selectedParkIds.indexOf(val.id);
-                      vm.selectedParkIds.splice(index, 1);
-                  }
-              });
+                  // "From" field
+                  el_fr_date.datetimepicker({
+                    format: "DD/MM/YYYY",
+                    minDate: "now",
+                    showClear: true
+                  });
+                  el_fr_date.on("dp.change", function(e) {
+                    if (el_fr_date.data("DateTimePicker").date()) {
+                      visit.date_from = e.date.format("DD/MM/YYYY");
+                      el_to_date.data("DateTimePicker").minDate(e.date);
+                    } else if (el_fr_date.data("date") === "") {
+                      visit.date_from = "";
+                    }
+                  });
+
+                  // "To" field
+                  el_to_date.datetimepicker({
+                    format: "DD/MM/YYYY",
+                    //minDate: "now",
+                    //minDate: el_fr_date,
+                    showClear: true
+                  });
+                  el_to_date.on("dp.change", function(e) {
+                    if (el_to_date.data("DateTimePicker").date()) {
+                      visit.date_to = e.date.format("DD/MM/YYYY");
+                    } else if (el_to_date.data("date") === "") {
+                      visit.date_to = "";
+                    }
+                  });
+                  // Parks
+                  let parkLabel = 'parks_' + i;
+                  //let el_parks = $(vm.$refs.refLabel);
+                  let el_parks = $('#' + parkLabel);
+                  el_parks.select2();
+                  el_parks.on('select2:select', function(e) {
+                      //console.log(e);
+                      let val = e.params.data;
+                      if (!visit.selected_park_ids.includes(val.id)) {
+                          visit.selected_park_ids.push(val.id);
+                      }
+                  }).
+                  on("select2:unselect",function (e) {
+                      //console.log(e);
+                      let val = e.params.data;
+                      if (visit.selected_park_ids.includes(val.id)) {
+                          let index = visit.selected_park_ids.indexOf(val.id);
+                          visit.selected_park_ids.splice(index, 1);
+                      }
+                  });
+              }
 
                 /*
               window.addEventListener('beforeunload', this.leaving);

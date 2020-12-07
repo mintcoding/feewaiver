@@ -53,24 +53,26 @@ class FeeWaiver(RevisionedMixin):
     lodgement_date = models.DateTimeField(auto_now_add=True)
     contact_details = models.OneToOneField(ContactDetails, related_name="fee_waiver")
     fee_waiver_purpose = models.TextField(blank=True)
-    fee_waiver_description = models.TextField(blank=True)
-    date_from = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=False,verbose_name="Date from", help_text='')
-    date_to = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=False,verbose_name="Date to", help_text='')
-    parks = models.ManyToManyField(Park)
-    number_of_vehicles = models.IntegerField(default=0)
-    AGE_CHOICES = (
-        ('15', 'Under 15 yrs'),
-        ('24', '15-24 yrs'),
-        ('25', '25-39 yrs'),
-        ('40', '40-59 yrs'),
-        ('60', '60 yrs and over')
-    )
-    age_of_participants = models.CharField(max_length=100, choices=AGE_CHOICES, null=True, blank=True,
-                             verbose_name='Age of Participants', help_text='')
+    #fee_waiver_description = models.TextField(blank=True)
+    #date_from = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=False,verbose_name="Date from", help_text='')
+    #date_to = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=False,verbose_name="Date to", help_text='')
+    #parks = models.ManyToManyField(Park)
+    #number_of_vehicles = models.IntegerField(default=0)
+    #AGE_CHOICES = (
+    #    ('15', 'Under 15 yrs'),
+    #    ('24', '15-24 yrs'),
+    #    ('25', '25-39 yrs'),
+    #    ('40', '40-59 yrs'),
+    #    ('60', '60 yrs and over')
+    #)
+    #age_of_participants = models.CharField(max_length=100, choices=AGE_CHOICES, null=True, blank=True,
+    #                         verbose_name='Age of Participants', help_text='')
 
 
+    #def __str__(self):
+     #   return 'Contact details: {}, Number of vehicles: {}'.format(self.contact_details, self.number_of_vehicles)
     def __str__(self):
-        return 'Contact details: {}, Number of vehicles: {}'.format(self.contact_details, self.number_of_vehicles)
+        return self.lodgement_number
 
     class Meta:
         app_label = 'feewaiver'
@@ -87,6 +89,32 @@ class FeeWaiver(RevisionedMixin):
             new_lodgment_id = 'EFWR{0:06d}'.format(self.pk)
             self.lodgement_number = new_lodgment_id
             self.save()
+
+
+class FeeWaiverVisit(RevisionedMixin):
+    fee_waiver = models.ForeignKey(FeeWaiver, related_name="visit")
+    description = models.TextField(blank=True)
+    date_from = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=False,verbose_name="Date from", help_text='')
+    date_to = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=False,verbose_name="Date to", help_text='')
+    parks = models.ManyToManyField(Park)
+    number_of_vehicles = models.IntegerField(default=0)
+    camping_requested = models.BooleanField(default=False)
+    AGE_CHOICES = (
+        ('15', 'Under 15 yrs'),
+        ('24', '15-24 yrs'),
+        ('25', '25-39 yrs'),
+        ('40', '40-59 yrs'),
+        ('60', '60 yrs and over')
+    )
+    age_of_participants = models.CharField(max_length=100, choices=AGE_CHOICES, null=True, blank=True,
+                             verbose_name='Age of Participants', help_text='')
+
+    def __str__(self):
+        return 'Fee Waiver: {}, Visit: {}'.format(self.fee_waiver.id, self.id)
+        #return 'Contact details: {}, Number of vehicles: {}'.format(self.contact_details, self.number_of_vehicles)
+
+    class Meta:
+        app_label = 'feewaiver'
 
 
 class ContactDetailsDocument(Document):
