@@ -115,7 +115,7 @@ class FeeWaiverVisitSerializer(serializers.ModelSerializer):
                 'date_to',     
                 'selected_park_ids',    
                 'number_of_vehicles',     
-                'age_of_participants', 
+                'age_of_participants_array', 
                 )
         read_only_fields = (
             'id',

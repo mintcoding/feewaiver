@@ -1,6 +1,7 @@
 from django.db import models
 from feewaiver.main_models import CommunicationsLogEntry, UserAction, Document
 from ledger.accounts.models import EmailUser, RevisionedMixin
+from django.contrib.postgres.fields import ArrayField
 
 
 class Participants(models.Model):
@@ -107,7 +108,13 @@ class FeeWaiverVisit(RevisionedMixin):
         ('60', '60 yrs and over')
     )
     age_of_participants = models.CharField(max_length=100, choices=AGE_CHOICES, null=True, blank=True,
-                             verbose_name='Age of Participants', help_text='')
+                             verbose_name='Age of Participants', help_text=''),
+    age_of_participants_array = ArrayField(
+            models.CharField(max_length=100, choices=AGE_CHOICES),
+            size=5,
+            default=[],
+            #null=True,
+            )
 
     def __str__(self):
         return 'Fee Waiver: {}, Visit: {}'.format(self.fee_waiver.id, self.id)

@@ -194,6 +194,7 @@
                     {
                         index: 0,
                         selected_park_ids: [],
+                        age_of_participants_array: [],
                     },
                 ],
             }
@@ -214,7 +215,8 @@
                 */
                 let visit = {
                     index: ++this.visitIdx,
-                    selected_park_ids: []
+                    selected_park_ids: [],
+                    age_of_participants_array: [],
                 }
 
                 this.visits.push(visit);
