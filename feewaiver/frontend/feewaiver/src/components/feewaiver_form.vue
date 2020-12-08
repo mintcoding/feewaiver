@@ -101,67 +101,15 @@
                 </div>
             </div>
         </FormSection>
-        <div v-for="visit in visits">
-            <FormSection :formCollapse="false" label="Visit" Index="visit.index">
-                <div class="col-sm-10">
-                    <div class="form-group">
-                        <div class="row">
-                            <label for="visit_description" class="col-sm-4 control-label">Provide the details of your visit</label>
-                            <div class="col-sm-8">
-                                <textarea class="form-control" name="visit_description" v-model="visit.description"/>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-10">
-                    <div class="form-group">
-                        <div class="row">
-                            <label for="date_from" class="col-sm-4 control-label">Date from</label>
-                            <div class="col-sm-4">
-                                <div class="input-group date" :id="'dateFromPicker_' + visit.index">
-                                        <input name="date_from" type="text" class="form-control" placeholder="DD/MM/YYYY" v-model="visit.date_from" />
-                                        <span class="input-group-addon">
-                                            <span class="glyphicon glyphicon-calendar"></span>
-                                        </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="row">
-                            <label for="date_to" class="col-sm-4 control-label">Date to</label>
-                            <div class="col-sm-4">
-                                <div class="input-group date" :id="'dateToPicker_' + visit.index">
-                                        <input name="date_to" type="text" class="form-control" placeholder="DD/MM/YYYY" v-model="visit.date_to" />
-                                        <span class="input-group-addon">
-                                            <span class="glyphicon glyphicon-calendar"></span>
-                                        </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="row">
-                            <label class="col-sm-4 control-label">Park/s</label>
-                            <div class="col-sm-6">
-                                <select :id="'parks_' + visit.index" class="form-control" multiple="multiple">
-                                    <option value="null"></option>
-                                    <option v-for="park in parksList" :value="park.id">{{park.name}}</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="row">
-                            <label for="number_of_vehicles" class="col-sm-4 control-label">Number of vehicles used for visit</label>
-                            <div class="col-sm-4">
-                                <input type="number" class="form-control" name="number_of_vehicles" min="0" step="1" v-model="visit.number_of_vehicles">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-     
-            </FormSection>
+        <div v-for="visit in visits" :key="visit.id">
+            <VisitSection 
+            :formCollapse="false" 
+            :label="'Visit ' + (visit.index + 1)"
+            :Index="'index_' + visit.index" 
+            :visit="visit"
+            :participantGroupList="participantGroupList"
+            :parksList="parksList"
+            />
         </div>
 
         <input type="button" @click.prevent="submit" class="btn btn-primary pull-right" value="Submit"/>
@@ -187,6 +135,7 @@
     require("select2/dist/css/select2.min.css");
     require("select2-bootstrap-theme/dist/select2-bootstrap.min.css");
     require("select2");
+    import VisitSection from "./feewaiver_visit.vue"
 
     export default {
         name: 'FeeWaiverForm',
@@ -240,7 +189,7 @@
                 participantGroupList: [],
                 parksList: [],
                 //selected_park_ids: [],
-                visitIdx: 0,
+                visitIdx: -1,
                 visits: [
                     {
                         index: 0,
@@ -251,6 +200,7 @@
         },
         components: {
             FormSection,
+            VisitSection,
         },
         computed: {
         },
@@ -268,24 +218,6 @@
                 }
 
                 this.visits.push(visit);
-                this.$nextTick(() => {
-                    this.addEventListeners();
-                });
-                //this.visits.push({});
-            },
-            updateSelectedParks: function() {
-                if (this.feeWaiver && this.feeWaiver.park_ids && this.feeWaiver.park_ids.length > 0) {
-                    //this.selected_park_ids = [];
-                    console.log(this.feeWaiver.park_ids);
-                    $(this.$refs.parks).val(this.feeWaiver.park_ids);
-                    $(this.$refs.parks).trigger('change');
-                    /*
-                    for (let parkId of this.feeWaiver.park_ids) {
-                        this.selected_park_ids.push(parkId);
-                        $(this.$refs.parks).val(parkId);
-                    }
-                    */
-                }
             },
             submit: async function(){
                 let swalTitle = "Submit Request";
@@ -323,111 +255,6 @@
                 });
 
             },
-            addEventListeners: function() {
-              let vm = this;
-                /*
-              let el_fr_date = $(vm.$refs.dateFromPicker);
-              let el_to_date = $(vm.$refs.dateToPicker);
-
-              // "From" field
-              el_fr_date.datetimepicker({
-                format: "DD/MM/YYYY",
-                minDate: "now",
-                showClear: true
-              });
-              el_fr_date.on("dp.change", function(e) {
-                if (el_fr_date.data("DateTimePicker").date()) {
-                  vm.feeWaiver.date_from = e.date.format("DD/MM/YYYY");
-                  el_to_date.data("DateTimePicker").minDate(e.date);
-                } else if (el_fr_date.data("date") === "") {
-                  vm.feeWaiver.date_from = "";
-                }
-              });
-
-              // "To" field
-              el_to_date.datetimepicker({
-                format: "DD/MM/YYYY",
-                //minDate: "now",
-                //minDate: el_fr_date,
-                showClear: true
-              });
-              el_to_date.on("dp.change", function(e) {
-                if (el_to_date.data("DateTimePicker").date()) {
-                  vm.feeWaiver.date_to = e.date.format("DD/MM/YYYY");
-                } else if (el_to_date.data("date") === "") {
-                  vm.feeWaiver.date_to = "";
-                }
-              });
-              */
-              // Parks multi select
-              let i;
-              for (i=0; i <= vm.visitIdx; i++) {
-                  //console.log(refLabel);
-                  //console.log(vm.$refs)
-                  let visit = vm.visits[i];
-                  // Dates 
-                  //let parkLabel = 'parks_' + i;
-                  //let el_fr_date = $(vm.$refs.dateFromPicker);
-                  //let el_to_date = $(vm.$refs.dateToPicker);
-                  let el_fr_date = $('#dateFromPicker_' + i);
-                  let el_to_date = $('#dateToPicker_' + i);
-
-                  // "From" field
-                  el_fr_date.datetimepicker({
-                    format: "DD/MM/YYYY",
-                    minDate: "now",
-                    showClear: true
-                  });
-                  el_fr_date.on("dp.change", function(e) {
-                    if (el_fr_date.data("DateTimePicker").date()) {
-                      visit.date_from = e.date.format("DD/MM/YYYY");
-                      el_to_date.data("DateTimePicker").minDate(e.date);
-                    } else if (el_fr_date.data("date") === "") {
-                      visit.date_from = "";
-                    }
-                  });
-
-                  // "To" field
-                  el_to_date.datetimepicker({
-                    format: "DD/MM/YYYY",
-                    //minDate: "now",
-                    //minDate: el_fr_date,
-                    showClear: true
-                  });
-                  el_to_date.on("dp.change", function(e) {
-                    if (el_to_date.data("DateTimePicker").date()) {
-                      visit.date_to = e.date.format("DD/MM/YYYY");
-                    } else if (el_to_date.data("date") === "") {
-                      visit.date_to = "";
-                    }
-                  });
-                  // Parks
-                  let parkLabel = 'parks_' + i;
-                  //let el_parks = $(vm.$refs.refLabel);
-                  let el_parks = $('#' + parkLabel);
-                  el_parks.select2();
-                  el_parks.on('select2:select', function(e) {
-                      //console.log(e);
-                      let val = e.params.data;
-                      if (!visit.selected_park_ids.includes(val.id)) {
-                          visit.selected_park_ids.push(val.id);
-                      }
-                  }).
-                  on("select2:unselect",function (e) {
-                      //console.log(e);
-                      let val = e.params.data;
-                      if (visit.selected_park_ids.includes(val.id)) {
-                          let index = visit.selected_park_ids.indexOf(val.id);
-                          visit.selected_park_ids.splice(index, 1);
-                      }
-                  });
-              }
-
-                /*
-              window.addEventListener('beforeunload', this.leaving);
-              window.addEventListener('onblur', this.leaving);
-              */
-            },
             fetchParticipantsGroupList: async function() {
                 this.participantGroupList = [];
                 const response = await this.$http.get(api_endpoints.participants)
@@ -442,48 +269,41 @@
                     this.parksList.push(group)
                 }
             },
-
-
         },
         created: function() {
         },
-        mounted: function() {
+        mounted: async function() {
             //let vm = this;
-            this.$nextTick(async () => {
+            await this.$nextTick(async () => {
                 await this.fetchParticipantsGroupList();
                 await this.fetchParksList();
-                this.addEventListeners();
                 if (this.feeWaiverId) {
                     console.log(this.feeWaiverId);
-                    /*
-                    const url = helpers.add_endpoint_join(
-                        api_endpoints.feewaivers,
-                        this.feeWaiverId,
-                        '/feewaiver_contactdetails_pack/'
-                    )
-                    */
                     const url = api_endpoints.feewaivers + this.feeWaiverId + '/feewaiver_contactdetails_pack/';
 
                     const returnVal = await this.$http.get(url);
-                    console.log(url);
-                    console.log(returnVal);
-                    /*
-                    this.contactDetails = returnVal.body.contact_details;
-                    this.feeWaiver = returnVal.body.fee_waiver;
-                    */
-                    //Object.assign(this.feeWaiver, returnVal.body);
-                    let feeWaiverUpdate = Object.assign({}, returnVal.body.fee_waiver);
-                    feeWaiverUpdate.date_to = moment(feeWaiverUpdate.date_to, 'YYYY-MM-DD').format('DD/MM/YYYY');
-                    feeWaiverUpdate.date_from = moment(feeWaiverUpdate.date_from, 'YYYY-MM-DD').format('DD/MM/YYYY');
-                    feeWaiverUpdate.number_of_vehicles = feeWaiverUpdate.number_of_vehicles.toString()
-                    this.feeWaiver = Object.assign({}, feeWaiverUpdate);
-
+                    //console.log(url);
+                    //console.log(returnVal);
+                    this.feeWaiver.id = returnVal.body.fee_waiver.id;
+                    this.feeWaiver.lodgement_number = returnVal.body.fee_waiver.lodgement_number;
+                    this.feeWaiver.fee_waiver_purpose = returnVal.body.fee_waiver.fee_waiver_purpose;
+                    // visits should be empty if reading from backend
+                    this.visits = []
+                    for (let retrievedVisit of returnVal.body.fee_waiver.visits) {
+                        let visit = Object.assign({}, retrievedVisit);
+                        //visit.index = visit.id;
+                        visit.index = ++this.visitIdx;
+                        visit.date_to = moment(visit.date_to, 'YYYY-MM-DD').format('DD/MM/YYYY');
+                        visit.date_from = moment(visit.date_from, 'YYYY-MM-DD').format('DD/MM/YYYY');
+                        visit.number_of_vehicles = visit.number_of_vehicles.toString()
+                        //this.feeWaiver = Object.assign({}, feeWaiverUpdate);
+                        this.visits.push(visit);
+                    }
                     this.contactDetails = Object.assign({}, returnVal.body.contact_details);
                     // TODO: try to improve this
                     if (this.contactDetails.participants_code) {
                         this.contactDetails.participants_id = this.contactDetails.participants_code;
                     }
-                    this.updateSelectedParks();
                 }
             });
         },
