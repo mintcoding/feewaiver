@@ -3,6 +3,7 @@
         <!--strong> fill in form</strong-->
         <!--a class="navbar-brand" href="{% url 'ds_home' %}"><div style="inline"><img src="{% static 'feewaiver/img/dpaw_small.png' %}">Staff login</div></a-->
         <!--a class="navbar-brand pull-right" href="/"><div style="inline"><img src="/static/feewaiver/img/dpaw_small.png">Staff login</div></a-->
+    <form id="feewaiver-form" @submit.prevent="submit">
         <div class="panel panel-default headerbox">
             <strong>
             Welcome to the Entry Fee Request Waiver form.
@@ -16,11 +17,11 @@
                     <div class="row">
                     <label for="" class="col-sm-2 control-label">Organisation</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control" name="organisation" placeholder="" v-model="contactDetails.organisation">
+                        <input required type="text" class="form-control" name="organisation" placeholder="" v-model="contactDetails.organisation">
                     </div>
                     <label for="" class="col-sm-2 control-label">Contact</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control" name="contact_name" placeholder="" v-model="contactDetails.contact_name">
+                        <input required type="text" class="form-control" name="contact_name" placeholder="" v-model="contactDetails.contact_name">
                     </div>
                     </div>
                 </div>
@@ -28,7 +29,7 @@
                     <div class="row">
                     <label for="" class="col-sm-2 control-label">Postal Address</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control" name="postal_address" placeholder="" v-model="contactDetails.postal_address">
+                        <input required type="text" class="form-control" name="postal_address" placeholder="" v-model="contactDetails.postal_address">
                     </div>
                     </div>
                 </div>
@@ -36,15 +37,15 @@
                     <div class="row">
                     <label for="suburb" class="col-sm-2 control-label">Suburb</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control" name="suburb" placeholder="" v-model="contactDetails.suburb">
+                        <input required type="text" class="form-control" name="suburb" placeholder="" v-model="contactDetails.suburb">
                     </div>
                     <label for="state" class="col-sm-1 control-label">State</label>
                     <div class="col-sm-2">
-                        <input type="text" class="form-control" name="state" placeholder="" v-model="contactDetails.state">
+                        <input required type="text" class="form-control" name="state" placeholder="" v-model="contactDetails.state">
                     </div>
                     <label for="postcode" class="col-sm-1 control-label">Postcode</label>
                     <div class="col-sm-2">
-                        <input type="text" class="form-control" name="postcode" placeholder="" v-model="contactDetails.postcode">
+                        <input required type="text" class="form-control" name="postcode" placeholder="" v-model="contactDetails.postcode">
                     </div>
                     </div>
                 </div>
@@ -52,7 +53,7 @@
                     <div class="row">
                     <label for="phone" class="col-sm-2 control-label">Phone</label>
                     <div class="col-sm-4">
-                    <input type="text" class="form-control" name="phone" placeholder="" v-model="contactDetails.phone">
+                    <input required type="text" class="form-control" name="phone" placeholder="" v-model="contactDetails.phone">
                     </div>
                     </div>
                 </div>
@@ -60,11 +61,11 @@
                     <div class="row">
                     <label for="email" class="col-sm-2 control-label">Email</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control" name="email" placeholder="" v-model="contactDetails.email">
+                        <input required type="text" class="form-control" name="email" placeholder="" v-model="contactDetails.email">
                     </div>
                     <label for="email_confirmation" class="col-sm-2 control-label">Confirm Email</label>
                     <div class="col-sm-4">
-                    <input type="text" class="form-control" name="email_confirmation" placeholder="" v-model="email_confirmation">
+                    <input required type="text" class="form-control" name="email_confirmation" placeholder="" v-model="email_confirmation">
                     </div>
                     </div>
                 </div>
@@ -72,8 +73,8 @@
                     <div class="row">
                         <label class="col-sm-4 control-label">Participants</label>
                         <div class="col-sm-6">
-                            <select ref="participants" class="form-control" v-model="contactDetails.participants_id">
-                                <option value="null"></option>
+                            <select required ref="participants" class="form-control" v-model="contactDetails.participants_id">
+                                <option value=""></option>
                                 <option v-for="group in participantGroupList" :value="group.id">{{group.name}}</option>
                             </select>
                         </div>
@@ -83,7 +84,7 @@
                     <div class="row">
                       <label class="col-sm-4 control-label">Provide a brief explanation of your organisation</label>
                       <div class="col-sm-8">
-                          <textarea class="form-control" v-model="contactDetails.organisation_description"/>
+                          <textarea required class="form-control" v-model="contactDetails.organisation_description"/>
                       </div>
                     </div>
                 </div>
@@ -95,7 +96,7 @@
                     <div class="row">
                       <label for="fee_waiver_purpose" class="col-sm-4 control-label">Describe the purpose of the visit(s)</label>
                       <div class="col-sm-8">
-                          <textarea class="form-control" name="fee_waiver_purpose" v-model="feeWaiver.fee_waiver_purpose"/>
+                          <textarea required class="form-control" name="fee_waiver_purpose" v-model="feeWaiver.fee_waiver_purpose"/>
                       </div>
                     </div>
                 </div>
@@ -105,16 +106,19 @@
             <VisitSection 
             :formCollapse="false" 
             :label="'Visit ' + (visit.index + 1)"
-            :Index="'index_' + visit.index" 
+            :Index="'index_' + visit.index"
+            :ref="'visit_' + visit.index"
             :visit="visit"
             :participantGroupList="participantGroupList"
             :parksList="parksList"
             />
         </div>
 
-        <input type="button" @click.prevent="submit" class="btn btn-primary pull-right" value="Submit"/>
+        <button class="btn btn-primary pull-right" type="submit">Submit</button>
+        <!--input type="button" @click="submit" class="btn btn-primary pull-right" value="Submit"/-->
         <input type="button" @click.prevent="addVisit" class="btn btn-primary pull-right" value="Add another visit"/>
         <!--button v-else disabled class="btn btn-primary"><i class="fa fa-spin fa-spinner"></i>&nbsp;Submitting</button-->
+    </form>
     </div>
 </template>
 
@@ -213,7 +217,40 @@
 
                 this.visits.push(visit);
             },
+            checkBlankFields: function() {
+                //let vm=this;
+                let blankFields = []
+                /*
+                if (!(this.$refs.apiary_site_transfer.num_of_sites_selected > 0)){
+                    blank_fields.push(' You must select at least one site to transfer')
+                }
+                */
+
+                if (!this.contactDetails.email) {
+                    blankFields.push(' You must select..')
+                }
+                return blankFields
+            },
+            highlightMissingFields: function(){
+                //let vm = this;
+                for (let missingField of vm.missingFields) {
+                    $("#" + missingField.id).css("color", 'red');
+                }
+            },
+
             submit: async function(){
+                /*
+                let missingData = this.checkBlankFields();
+                if(missingData.length > 0){
+                  swal({
+                    title: "Please fix following errors before submitting",
+                    text: missingData,
+                    type:'error'
+                  })
+                //return false;
+                }
+                */
+
                 let swalTitle = "Submit Request";
                 let swalText = "Are you sure you want to submit this request?";
                 let payload = {

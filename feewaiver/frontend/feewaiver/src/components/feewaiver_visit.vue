@@ -5,7 +5,7 @@
                         <div class="row">
                             <label for="visit_description" class="col-sm-4 control-label">Provide the details of your visit</label>
                             <div class="col-sm-8">
-                                <textarea class="form-control" name="visit_description" v-model="visit.description"/>
+                                <textarea required class="form-control" name="visit_description" v-model="visit.description"/>
                             </div>
                         </div>
                     </div>
@@ -15,9 +15,9 @@
                         <div class="row">
                               <label class="col-sm-4">Are you intending to camp on CALM land during your visit?</label>
                                 <input class="col-sm-1" id="yes" type="radio" v-model="visit.camping_requested" v-bind:value="true">
-                                <label class="col-sm-1" for="yes">Yes</label>
+                                <label required class="col-sm-1" for="yes">Yes</label>
                                 <input class="col-sm-1" id="no" type="radio" v-model="visit.camping_requested" v-bind:value="false">
-                                <label class="col-sm-1" for="no">No</label>
+                                <label required class="col-sm-1" for="no">No</label>
                         </div>
                     </div>
                 </div>
@@ -27,7 +27,7 @@
                             <label class="col-sm-4 control-label">Date from</label>
                             <div class="col-sm-4">
                                 <div class="input-group date" :id="'dateFromPicker_' + visit.index">
-                                        <input type="text" class="form-control" placeholder="DD/MM/YYYY" v-model="visit.date_from" />
+                                        <input required type="text" class="form-control" placeholder="DD/MM/YYYY" v-model="visit.date_from" />
                                         <span class="input-group-addon">
                                             <span class="glyphicon glyphicon-calendar"></span>
                                         </span>
@@ -40,7 +40,7 @@
                             <label class="col-sm-4 control-label">Date to</label>
                             <div class="col-sm-4">
                                 <div class="input-group date" :id="'dateToPicker_' + visit.index">
-                                        <input type="text" class="form-control" placeholder="DD/MM/YYYY" v-model="visit.date_to" />
+                                        <input required type="text" class="form-control" placeholder="DD/MM/YYYY" v-model="visit.date_to" />
                                         <span class="input-group-addon">
                                             <span class="glyphicon glyphicon-calendar"></span>
                                         </span>
@@ -52,7 +52,7 @@
                         <div class="row">
                             <label class="col-sm-4 control-label">Park/s</label>
                             <div class="col-sm-6">
-                                <select :id="'parks_' + visit.index" class="form-control" multiple="multiple">
+                                <select required :id="'parks_' + visit.index" class="form-control" multiple="multiple">
                                     <option value="null"></option>
                                     <option v-for="park in parksList" :value="park.id">{{park.name}}</option>
                                 </select>
@@ -63,7 +63,7 @@
                         <div class="row">
                             <label for="number_of_vehicles" class="col-sm-4 control-label">Number of vehicles used for visit</label>
                             <div class="col-sm-4">
-                                <input type="number" class="form-control" name="number_of_vehicles" min="0" step="1" v-model="visit.number_of_vehicles">
+                                <input required type="number" class="form-control" name="number_of_vehicles" min="0" step="1" v-model="visit.number_of_vehicles">
                             </div>
                         </div>
                     </div>
