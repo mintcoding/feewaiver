@@ -13,6 +13,17 @@
                 <div class="col-sm-10">
                     <div class="form-group">
                         <div class="row">
+                              <label class="col-sm-4">Are you intending to camp on CALM land during your visit?</label>
+                                <input class="col-sm-1" id="yes" type="radio" v-model="visit.camping_requested" v-bind:value="true">
+                                <label class="col-sm-1" for="yes">Yes</label>
+                                <input class="col-sm-1" id="no" type="radio" v-model="visit.camping_requested" v-bind:value="false">
+                                <label class="col-sm-1" for="no">No</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-10">
+                    <div class="form-group">
+                        <div class="row">
                             <label class="col-sm-4 control-label">Date from</label>
                             <div class="col-sm-4">
                                 <div class="input-group date" :id="'dateFromPicker_' + visit.index">

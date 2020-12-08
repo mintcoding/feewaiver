@@ -120,14 +120,6 @@
 
 <script>
 
-    /*
-    import ComponentSiteSelection from '@/components/common/apiary/component_site_selection.vue'
-    import FileField from '@/components/forms/filefield_immediate.vue'
-    import SiteLocations from '@/components/common/apiary/site_locations.vue'
-    import ApiaryChecklist from '@/components/common/apiary/section_checklist.vue'
-    import uuid from 'uuid'
-    import DeedPoll from "@/components/common/apiary/section_deed_poll.vue"
-    */
     import { api_endpoints, helpers }from '@/utils/hooks'
     import FormSection from "@/components/forms/section_toggle.vue"
     import 'bootstrap/dist/css/bootstrap.css';
@@ -189,7 +181,7 @@
                 participantGroupList: [],
                 parksList: [],
                 //selected_park_ids: [],
-                visitIdx: -1,
+                visitIdx: 0,
                 visits: [
                     {
                         index: 0,
@@ -291,6 +283,7 @@
                     this.feeWaiver.fee_waiver_purpose = returnVal.body.fee_waiver.fee_waiver_purpose;
                     // visits should be empty if reading from backend
                     this.visits = []
+                    this.visitIdx = -1;
                     for (let retrievedVisit of returnVal.body.fee_waiver.visits) {
                         let visit = Object.assign({}, retrievedVisit);
                         //visit.index = visit.id;
