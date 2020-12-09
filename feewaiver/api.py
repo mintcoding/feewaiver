@@ -77,82 +77,26 @@ class FeeWaiverFilterBackend(DatatablesFilterBackend):
 
     def filter_queryset(self, request, queryset, view):
         #import ipdb; ipdb.set_trace()
+        #print(request.GET)
         total_count = queryset.count()
 
-        #def get_choice(status, choices=Proposal.PROCESSING_STATUS_CHOICES):
-        #    for i in choices:
-        #        if i[1]==status:
-        #            return i[0]
-        #    return None
+        def get_choice(status, choices=FeeWaiver.PROCESSING_STATUS_CHOICES):
+            for i in choices:
+                if i[1]==status:
+                    return i[0]
+            return None
 
-        #import ipdb; ipdb.set_trace()
-        # on the internal dashboard, the Region filter is multi-select - have to use the custom filter below
-        #regions = request.GET.get('regions')
-        #if regions:
-        #    if queryset.model is Proposal:
-        #        queryset = queryset.filter(region__name__iregex=regions.replace(',', '|'))
-        #    elif queryset.model is Referral or queryset.model is Compliance:
-        #        queryset = queryset.filter(proposal__region__name__iregex=regions.replace(',', '|'))
-        #application_type = request.GET.get('application_type')
-        #if application_type and not application_type.lower() =='all':
-        #    if queryset.model is Referral or queryset.model is Compliance:
-        #        queryset = queryset.filter(proposal__application_type__name=application_type)
-        #    else:
-        #        queryset = queryset.filter(application_type__name=application_type)
-        #proposal_activity = request.GET.get('proposal_activity')
-        #if proposal_activity and not proposal_activity.lower() == 'all':
-        #    if queryset.model is Referral or queryset.model is Compliance:
-        #        queryset = queryset.filter(proposal__activity=proposal_activity)
-        #    else:
-        #        queryset = queryset.filter(activity=proposal_activity)
-        #proposal_status = request.GET.get('proposal_status')
-        #if proposal_status and not proposal_status.lower() == 'all':
-        #    #processing_status = get_choice(proposal_status, Proposal.PROCESSING_STATUS_CHOICES)
-        #    #queryset = queryset.filter(processing_status=processing_status)
-        #    if queryset.model is Referral or queryset.model is Compliance:
-        #        queryset = queryset.filter(proposal__processing_status=proposal_status)
-        #    else:
-        #        queryset = queryset.filter(processing_status=proposal_status)
-        #submitter = request.GET.get('submitter')
-        #if submitter and not submitter.lower() == 'all':
-        #    if queryset.model is Referral or queryset.model is Compliance:
-        #        queryset = queryset.filter(proposal__submitter__email=submitter)
-        #    else:
-        #        queryset = queryset.filter(submitter__email=submitter)
+        processing_status = request.GET.get('processing_status')
+        if processing_status and not processing_status.lower() == 'all':
+            processing_status = get_choice(processing_status, FeeWaiver.PROCESSING_STATUS_CHOICES)
+            queryset = queryset.filter(processing_status=processing_status)
+
         date_from = request.GET.get('date_from')
         date_to = request.GET.get('date_to')
-        #import ipdb; ipdb.set_trace()
-        #if queryset.model is Proposal:
-        #    if date_from:
-        #        queryset = queryset.filter(lodgement_date__gte=date_from)
-
-        #    if date_to:
-        #        queryset = queryset.filter(lodgement_date__lte=date_to)
-        #elif queryset.model is Approval:
-        #    if date_from:
-        #        queryset = queryset.filter(start_date__gte=date_from)
-
-        #    if date_to:
-        #        queryset = queryset.filter(expiry_date__lte=date_to)
-        #elif queryset.model is Compliance:
-        #    if date_from:
-        #        queryset = queryset.filter(due_date__gte=date_from)
-
-        #    if date_to:
-        #        queryset = queryset.filter(due_date__lte=date_to)
-
-        #    if request.GET.get('processing_status'):
-        #        queryset = queryset.filter(processing_status__icontains=request.GET.get('processing_status'))
-
-        #    if request.GET.get('customer_status'):
-        #        queryset = queryset.filter(customer_status__icontains=request.GET.get('customer_status'))
-
-        #elif queryset.model is Referral:
-        #    if date_from:
-        #        queryset = queryset.filter(proposal__lodgement_date__gte=date_from)
-
-        #    if date_to:
-        #        queryset = queryset.filter(proposal__lodgement_date__lte=date_to)
+        if date_from:
+            queryset = queryset.filter(lodgement_date__gte=date_from)
+        if date_to:
+            queryset = queryset.filter(lodgement_date__lte=date_to)
 
         getter = request.query_params.get
         fields = self.get_fields(getter)
@@ -160,13 +104,13 @@ class FeeWaiverFilterBackend(DatatablesFilterBackend):
         queryset = queryset.order_by(*ordering)
         if len(ordering):
             #for num, item in enumerate(ordering):
-             #   if item == 'status__name':
-              #      ordering[num] = 'status'
-               # elif item == '-status__name':
-                #    ordering[num] = '-status'
+                #if item == 'status__name':
+                 #   ordering[num] = 'status'
+                #elif item == '-status__name':
+                 #   ordering[num] = '-status'
             queryset = queryset.order_by(*ordering)
 
-        queryset = super(FeeWaiverFilterBackend, self).filter_queryset(request, queryset, view)
+        #queryset = super(FeeWaiverFilterBackend, self).filter_queryset(request, queryset, view)
         setattr(view, '_datatables_total_count', total_count)
         return queryset
 

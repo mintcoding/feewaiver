@@ -2,21 +2,21 @@
     <FormSection>
                     <div class="row">
                         <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="">Lodged From</label>
-                                <select class="form-control" v-model="filterFeeWaiverLodgedFrom">
-                                    <option value="All">All</option>
-                                    <!--option v-for="r in proposal_regions" :value="r">{{r}}</option-->
-                                </select>
+                            <label for="">Lodged From</label>
+                            <div class="input-group date" ref="feewaiverDateFromPicker">
+                                <input type="text" class="form-control" placeholder="DD/MM/YYYY" v-model="filterFeeWaiverLodgedFrom">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="">Lodged To</label>
-                                <select class="form-control" v-model="filterFeeWaiverLodgedTo">
-                                    <option value="All">All</option>
-                                    <!--option v-for="a in proposal_activityTitles" :value="a">{{a}}</option-->
-                                </select>
+                            <label for="">Lodged To</label>
+                            <div class="input-group date" ref="feewaiverDateToPicker">
+                                <input type="text" class="form-control" placeholder="DD/MM/YYYY" v-model="filterFeeWaiverLodgedTo">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -130,7 +130,7 @@ export default {
             apiaryTemplateGroup: false,
             */
             //feewaiver_headers:["Number","Submitter","Status","Lodged On","Document","Assigned To","Action"],
-            feewaiver_headers:["Lodgement Number"],
+            feewaiver_headers:["Lodgement Number", "Submitter", "Status", "Lodged on",],
             feewaiver_options:{
                 language: {
                     processing: "<i class='fa fa-4x fa-spinner fa-spin'></i>"
@@ -147,13 +147,9 @@ export default {
                     "dataSrc": 'data',
                     // adding extra GET params for Custom filtering
                     "data": function ( d ) {
-                        /*
-                        d.date_from = vm.filterProposalLodgedFrom != '' && vm.filterProposalLodgedFrom != null ? moment(vm.filterProposalLodgedFrom, 'DD/MM/YYYY').format('YYYY-MM-DD'): '';
-                        d.date_to = vm.filterProposalLodgedTo != '' && vm.filterProposalLodgedTo != null ? moment(vm.filterProposalLodgedTo, 'DD/MM/YYYY').format('YYYY-MM-DD'): '';
-                        d.region = vm.filterProposalRegion;
-                        d.proposal_activity = vm.filterProposalActivity;
-                        d.approval_status = vm.filterProposalStatus;
-                        */
+                        d.date_from = vm.filterFeeWaiverLodgedFrom != '' && vm.filterFeeWaiverLodgedFrom != null ? moment(vm.filterFeeWaiverLodgedFrom, 'DD/MM/YYYY').format('YYYY-MM-DD'): '';
+                        d.date_to = vm.filterFeeWaiverLodgedTo != '' && vm.filterFeeWaiverLodgedTo != null ? moment(vm.filterFeeWaiverLodgedTo, 'DD/MM/YYYY').format('YYYY-MM-DD'): '';
+                        d.processing_status = vm.filterFeeWaiverStatus;
                     }
 
                 },
@@ -230,22 +226,32 @@ export default {
                     {
                         data: "lodgement_number",
                         visible: true,
+                        //searchable: false,
+                    },
+                    {
+                        data: "contact_name",
+                        visible: true,
+                        orderable: false,
+                    },
+                    {
+                        data: "processing_status",
+                        //searchable: false,
+                        visible: true,
+                    },
+                    {
+                        data: "lodgement_date",
+                        mRender:function (data,type,full) {
+                            return data != '' && data != null ? moment(data).format(vm.dateFormat): '';
+                        },
+                        visible: true,
                     },
 
                 ],
                 processing: true,
+                /*
                 initComplete: function() {
-                    // set column visibility and headers according to template group
-                    // region
-                    /*
-                    let regionColumn = vm.$refs.proposal_datatable.vmDataTable.columns(1);
-                    let activityColumn = vm.$refs.proposal_datatable.vmDataTable.columns(2);
-                    if (vm.dasTemplateGroup) {
-                        regionColumn.visible(true);
-                        activityColumn.visible(true);
-                    }
-                    */
                 },
+                */
             }
         }
     },
@@ -254,14 +260,19 @@ export default {
         datatable,
     },
     watch:{
+        /*
         filterFeeWaiverStatus: function(){
             //this.$refs.proposal_datatable.vmDataTable.draw();
             let vm = this;
             if (vm.filterFeeWaiverStatus!= 'All') {
-                vm.$refs.feewaiver_datatable.vmDataTable.columns(1).search(vm.filterFeeWaiverStatus).draw();
+                vm.$refs.feewaiver_datatable.vmDataTable.columns(2).search(vm.filterFeeWaiverStatus).draw();
             } else {
-                vm.$refs.feewaiver_datatable.vmDataTable.columns(1).search('').draw();
+                vm.$refs.feewaiver_datatable.vmDataTable.columns(2).search('').draw();
             }
+        },
+        */
+        filterFeeWaiverStatus: function(){
+            this.$refs.feewaiver_datatable.vmDataTable.draw();
         },
 
         filterFeeWaiverLodgedFrom: function(){
@@ -362,26 +373,26 @@ export default {
         addEventListeners: function(){
             let vm = this;
             // Initialise Proposal Date Filters
-            $(vm.$refs.proposalDateToPicker).datetimepicker(vm.datepickerOptions);
-            $(vm.$refs.proposalDateToPicker).on('dp.change', function(e){
-                if ($(vm.$refs.proposalDateToPicker).data('DateTimePicker').date()) {
-                    vm.filterProposalLodgedTo =  e.date.format('DD/MM/YYYY');
+            $(vm.$refs.feewaiverDateToPicker).datetimepicker(vm.datepickerOptions);
+            $(vm.$refs.feewaiverDateToPicker).on('dp.change', function(e){
+                if ($(vm.$refs.feewaiverDateToPicker).data('DateTimePicker').date()) {
+                    vm.filterFeeWaiverLodgedTo =  e.date.format('DD/MM/YYYY');
                 }
-                else if ($(vm.$refs.proposalDateToPicker).data('date') === "") {
-                    vm.filterProposaLodgedTo = "";
+                else if ($(vm.$refs.feewaiverDateToPicker).data('date') === "") {
+                    vm.filterFeeWaiverLodgedTo = "";
                 }
              });
-            $(vm.$refs.proposalDateFromPicker).datetimepicker(vm.datepickerOptions);
-            $(vm.$refs.proposalDateFromPicker).on('dp.change',function (e) {
-                if ($(vm.$refs.proposalDateFromPicker).data('DateTimePicker').date()) {
-                    vm.filterProposalLodgedFrom = e.date.format('DD/MM/YYYY');
-                    $(vm.$refs.proposalDateToPicker).data("DateTimePicker").minDate(e.date);
+            $(vm.$refs.feewaiverDateFromPicker).datetimepicker(vm.datepickerOptions);
+            $(vm.$refs.feewaiverDateFromPicker).on('dp.change',function (e) {
+                if ($(vm.$refs.feewaiverDateFromPicker).data('DateTimePicker').date()) {
+                    vm.filterFeeWaiverLodgedFrom = e.date.format('DD/MM/YYYY');
+                    $(vm.$refs.feewaiverDateToPicker).data("DateTimePicker").minDate(e.date);
                 }
-                else if ($(vm.$refs.proposalDateFromPicker).data('date') === "") {
-                    vm.filterProposalLodgedFrom = "";
+                else if ($(vm.$refs.feewaiverDateFromPicker).data('date') === "") {
+                    vm.filterFeeWaiverLodgedFrom = "";
                 }
             });
-
+            /*
             // End Proposal Date Filters
             // Internal Reissue listener
             vm.$refs.proposal_datatable.vmDataTable.on('click', 'a[data-reissue-approval]', function(e) {
@@ -446,12 +457,13 @@ export default {
                 vm.$refs.approval_history.approval_history_id = approval_id;
                 vm.$refs.approval_history.isModalOpen = true;
             });
-
+            */
         },
         initialiseSearch:function(){
-            this.regionSearch();
+            //this.regionSearch();
             this.dateSearch();
         },
+        /*
         regionSearch:function(){
             let vm = this;
             vm.$refs.proposal_datatable.table.dataTableExt.afnFiltering.push(
@@ -484,13 +496,14 @@ export default {
                 }
             );
         },
+        */
         dateSearch:function(){
             let vm = this;
-            vm.$refs.proposal_datatable.table.dataTableExt.afnFiltering.push(
+            vm.$refs.feewaiver_datatable.table.dataTableExt.afnFiltering.push(
                 function(settings,data,dataIndex,original){
-                    let from = vm.filterProposalLodgedFrom;
-                    let to = vm.filterProposalLodgedTo;
-                    let val = original.expiry_date;
+                    let from = vm.filterFeeWaiverLodgedFrom;
+                    let to = vm.filterFeeWaiverLodgedTo;
+                    let val = original.lodgement_date;
 
                     if ( from == '' && to == ''){
                         return true;
@@ -741,11 +754,9 @@ export default {
     },
     updated: function() {
         this.$nextTick(() => {
-            /*
             this.initialiseSearch();
             this.addEventListeners();
-            this.setDashboardText();
-            */
+            //this.setDashboardText();
         });
     },
     created: function() {

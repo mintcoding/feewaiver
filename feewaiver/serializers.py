@@ -158,14 +158,22 @@ class FeeWaiverSerializer(serializers.ModelSerializer):
 
 
 class FeeWaiverDTSerializer(serializers.ModelSerializer):
+    #contact_details = ContactDetailsSerializer()
+    contact_name = serializers.SerializerMethodField()
+    processing_status = serializers.SerializerMethodField()
+    #processing_status = serializers.CharField(source='get_processing_status_display')
+    #lodgement_date = serializers.SerializerMethodField()
 
     class Meta:
         model = FeeWaiver
         fields = (
                 'id',
                 'lodgement_number',
+                'contact_name',
+                #'contact_details',
                 #'submitter',
-                #'status',
+                'processing_status',
+                #'lodgement_date',
                 'lodgement_date',
                 #document,
                 #assigned_to,
@@ -174,6 +182,15 @@ class FeeWaiverDTSerializer(serializers.ModelSerializer):
             'id',
         )
 
+    #def get_lodgement_date(self, obj):
+     #   return obj.lodgement_date.strftime('%d/%m/%Y')
+
+    def get_contact_name(self, obj):
+        if obj.contact_details:
+            return obj.contact_details.contact_name
+
+    def get_processing_status(self,obj):
+        return obj.get_processing_status_display()
 
 class ParticipantsSerializer(serializers.ModelSerializer):
 
