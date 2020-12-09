@@ -88,6 +88,14 @@
                       </div>
                     </div>
                 </div>
+                <div class="form-group">
+                    <div class="row">
+                      <label class="col-sm-4 control-label">Attach any other documentation you want to provide</label>
+                      <div class="col-sm-8">
+                          <!--textarea required class="form-control" v-model="contactDetails.organisation_description"/-->
+                      </div>
+                    </div>
+                </div>
             </div>
         </FormSection>
         <FormSection :formCollapse="false" label="Fee Waiver Request" Index="fee_waiver_request">
@@ -201,6 +209,31 @@
             VisitSection,
         },
         computed: {
+            // need temp doc
+            /*
+            let rendererDocumentUrl = helpers.add_endpoint_join(
+                api_endpoints.call_email,
+                state.call_email.id + "/process_renderer_document/"
+                )
+            //Vue.set(state.call_email, 'rendererDocumentUrl', rendererDocumentUrl); 
+            let commsLogsDocumentUrl = helpers.add_endpoint_join(
+                api_endpoints.call_email,
+                state.call_email.id + "/process_comms_log_document/"
+                )
+            //Vue.set(state.call_email, 'commsLogsDocumentUrl', commsLogsDocumentUrl); 
+            documentActionUrl: function() {
+                let rendererDocumentUrl = '';
+                if (this.call_email && this.call_email.id) {
+                    rendererDocumentUrl = this.call_email.rendererDocumentUrl;
+                } else if (this.inspection && this.inspection.id) {
+                    rendererDocumentUrl = this.inspection.rendererDocumentUrl;
+                } else if (this.physical_artifact && this.physical_artifact.id) {
+                    rendererDocumentUrl = this.physical_artifact.rendererDocumentUrl;
+                }
+                return rendererDocumentUrl;
+            },
+
+            */
         },
         methods:{
             addVisit: function() {

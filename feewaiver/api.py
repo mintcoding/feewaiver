@@ -35,6 +35,7 @@ from feewaiver.serializers import (
 )
 from feewaiver.models import (
         ContactDetails,
+        ContactDetailsDocument,
         FeeWaiver,
         FeeWaiverVisit,
         FeeWaiverLogEntry,
@@ -54,6 +55,7 @@ from feewaiver.process_document import (
         )
 import logging
 from feewaiver.emails import send_fee_waiver_received_notification
+from feewaiver.main_decorators import basic_exception_handler
 logger = logging.getLogger(__name__)
 
 
@@ -223,6 +225,18 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
         #    return queryset
         #logger.warn("User is neither customer nor internal user: {} <{}>".format(user.get_full_name(), user.email))
         return FeeWaiver.objects.none()
+
+    @detail_route(methods=['POST'])
+    @renderer_classes((JSONRenderer,))
+    @basic_exception_handler
+    def process_contact_details_document(self, request, *args, **kwargs):
+        instance = self.get_object()
+        #returned_data = process_generic_document(request, instance, document_type=ContactDetailsDocument.DOC_TYPE_NAME)
+        returned_data = process_generic_document(request, instance)
+        if returned_data:
+            return Response(returned_data)
+        else:
+            return Response()
 
     #def get_object(self):
 
