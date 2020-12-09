@@ -50,6 +50,42 @@ class ContactDetails(RevisionedMixin):
 
 
 class FeeWaiver(RevisionedMixin):
+    PROCESSING_STATUS_TEMP = 'temp'
+    PROCESSING_STATUS_DRAFT = 'draft'
+    PROCESSING_STATUS_WITH_ASSESSOR = 'with_assessor'
+    PROCESSING_STATUS_WITH_REFERRAL = 'with_referral'
+    PROCESSING_STATUS_WITH_ASSESSOR_REQUIREMENTS = 'with_assessor_requirements'
+    PROCESSING_STATUS_WITH_APPROVER = 'with_approver'
+    PROCESSING_STATUS_RENEWAL = 'renewal'
+    PROCESSING_STATUS_LICENCE_AMENDMENT = 'licence_amendment'
+    PROCESSING_STATUS_AWAITING_APPLICANT_RESPONSE = 'awaiting_applicant_response'
+    PROCESSING_STATUS_AWAITING_ASSESSOR_RESPONSE = 'awaiting_assessor_response'
+    PROCESSING_STATUS_AWAITING_RESPONSES = 'awaiting_responses'
+    PROCESSING_STATUS_READY_FOR_CONDITIONS = 'ready_for_conditions'
+    PROCESSING_STATUS_READY_TO_ISSUE = 'ready_to_issue'
+    PROCESSING_STATUS_APPROVED = 'approved'
+    PROCESSING_STATUS_DECLINED = 'declined'
+    PROCESSING_STATUS_DISCARDED = 'discarded'
+    PROCESSING_STATUS_CHOICES = ((PROCESSING_STATUS_TEMP, 'Temporary'),
+                                 (PROCESSING_STATUS_DRAFT, 'Draft'),
+                                 (PROCESSING_STATUS_WITH_ASSESSOR, 'With Assessor'),
+                                 (PROCESSING_STATUS_WITH_REFERRAL, 'With Referral'),
+                                 (PROCESSING_STATUS_WITH_ASSESSOR_REQUIREMENTS, 'With Assessor (Requirements)'),
+                                 (PROCESSING_STATUS_WITH_APPROVER, 'With Approver'),
+                                 (PROCESSING_STATUS_RENEWAL, 'Renewal'),
+                                 (PROCESSING_STATUS_LICENCE_AMENDMENT, 'Licence Amendment'),
+                                 (PROCESSING_STATUS_AWAITING_APPLICANT_RESPONSE, 'Awaiting Applicant Response'),
+                                 (PROCESSING_STATUS_AWAITING_ASSESSOR_RESPONSE, 'Awaiting Assessor Response'),
+                                 (PROCESSING_STATUS_AWAITING_RESPONSES, 'Awaiting Responses'),
+                                 (PROCESSING_STATUS_READY_FOR_CONDITIONS, 'Ready for Conditions'),
+                                 (PROCESSING_STATUS_READY_TO_ISSUE, 'Ready to Issue'),
+                                 (PROCESSING_STATUS_APPROVED, 'Approved'),
+                                 (PROCESSING_STATUS_DECLINED, 'Declined'),
+                                 (PROCESSING_STATUS_DISCARDED, 'Discarded'),
+                                 )
+
+    processing_status = models.CharField('Processing Status', max_length=30, choices=PROCESSING_STATUS_CHOICES,
+                                         default=PROCESSING_STATUS_CHOICES[1][0])
     #contact_details = models.ForeignKey(ContactDetails, null=True, blank=False, related_name='fee_waivers')
     lodgement_number = models.CharField(max_length=12, blank=True, default='')
     lodgement_date = models.DateTimeField(auto_now_add=True)

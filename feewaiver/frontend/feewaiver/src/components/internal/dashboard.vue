@@ -1,42 +1,30 @@
 <template id="proposal_dashboard">
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{{dashboardTitle}} <small v-if="is_external">{{dashboardDescription}}</small>
-                        <a :href="'#'+pBody" data-toggle="collapse"  data-parent="#userInfo" expanded="true" :aria-controls="pBody">
-                            <span class="glyphicon glyphicon-chevron-up pull-right "></span>
-                        </a>
-                    </h3>
-                </div>
-                <div class="panel-body collapse in" :id="pBody">
+    <FormSection>
                     <div class="row">
-                        <div v-if="!apiaryTemplateGroup">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="">Lodged From</label>
-                                    <select class="form-control" v-model="filterProposalRegion">
-                                        <option value="All">All</option>
-                                        <option v-for="r in proposal_regions" :value="r">{{r}}</option>
-                                    </select>
-                                </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="">Lodged From</label>
+                                <select class="form-control" v-model="filterFeeWaiverLodgedFrom">
+                                    <option value="All">All</option>
+                                    <!--option v-for="r in proposal_regions" :value="r">{{r}}</option-->
+                                </select>
                             </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="">Lodged To</label>
-                                    <select class="form-control" v-model="filterProposalActivity">
-                                        <option value="All">All</option>
-                                        <option v-for="a in proposal_activityTitles" :value="a">{{a}}</option>
-                                    </select>
-                                </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="">Lodged To</label>
+                                <select class="form-control" v-model="filterFeeWaiverLodgedTo">
+                                    <option value="All">All</option>
+                                    <!--option v-for="a in proposal_activityTitles" :value="a">{{a}}</option-->
+                                </select>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="">Status</label>
-                                <select class="form-control" v-model="filterProposalStatus">
+                                <select class="form-control" v-model="filterFeeWaiverStatus">
                                     <option value="All">All</option>
-                                    <option v-for="s in approval_status" :value="s">{{s}}</option>
+                                    <option v-for="s in feewaiver_status" :value="s">{{s}}</option>
                                 </select>
                             </div>
                         </div>
@@ -66,15 +54,13 @@
                             <datatable ref="feewaiver_datatable" :id="datatable_id" :dtOptions="feewaiver_options" :dtHeaders="feewaiver_headers"/>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    </FormSection>
 </template>
 <script>
 
 import datatable from '@/utils/vue/datatable.vue'
 import Vue from 'vue'
+import FormSection from "@/components/forms/section_toggle.vue"
 /*
 import ApprovalCancellation from '../internal/approvals/approval_cancellation.vue'
 import ApprovalSuspension from '../internal/approvals/approval_suspension.vue'
@@ -106,8 +92,9 @@ export default {
     data() {
         let vm = this;
         return {
+            url: '/api/feewaivers_paginated/feewaiver_internal/?format=datatables',
             pBody: 'pBody' + vm._uid,
-            datatable_id: 'proposal-datatable-'+vm._uid,
+            datatable_id: 'feewaiver-datatable-'+vm._uid,
             //Profile to check if user has access to process Proposal
             profile: {},
             /*
@@ -133,8 +120,8 @@ export default {
                 keepInvalid:true,
                 allowInputToggle:true
             },
+            feewaiver_status:[],
             /*
-            approval_status:[],
             proposal_activityTitles : [],
             proposal_regions: [],
             proposal_submitters: [],
@@ -142,28 +129,31 @@ export default {
             dasTemplateGroup: false,
             apiaryTemplateGroup: false,
             */
-            feewaiver_headers:["Number","Submitter","Status","Lodged On","Document","Assigned To","Action"],
+            //feewaiver_headers:["Number","Submitter","Status","Lodged On","Document","Assigned To","Action"],
+            feewaiver_headers:["Lodgement Number"],
             feewaiver_options:{
                 language: {
                     processing: "<i class='fa fa-4x fa-spinner fa-spin'></i>"
                 },
                 responsive: true,
                 serverSide: true,
-                lengthMenu: [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "All"] ],
+                //lengthMenu: [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "All"] ],
                 order: [
                     [0, 'desc']
                     ],
                 ajax: {
-                    "url": vm.url,
+                    //"url": vm.url,
+                    "url": '/api/feewaivers_paginated/feewaiver_internal/?format=datatables',
                     "dataSrc": 'data',
                     // adding extra GET params for Custom filtering
                     "data": function ( d ) {
-                        //d.regions = vm.filterProposalRegion.join(); // no need to add this since we can filter normally (filter is not multi-select in Approval table)
+                        /*
                         d.date_from = vm.filterProposalLodgedFrom != '' && vm.filterProposalLodgedFrom != null ? moment(vm.filterProposalLodgedFrom, 'DD/MM/YYYY').format('YYYY-MM-DD'): '';
                         d.date_to = vm.filterProposalLodgedTo != '' && vm.filterProposalLodgedTo != null ? moment(vm.filterProposalLodgedTo, 'DD/MM/YYYY').format('YYYY-MM-DD'): '';
                         d.region = vm.filterProposalRegion;
                         d.proposal_activity = vm.filterProposalActivity;
                         d.approval_status = vm.filterProposalStatus;
+                        */
                     }
 
                 },
@@ -183,6 +173,7 @@ export default {
                     },
                 ],
                 columns: [
+                    /*
                     {
                         data: "id",
                         'render':function(data,type,full){
@@ -235,122 +226,10 @@ export default {
                         name: 'current_proposal__region__name',// will be use like: Approval.objects.filter(current_proposal__region__name='Kimberley')
                         visible: false,
                     },
+                    */
                     {
-                        data: "activity",
-                        name: "current_proposal__activity",
-                        visible: false,
-                    },
-                    {
-                        data: "applicant",
-                        //name: "applicant__organisation__name" // will be use like: Approval.objects.all().order_by('applicant__organisation__nane')
-                    },
-                    {data: "status"},
-                    {
-                        data: "start_date",
-                        mRender:function (data,type,full) {
-                            return data != '' && data != null ? moment(data).format(vm.dateFormat): '';
-                        },
-                        searchable: false
-                    },
-                    {
-                        data: "expiry_date",
-                        mRender:function (data,type,full) {
-                            return data != '' && data != null ? moment(data).format(vm.dateFormat): '';
-                        },
-                        searchable: false
-                    },
-                    {
-                        data: "licence_document",
-                        mRender:function(data,type,full){
-                            //let link='';
-                            //return `<a href="${data}" target="_blank"><i style="color:red" class="fa fa-file-pdf-o"></i></a>`;
-                            // link=`<a href='#${full.id}'<i style="color:red" class="fa fa-file-pdf-o"></i></a>`;
-                            if (full.apiary_approval) {
-                                return `<a href="${full.latest_apiary_licence_document}" target="_blank"><i style="color:red" class="fa fa-file-pdf-o"></i></a>`;
-                            } else {
-                                if(vm.is_external){
-                                    return `<a href="${data}" target="_blank"><i style="color:red" class="fa fa-file-pdf-o"></i></a>`;
-                                }
-                                else{
-                                    return `<a href="#${full.id}" data-pdf-approval='${full.id}' media-link='${data}'><i style="color:red" class="fa fa-file-pdf-o"></i></a>`;
-                                }
-                            }
-                            //return link;
-                        },
-                        name: 'licence_document__name'
-                    },
-                    {
-                        data: '',
-                        mRender:function (data,type,full) {
-                            let links = '';
-                            if (!vm.is_external){
-                                //if(full.can_approver_reissue && full.current_proposal && full.current_proposal.application_type !== 'Site Transfer'){
-                                if(full.can_approver_reissue && full.current_proposal){
-                                        links +=  `<a href='#${full.id}' data-reissue-approval='${full.current_proposal_id}'>Reissue</a><br/>`;
-                                }
-                                if(vm.check_assessor(full)){
-                                    // if(full.can_approver_reissue){
-                                    //     links +=  `<a href='#${full.id}' data-reissue-approval='${full.current_proposal}'>Reissue</a><br/>`;
-                                    // }
-                                    if(full.can_reissue && full.can_action){
-                                        links +=  `<a href='#${full.id}' data-cancel-approval='${full.id}'>Cancel</a><br/>`;
-                                        links +=  `<a href='#${full.id}' data-surrender-approval='${full.id}'>Surrender</a><br/>`;
-                                    }
-                                    if(full.status == 'Current' && full.can_action){
-                                        links +=  `<a href='#${full.id}' data-suspend-approval='${full.id}'>Suspend</a><br/>`;
-                                    }
-                                    if(full.can_reinstate)
-                                    {
-                                        links +=  `<a href='#${full.id}' data-reinstate-approval='${full.id}'>Reinstate</a><br/>`;
-                                    }
-                                    links +=  `<a href='/internal/approval/${full.id}'>View</a><br/>`;
-                                }
-                                else{
-                                    links +=  `<a href='/internal/approval/${full.id}'>View</a><br/>`;
-
-                                }
-                                if(full.renewal_document && full.renewal_sent){
-                                  links +=  `<a href='${full.renewal_document}' target='_blank'>Renewal Notice</a><br/>`;
-
-                                }
-                                // if(full.can_approver_reissue){
-                                //         links +=  `<a href='#${full.id}' data-reissue-approval='${full.current_proposal}'>Reissue</a><br/>`;
-                                // }
-                            }
-                            else{
-                                if (full.can_reissue) {
-                                    links +=  `<a href='/external/approval/${full.id}'>View</a><br/>`;
-                                    if(full.can_action){
-                                        links +=  `<a href='#${full.id}' data-surrender-approval='${full.id}'>Surrender</a><br/>`;
-                                        if(full.can_amend){
-                                           links +=  `<a href='#${full.id}' data-amend-approval='${full.current_proposal_id}'>Amend</a><br/>`;
-                                       }
-                                    }
-                                    if(full.renewal_document && full.renewal_sent && full.can_renew) {
-                                        links +=  `<a href='#${full.id}' data-renew-approval='${full.current_proposal_id}'>Renew</a><br/>`;
-                                    }
-                                }
-                                else {
-                                    links +=  `<a href='/external/approval/${full.id}'>View</a><br/>`;
-
-                                }
-                            }
-                            if (full.apiary_approval) {
-                                links +=  `<a href='#${full.id}' approval-history='${full.id}'>Licence History</a><br/>`;
-                            } else {
-                                links +=  `<a href='#${full.id}' approval-history='${full.id}'>Approval History</a><br/>`;
-                            }
-                            return links;
-                        },
-                        searchable: false,
-                        orderable: false,
-                        name: ''
-                    },
-                    {
-                        data: 'template_group',
-                        searchable: false,
-                        orderable: false,
-                        visible: false,
+                        data: "lodgement_number",
+                        visible: true,
                     },
 
                 ],
@@ -358,26 +237,39 @@ export default {
                 initComplete: function() {
                     // set column visibility and headers according to template group
                     // region
+                    /*
                     let regionColumn = vm.$refs.proposal_datatable.vmDataTable.columns(1);
                     let activityColumn = vm.$refs.proposal_datatable.vmDataTable.columns(2);
                     if (vm.dasTemplateGroup) {
                         regionColumn.visible(true);
                         activityColumn.visible(true);
                     }
+                    */
                 },
             }
         }
     },
     components:{
-        /*
+        FormSection,
         datatable,
-        ApprovalCancellation,
-        ApprovalSuspension,
-        ApprovalSurrender,
-        ApprovalHistory
-        */
     },
     watch:{
+        filterFeeWaiverStatus: function(){
+            //this.$refs.proposal_datatable.vmDataTable.draw();
+            let vm = this;
+            if (vm.filterFeeWaiverStatus!= 'All') {
+                vm.$refs.feewaiver_datatable.vmDataTable.columns(1).search(vm.filterFeeWaiverStatus).draw();
+            } else {
+                vm.$refs.feewaiver_datatable.vmDataTable.columns(1).search('').draw();
+            }
+        },
+
+        filterFeeWaiverLodgedFrom: function(){
+            this.$refs.feewaiver_datatable.vmDataTable.draw();
+        },
+        filterFeeWaiverLodgedTo: function(){
+            this.$refs.feewaiver_datatable.vmDataTable.draw();
+        }
         /*
         filterProposalRegion: function(){
             //this.$refs.proposal_datatable.vmDataTable.draw();
@@ -450,14 +342,17 @@ export default {
             //return title;
         },
 
+        */
         fetchFilterLists: function(){
             let vm = this;
 
-            vm.$http.get(api_endpoints.filter_list_approvals).then((response) => {
+            vm.$http.get(api_endpoints.filter_list).then((response) => {
+                /*
                 vm.proposal_regions = response.body.regions;
                 vm.proposal_activityTitles = response.body.activities;
                 vm.proposal_submitters = response.body.submitters;
-                vm.approval_status = response.body.approval_status_choices;
+                */
+                vm.feewaiver_status = response.body.feewaiver_status_choices;
             },(error) => {
                 console.log(error);
             })
@@ -625,7 +520,7 @@ export default {
                 }
             );
         },
-
+        /*
         fetchProfile: function(){
             let vm = this;
             Vue.http.get(api_endpoints.profile).then((response) => {
@@ -834,9 +729,8 @@ export default {
 
     },
     mounted: function(){
-        /*
 		this.fetchFilterLists();
-        this.fetchProfile();
+        //this.fetchProfile();
         let vm = this;
         $( 'a[data-toggle="collapse"]' ).on( 'click', function () {
             var chev = $( this ).children()[ 0 ];
@@ -844,7 +738,6 @@ export default {
                 $( chev ).toggleClass( "glyphicon-chevron-down glyphicon-chevron-up" );
             }, 100 );
         });
-        */
     },
     updated: function() {
         this.$nextTick(() => {

@@ -350,21 +350,7 @@
 
 <!--style lang="css" scoped-->
 <style lang="css">
-    /*
-    input:required {
-        box-shadow: 4px 4px 20px rgba(200, 0, 0, 0.85);
-    }
-    :required {
-        background: red;
-    }
-    input:required:focus {
-        border: 1px solid red;
-        outline: none;
-    }
-    input:required:hover {
-        opacity: 1;
-    }
-    */
+/*
     input:required {
         border: 1px solid red;
     }
@@ -377,6 +363,7 @@
     textarea:required {
         border: 1px solid red;
     }
+    */
     .headerbox {
         padding: 50px;
     }

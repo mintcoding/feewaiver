@@ -26,6 +26,7 @@ from django.shortcuts import redirect, get_object_or_404
 from feewaiver.serializers import (
         ContactDetailsSerializer,
         FeeWaiverSerializer,
+        FeeWaiverDTSerializer,
         FeeWaiverVisitSerializer,
         FeeWaiverLogEntrySerializer,
         FeeWaiverUserActionSerializer,
@@ -165,7 +166,7 @@ class FeeWaiverFilterBackend(DatatablesFilterBackend):
                 #    ordering[num] = '-status'
             queryset = queryset.order_by(*ordering)
 
-        #queryset = super(ProposalFilterBackend, self).filter_queryset(request, queryset, view)
+        queryset = super(FeeWaiverFilterBackend, self).filter_queryset(request, queryset, view)
         setattr(view, '_datatables_total_count', total_count)
         return queryset
 
@@ -188,7 +189,7 @@ class FeeWaiverPaginatedViewSet(viewsets.ModelViewSet):
     pagination_class = DatatablesPageNumberPagination
     renderer_classes = (FeeWaiverRenderer,)
     queryset = FeeWaiver.objects.none()
-    serializer_class = FeeWaiverSerializer
+    serializer_class = FeeWaiverDTSerializer
     #serializer_class = DTProposalSerializer
     page_size = 10
 
@@ -197,7 +198,7 @@ class FeeWaiverPaginatedViewSet(viewsets.ModelViewSet):
 #        return super(ListProposalViewSet, self).dispatch(*args, **kwargs)
 
     def get_queryset(self):
-        user = self.request.user
+        #user = self.request.user
         #import ipdb; ipdb.set_trace()
         if is_internal(self.request): #user.is_authenticated():
             #return Proposal.objects.all().order_by('-id')
@@ -205,7 +206,7 @@ class FeeWaiverPaginatedViewSet(viewsets.ModelViewSet):
         #elif is_customer(self.request):
             #user_orgs = [org.id for org in user.disturbance_organisations.all()]
             #return Proposal.objects.filter( Q(applicant_id__in = user_orgs) | Q(submitter = user) | Q(proxy_applicant = user))
-        return Proposal.objects.none()
+        return Feewaiver.objects.none()
 
 #    def filter_queryset(self, request, queryset, view):
 #        return self.filter_backends[0]().filter_queryset(self.request, queryset, view)
@@ -219,13 +220,13 @@ class FeeWaiverPaginatedViewSet(viewsets.ModelViewSet):
 #        return response
 
     @list_route(methods=['GET',])
-    def proposals_internal(self, request, *args, **kwargs):
+    def feewaiver_internal(self, request, *args, **kwargs):
         """
         Used by the internal dashboard
 
         http://localhost:8499/api/proposal_paginated/proposal_paginated_internal/?format=datatables&draw=1&length=2
         """
-        template_group = get_template_group(request)
+        #template_group = get_template_group(request)
         #import ipdb; ipdb.set_trace()
         #if template_group == 'apiary':
         #    #qs = self.get_queryset().filter(application_type__apiary_group_application_type=True)
@@ -250,7 +251,10 @@ class FeeWaiverPaginatedViewSet(viewsets.ModelViewSet):
         self.paginator.page_size = qs.count()
         #import ipdb; ipdb.set_trace()
         result_page = self.paginator.paginate_queryset(qs, request)
-        serializer = FeeWaiverSerializer(result_page, context={
+        #serializer = FeeWaiverSerializer(result_page, context={
+         #   'request':request,
+          #  }, many=True)
+        serializer = FeeWaiverDTSerializer(result_page, context={
             'request':request,
             }, many=True)
         #serializer = DTProposalSerializer(result_page, context={'request':request}, many=True)
@@ -274,7 +278,7 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
         #    queryset =  Proposal.objects.filter(region__isnull=False).filter( Q(applicant_id__in = user_orgs) | Q(submitter = user) )
         #    return queryset
         #logger.warn("User is neither customer nor internal user: {} <{}>".format(user.get_full_name(), user.email))
-        return Proposal.objects.none()
+        return FeeWaiver.objects.none()
 
     #def get_object(self):
 
@@ -389,6 +393,16 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
     #    result_page = paginator.paginate_queryset(proposals, request)
     #    serializer = ListProposalSerializer(result_page, context={'request':request}, many=True)
     #    return paginator.get_paginated_response(serializer.data)
+
+    @list_route(methods=['GET',])
+    def filter_list(self, request, *args, **kwargs):
+        #import ipdb; ipdb.set_trace()
+        """ Used by the internal/external dashboard filters """
+        feewaiver_status = []
+        data = dict(
+            feewaiver_status_choices = [i[1] for i in FeeWaiver.PROCESSING_STATUS_CHOICES],
+        )
+        return Response(data)
 
     @detail_route(methods=['GET',])
     def action_log(self, request, *args, **kwargs):
