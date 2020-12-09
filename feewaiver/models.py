@@ -93,6 +93,7 @@ class FeeWaiver(RevisionedMixin):
     lodgement_date = models.DateTimeField(auto_now_add=True)
     contact_details = models.OneToOneField(ContactDetails, related_name="fee_waiver")
     fee_waiver_purpose = models.TextField(blank=True)
+    assigned_officer = models.ForeignKey(EmailUser, blank=True, null=True, related_name='feewaiver_assigned', on_delete=models.SET_NULL)
     #fee_waiver_description = models.TextField(blank=True)
     #date_from = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=False,verbose_name="Date from", help_text='')
     #date_to = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=False,verbose_name="Date to", help_text='')
@@ -129,6 +130,20 @@ class FeeWaiver(RevisionedMixin):
             new_lodgment_id = 'EFWR{0:06d}'.format(self.pk)
             self.lodgement_number = new_lodgment_id
             self.save()
+
+    @property
+    def relevant_access_group(self):
+        if self.processing_status == 'with_approver':
+            #group = AssessorsGroup
+            qs = EmailUser.objects.filter
+            return AssessorsGroup.objects.first().members.all()
+        else:
+            #group = ApproversGroup
+            return ApproversGroup.objects.first().members.all()
+        #return group.members.all() if group else []
+        #import ipdb; ipdb.set_trace()
+        #esult_list = [member in member in group.members
+        #return group.all_members if group else []
 
 
 class FeeWaiverVisit(RevisionedMixin):

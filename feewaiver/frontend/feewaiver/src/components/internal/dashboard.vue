@@ -130,7 +130,7 @@ export default {
             apiaryTemplateGroup: false,
             */
             //feewaiver_headers:["Number","Submitter","Status","Lodged On","Document","Assigned To","Action"],
-            feewaiver_headers:["Lodgement Number", "Submitter", "Status", "Lodged on",],
+            feewaiver_headers:["Lodgement Number", "Submitter", "Status", "Lodged on", "Document", "Assigned To", "Action"],
             feewaiver_options:{
                 language: {
                     processing: "<i class='fa fa-4x fa-spinner fa-spin'></i>"
@@ -169,60 +169,6 @@ export default {
                     },
                 ],
                 columns: [
-                    /*
-                    {
-                        data: "id",
-                        'render':function(data,type,full){
-                        if(!vm.is_external){
-                            var result = '';
-                            var popTemplate = '';
-                            var message = '';
-                            let tick = '';
-                            tick = "<i class='fa fa-exclamation-triangle' style='color:red'></i>"
-                            result = '<span>' + full.lodgement_number + '</span>';
-                            if(full.can_reissue){
-                                if(!full.can_action){
-                                    if(full.set_to_cancel){
-                                        message = 'This Approval is marked for cancellation to future date';
-                                    }
-                                    if(full.set_to_suspend){
-                                        message = 'This Approval is marked for suspension to future date';
-                                    }
-                                    if(full.set_to_surrender){
-                                        message = 'This Approval is marked for surrendering to future date';
-                                    }
-                                    popTemplate = _.template('<a href="#" ' +
-                                            'role="button" ' +
-                                            'data-toggle="popover" ' +
-                                            'data-trigger="hover" ' +
-                                            'data-placement="top auto"' +
-                                            'data-html="true" ' +
-                                            'data-content="<%= text %>" ' +
-                                            '><%= tick %></a>');
-                                    result += popTemplate({
-                                        text: message,
-                                        tick: tick
-                                    });
-
-                                }
-                            }
-                            return result;
-                        }
-                        else { return full.lodgement_number }
-                        },
-                        'createdCell': helpers.dtPopoverCellFn,
-                        name: "id, lodgement_number",
-                    },
-                    {
-                        data: "region",
-                        'render': function (value) {
-                            return helpers.dtPopover(value);
-                        },
-                        'createdCell': helpers.dtPopoverCellFn,
-                        name: 'current_proposal__region__name',// will be use like: Approval.objects.filter(current_proposal__region__name='Kimberley')
-                        visible: false,
-                    },
-                    */
                     {
                         data: "lodgement_number",
                         visible: true,
@@ -245,6 +191,49 @@ export default {
                         },
                         visible: true,
                     },
+                    {
+                        data: "id",
+                        visible: true,
+                        orderable: false,
+                        //searchable: false,
+                    },
+                    {
+                        data: "assigned_officer",
+                        visible: true,
+                        //searchable: false,
+                    },
+                    /*
+                    {
+                        data: "user_action",
+                        searchable: false,
+                        orderable: false
+                    },
+                    {
+                        data: "id",
+                        visible: true,
+                        orderable: false,
+                        //searchable: false,
+                    },
+                    */
+                    {
+                        data: "can_process",
+                        mRender:function (data,type,full) {
+                            let links = '';
+                            //console.log(full)
+                            if(full.can_process){
+
+                                links +=  `<a href='/internal/fee_waiver/${full.id}'>Process</a><br/>`;
+                            } else{
+                                links +=  `<a href='/internal/fee_waiver/${full.id}'>View</a><br/>`;
+                            }
+                            return links;
+                        },
+                        name: '',
+                        searchable: false,
+                        orderable: false
+                    },
+
+
 
                 ],
                 processing: true,
