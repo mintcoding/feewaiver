@@ -191,6 +191,7 @@
                         index: 0,
                         selected_park_ids: [],
                         age_of_participants_array: [],
+                        camping_requested: false,
                     },
                 ],
             }
@@ -213,6 +214,7 @@
                     index: ++this.visitIdx,
                     selected_park_ids: [],
                     age_of_participants_array: [],
+                    camping_requested: false,
                 }
 
                 this.visits.push(visit);
