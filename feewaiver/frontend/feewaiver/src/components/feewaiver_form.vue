@@ -92,7 +92,16 @@
                     <div class="row">
                       <label class="col-sm-4 control-label">Attach any other documentation you want to provide</label>
                       <div class="col-sm-8">
-                          <!--textarea required class="form-control" v-model="contactDetails.organisation_description"/-->
+                          <FileField
+                              class="input_file_wrapper"
+                              ref="contact_details_documents"
+                              name="contact-details-documents"
+                              :isRepeatable="true"
+                              :documentActionUrl="documentActionUrl"
+                              :replace_button_by_text="true"
+                              @update-temp-doc-coll-id="updateTempDocCollId"
+                              :key="documentActionUrl"
+                          />
                       </div>
                     </div>
                 </div>
@@ -140,6 +149,7 @@
     require("select2-bootstrap-theme/dist/select2-bootstrap.min.css");
     require("select2");
     import VisitSection from "./feewaiver_visit.vue"
+    import FileField from '@/components/forms/filefield_immediate.vue'
 
     export default {
         name: 'FeeWaiverForm',
@@ -191,6 +201,7 @@
                 contactDetails: {},
                 email_confirmation: '',
                 participantGroupList: [],
+                temporary_document_collection_id: null,
                 parksList: [],
                 //selected_park_ids: [],
                 visitIdx: 0,
@@ -207,8 +218,24 @@
         components: {
             FormSection,
             VisitSection,
+            FileField,
         },
         computed: {
+            documentActionUrl: function() {
+                let url = '';
+                if (this.contactDetails && this.contactDetails.id) {
+                    url = helpers.add_endpoint_join(
+                        '/api/feewaivers/',
+                        //this.contactDetails.id + '/process_contact_details_document/'
+                        this.feeWaiver.id + '/process_contact_details_document/'
+                    )
+                } else if (!this.feeWaiverId) {
+                    // internal view
+                    url = 'temporary_document';
+                }
+                return url;
+            },
+
             // need temp doc
             /*
             let rendererDocumentUrl = helpers.add_endpoint_join(
@@ -236,6 +263,9 @@
             */
         },
         methods:{
+            updateTempDocCollId: function(id) {
+                this.temporary_document_collection_id = id.temp_doc_id;
+            },
             addVisit: function() {
                 /*
                 let visit = {};
@@ -288,24 +318,28 @@
 
                 let swalTitle = "Submit Request";
                 let swalText = "Are you sure you want to submit this request?";
-                let payload = {
-                    'contact_details': this.contactDetails,
-                    'fee_waiver': this.feeWaiver,
-                    //'parks': this.selected_park_ids,
-                    'visits': [],
-                }
-                for (let visitData of this.visits) {
-                    let visit = Object.assign({}, visitData);
-                    // convert date strings
-                    if (visit.date_from) {
-                        visit.date_from = moment(visit.date_from, 'DD/MM/YYYY').format('YYYY-MM-DD');
+                let payload = {}
+                this.$nextTick(() => {
+                    payload = {
+                        'contact_details': this.contactDetails,
+                        'fee_waiver': this.feeWaiver,
+                        //'parks': this.selected_park_ids,
+                        'visits': [],
+                        'temporary_document_collection_id': this.temporary_document_collection_id,
                     }
-                    if (visit.date_to) {
-                        visit.date_to = moment(visit.date_to, 'DD/MM/YYYY').format('YYYY-MM-DD');
+                    for (let visitData of this.visits) {
+                        let visit = Object.assign({}, visitData);
+                        // convert date strings
+                        if (visit.date_from) {
+                            visit.date_from = moment(visit.date_from, 'DD/MM/YYYY').format('YYYY-MM-DD');
+                        }
+                        if (visit.date_to) {
+                            visit.date_to = moment(visit.date_to, 'DD/MM/YYYY').format('YYYY-MM-DD');
+                        }
+                        // add to payload
+                        payload.visits.push(visit)
                     }
-                    // add to payload
-                    payload.visits.push(visit)
-                }
+                });
 
                 await swal({
                     title: swalTitle,
@@ -399,6 +433,9 @@
         border: 1px solid red;
     }
     */
+    .input_file_wrapper {
+        margin: 1.5em 0 0 0;
+    }
     .headerbox {
         padding: 50px;
     }

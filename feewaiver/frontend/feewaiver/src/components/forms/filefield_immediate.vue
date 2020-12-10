@@ -116,12 +116,14 @@ export default {
                 if (!this.temporary_document_collection_id) {
                     url = api_endpoints.temporary_document
                 } else {
-                    url = api_endpoints.temporary_document + this.temporary_document_collection_id + '/process_temp_comms_log_document/'
+                    //url = api_endpoints.temporary_document + this.temporary_document_collection_id + '/process_temp_comms_log_document/'
+                    url = api_endpoints.temporary_document + this.temporary_document_collection_id + '/process_temp_document/'
                 }
             } else {
                 console.log(this.documentActionUrl);
                 url = this.documentActionUrl
             }
+            console.log(url);
             return url;
         },
     },

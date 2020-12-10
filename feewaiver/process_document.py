@@ -10,6 +10,7 @@ from django.conf import settings
 
 
 def process_generic_document(request, instance, document_type=None, *args, **kwargs):
+    #import ipdb; ipdb.set_trace()
     print("process_generic_document")
     print(request.data)
     try:
@@ -18,7 +19,7 @@ def process_generic_document(request, instance, document_type=None, *args, **kwa
         comms_log_id = request.data.get('comms_log_id')
         comms_instance = None
 
-        if document_type == 'comms_log' and comms_log_id and comms_log_id is not 'null':
+        if document_type == 'comms_log' and comms_log_id and comms_log_id != 'null':
             comms_instance = instance.comms_logs.get(id=comms_log_id)
         elif document_type == 'comms_log':
             comms_instance = instance.comms_logs.create()
@@ -39,16 +40,16 @@ def process_generic_document(request, instance, document_type=None, *args, **kwa
             returned_file_data = [dict(file=d._file.url, id=d.id, name=d.name,) for d in comms_instance.documents.all() if d._file]
             return {'filedata': returned_file_data, 'comms_instance_id': comms_instance.id}
         # example document_type
-        elif input_name:
-            if document_type == DeedPollDocument.DOC_TYPE_NAME:
-                documents_qs = instance.deed_poll_documents
-            elif document_type == PublicLiabilityInsuranceDocument.DOC_TYPE_NAME:
-                documents_qs = instance.public_liability_insurance_documents
-            elif document_type == SupportingApplicationDocument.DOC_TYPE_NAME:
-                documents_qs = instance.supporting_application_documents
+        #elif input_name:
+        #    if document_type == DeedPollDocument.DOC_TYPE_NAME:
+        #        documents_qs = instance.deed_poll_documents
+        #    elif document_type == PublicLiabilityInsuranceDocument.DOC_TYPE_NAME:
+        #        documents_qs = instance.public_liability_insurance_documents
+        #    elif document_type == SupportingApplicationDocument.DOC_TYPE_NAME:
+        #        documents_qs = instance.supporting_application_documents
 
-            returned_file_data = [dict(file=d._file.url, id=d.id, name=d.name,) for d in documents_qs.filter(input_name=input_name) if d._file]
-            return { 'filedata': returned_file_data }
+        #    returned_file_data = [dict(file=d._file.url, id=d.id, name=d.name,) for d in documents_qs.filter(input_name=input_name) if d._file]
+        #    return { 'filedata': returned_file_data }
         else:
             returned_file_data = [dict(file=d._file.url, id=d.id, name=d.name, ) for d in instance.documents.all() if d._file]
             return {'filedata': returned_file_data}
@@ -183,6 +184,24 @@ def save_comms_log_document_obj(instance, comms_instance, temp_document):
             comms_instance.id, 
             temp_document.name
             ), 
+            temp_document._file
+        )
+
+    document._file = path
+    document.save()
+
+# For transferring files from temp doc objs to comms_log objs
+def save_contact_details_document_obj(instance, contact_details, temp_document):
+    document = contact_details.documents.get_or_create(
+        name=temp_document.name)[0]
+    path = default_storage.save(
+        #'{}/{}/communications/{}/documents/{}'.format(
+        '{}/{}/{}/documents/{}'.format(
+            instance._meta.model_name, 
+            instance.id, 
+            #contact_details.id, 
+            temp_document.name
+            ),
             temp_document._file
         )
 

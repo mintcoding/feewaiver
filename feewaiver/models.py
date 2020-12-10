@@ -179,7 +179,7 @@ class FeeWaiverVisit(RevisionedMixin):
 
 
 class ContactDetailsDocument(Document):
-    contact_details = models.ForeignKey(ContactDetails,related_name='contact_details_documents')
+    contact_details = models.ForeignKey(ContactDetails,related_name='documents')
     #_file = models.FileField(upload_to=update_approval_doc_filename)
     _file = models.FileField(null=True)
     can_delete = models.BooleanField(default=True) # after initial submit prevent document from being deleted
@@ -293,4 +293,5 @@ class ApproversGroup(models.Model):
     class Meta:
         app_label = 'feewaiver'
         verbose_name_plural = "Approvers group"
+
 

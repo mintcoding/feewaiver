@@ -10,6 +10,7 @@ from feewaiver.models import (
         Participants,
         Park,
         )
+from feewaiver.main_models import TemporaryDocumentCollection
 #from disturbance.components.organisations.models import (
  #                               Organisation
   #                          )
@@ -224,4 +225,9 @@ class ParticipantsSerializer(serializers.ModelSerializer):
             'id',
         )
 
+
+class TemporaryDocumentCollectionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TemporaryDocumentCollection
+        fields = ('id',)
 

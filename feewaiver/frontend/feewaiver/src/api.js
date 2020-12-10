@@ -10,6 +10,7 @@ module.exports = {
     participants: '/api/participants/participants_list',
     parks: '/api/parks/parks_list',
     filter_list: '/api/feewaivers/filter_list/',
+    temporary_document: '/api/temporary_document/',
     /*
     organisations: '/api/organisations.json',
     filtered_organisations: '/api/filtered_organisations',
