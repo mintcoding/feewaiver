@@ -155,7 +155,7 @@
         name: 'FeeWaiverForm',
         props:{
             feeWaiverId:{
-                type: Number,
+                type: String,
                 required: true,
             }
         },
@@ -163,7 +163,7 @@
             let vm = this;
             return {
                 feeWaiver: {},
-                feeWaiverId: null,
+                //feeWaiverId: null,
                 contactDetails: {},
                 email_confirmation: '',
                 participantGroupList: [],

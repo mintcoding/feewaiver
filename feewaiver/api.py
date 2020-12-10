@@ -752,7 +752,7 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
         try:
             instance = self.get_object()
             contact_serializer = ContactDetailsSerializer(instance.contact_details)
-            waiver_serializer = FeeWaiverSerializer(instance)
+            waiver_serializer = FeeWaiverSerializer(instance, context={'request': request})
             return Response({
                 "contact_details": contact_serializer.data,
                 "fee_waiver": waiver_serializer.data,
