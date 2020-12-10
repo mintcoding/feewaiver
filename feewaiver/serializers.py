@@ -133,7 +133,10 @@ class FeeWaiverSerializer(serializers.ModelSerializer):
     visits = serializers.SerializerMethodField()
     contact_details_id = serializers.IntegerField(
             required=True, write_only=True, allow_null=False)
-
+    processing_status = serializers.SerializerMethodField()
+    can_process = serializers.SerializerMethodField()
+    assigned_officer = serializers.SerializerMethodField(read_only=True)
+    action_group = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = FeeWaiver
@@ -144,6 +147,10 @@ class FeeWaiverSerializer(serializers.ModelSerializer):
                 'contact_details_id',     
                 'fee_waiver_purpose',     
                 'visits',
+                'processing_status',
+                'can_process',
+                'assigned_officer',
+                'action_group',
                 )
         read_only_fields = (
             'id',
@@ -151,11 +158,34 @@ class FeeWaiverSerializer(serializers.ModelSerializer):
             'lodgement_date',
         )
 
+    def get_action_group(self, obj):
+        return EmailUserSerializer(obj.relevant_access_group, many=True).data
+
     def get_visits(self, obj):
         visits = []
         for visit in obj.visit.all():
             visits.append(FeeWaiverVisitSerializer(visit).data)
         return visits
+
+    def get_processing_status(self,obj):
+        return obj.get_processing_status_display()
+
+    def get_can_process(self,obj):
+        # Check if currently logged in user has access to process the proposal
+        #import ipdb; ipdb.set_trace()
+        request = self.context['request']
+        user = request.user
+        if obj.assigned_officer:
+            if obj.assigned_officer == user:
+                return True
+        elif user in obj.relevant_access_group:
+            return True
+        return False
+
+    def get_assigned_officer(self,obj):
+        if obj.assigned_officer:
+            return obj.assigned_officer.get_full_name()
+        return None
 
 
 class FeeWaiverDTSerializer(serializers.ModelSerializer):

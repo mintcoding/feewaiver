@@ -154,44 +154,10 @@
     export default {
         name: 'FeeWaiverForm',
         props:{
-            /*
-            proposal:{
-                type: Object,
-                required:true
-            },
-            canEditActivities:{
-              type: Boolean,
-              default: true
-            },
-            is_external:{
-              type: Boolean,
-              default: false
-            },
-            is_internal:{
-              type: Boolean,
-              default: false
-            },
-            is_referral:{
-              type: Boolean,
-              default: false
-            },
-            hasReferralMode:{
-                type:Boolean,
-                default: false
-            },
-            hasAssessorMode:{
-                type:Boolean,
-                default: false
-            },
-            referral:{
-                type: Object,
-                required:false
-            },
-            proposal_parks:{
-                type:Object,
-                default:null
-            },
-            */
+            feeWaiverId:{
+                type: Number,
+                required: true,
+            }
         },
         data:function () {
             let vm = this;
@@ -408,12 +374,14 @@
                 }
             });
         },
+        /*
         // this needs to go into the internal wrapper form, which will then pass feeWaiverId to this component as a prop
         beforeRouteEnter: function(to, from, next) {
             next(vm => {
                 vm.feeWaiverId = to.params.fee_waiver_id;
             })
         }
+        */
     }
 </script>
 
