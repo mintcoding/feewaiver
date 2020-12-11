@@ -683,6 +683,7 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
                 fee_waiver_data = request.data.get('fee_waiver')
                 fee_waiver_data.update({'contact_details_id': contact_details_obj.id})
                 waiver_serializer = FeeWaiverSerializer(data=fee_waiver_data)
+                #waiver_serializer = FeeWaiverSerializer(data=fee_waiver_data,context={'request':request})
                 waiver_serializer.is_valid(raise_exception=True)
                 fee_waiver_obj = waiver_serializer.save()
                 # add visits

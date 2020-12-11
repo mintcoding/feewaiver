@@ -176,13 +176,14 @@ class FeeWaiverSerializer(serializers.ModelSerializer):
     def get_can_process(self,obj):
         # Check if currently logged in user has access to process the proposal
         #import ipdb; ipdb.set_trace()
-        request = self.context['request']
-        user = request.user
-        if obj.assigned_officer:
-            if obj.assigned_officer == user:
+        request = self.context.get('request')
+        if request:
+            user = request.user
+            if obj.assigned_officer:
+                if obj.assigned_officer == user:
+                    return True
+            elif user in obj.relevant_access_group:
                 return True
-        elif user in obj.relevant_access_group:
-            return True
         return False
 
     def get_assigned_officer(self,obj):
@@ -191,11 +192,13 @@ class FeeWaiverSerializer(serializers.ModelSerializer):
         return None
 
     def get_current_officer(self,obj):
-        return {
-            'id': self.context['request'].user.id,
-            'name': self.context['request'].user.get_full_name(),
-            'email': self.context['request'].user.email
-        }
+        request = self.context.get('request')
+        if request:
+            return {
+                'id': self.context['request'].user.id,
+                'name': self.context['request'].user.get_full_name(),
+                'email': self.context['request'].user.email
+            }
 
 
 class FeeWaiverDTSerializer(serializers.ModelSerializer):
