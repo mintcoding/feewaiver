@@ -43,12 +43,12 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-sm-12">
-                                            <button style="width:80%;" class="btn btn-primary" :disabled="false" @click.prevent="switchStatus('with_assessor')">Propose Issue Fee Waiver</button><br/>
+                                            <button style="width:80%;" class="btn btn-primary" :disabled="false" @click.prevent="switchStatus('with_assessor')">Propose..</button><br/>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-sm-12">
-                                            <button style="width:80%;" class="btn btn-primary top-buffer-s" :disabled="false" @click.prevent="proposedApproval()">Propose</button><br/>
+                                            <button style="width:80%;" class="btn btn-primary top-buffer-s" :disabled="false" @click.prevent="proposedApproval()">Propose..</button><br/>
                                         </div>
                                     </div>
                                 </template>
