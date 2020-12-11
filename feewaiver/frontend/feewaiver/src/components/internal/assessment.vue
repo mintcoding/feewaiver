@@ -20,23 +20,6 @@
                                 <div class="separator"></div>
                             </div>
 
-                            <!--div class="col-sm-12 top-buffer-s">
-                                <strong>Currently assigned to</strong><br/>
-                                <div class="form-group">
-                                    <template v-if="feeWaiver.processing_status == 'With Approver'">
-                                        <select ref="assigned_officer" :disabled="!canAction" class="form-control" v-model="feeWaiver.assigned_approver"iver>
-                                            <option v-for="member in feeWaiver.action_group" :value="member.id">{{member.first_name}} {{member.last_name}}</option>
-                                        </select>
-                                        <a v-if="canAssess && feeWaiver.assigned_approver != feeWaiver.current_assessor.id" @click.prevent="assignRequestUser()" class="actionBtn pull-right">Assign to me</a>
-                                    </template>
-                                    <template v-else>
-                                        <select ref="assigned_officer" :disabled="!canAction" class="form-control" v-model="feeWaiver.assigned_officer">
-                                            <option v-for="member in feeWaiver.action_group" :value="member.id">{{member.first_name}} {{member.last_name}}</option>
-                                        </select>
-                                        <a v-if="canAssess && feeWaiver.assigned_officer != feeWaiver.current_assessor.id" @click.prevent="assignRequestUser()" class="actionBtn pull-right">Assign to me</a>
-                                    </template>
-                                </div>
-                            </div-->
                             <div class="col-sm-12 top-buffer-s">
                                 <strong>Currently assigned to</strong><br/>
                                 <div class="form-group">
@@ -51,8 +34,8 @@
                                 </div>
                             </div>
 
-                            <!--div class="col-sm-12 top-buffer-s" v-if="!isFinalised && canAction">
-                                <template v-if="feeWaiver.processing_status == 'With Assessor' || feeWaiver.processing_status == 'With Referral'">
+                            <div class="col-sm-12 top-buffer-s" v-if="!isFinalised && canAction">
+                                <template v-if="feeWaiver.processing_status == 'With Assessor'">
                                     <div class="row">
                                         <div class="col-sm-12">
                                             <strong>Action</strong><br/>
@@ -60,38 +43,16 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-sm-12">
-                                            <button style="width:80%;" class="btn btn-primary" :disabled="feeWaiver.can_user_edit" @click.prevent="switchStatus('with_assessor_requirements')">Enter Requirements</button><br/>
+                                            <button style="width:80%;" class="btn btn-primary" :disabled="false" @click.prevent="switchStatus('with_assessor')">Propose Issue Fee Waiver</button><br/>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-sm-12">
-                                            <button style="width:80%;" class="btn btn-primary top-buffer-s" :disabled="feeWaiver.can_user_edit" @click.prevent="amendmentRequest()">Request Amendment</button><br/>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <button style="width:80%;" class="btn btn-primary top-buffer-s" :disabled="feeWaiver.can_user_edit" @click.prevent="proposedDecline()">Propose to Decline</button>
+                                            <button style="width:80%;" class="btn btn-primary top-buffer-s" :disabled="false" @click.prevent="proposedApproval()">Propose</button><br/>
                                         </div>
                                     </div>
                                 </template>
-                                <template v-else-if="feeWaiver.processing_status == 'With Assessor (Requirements)'">
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <strong>Action</strong><br/>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <button style="width:80%;" class="btn btn-primary" :disabled="feeWaiver.can_user_edit" @click.prevent="switchStatus('with_assessor')">Back To Processing</button><br/>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <button style="width:80%;" class="btn btn-primary top-buffer-s" :disabled="feeWaiver.can_user_edit" @click.prevent="proposedApproval()">Propose to Approve</button><br/>
-                                        </div>
-                                    </div>
-                                </template>
-                            </div-->
+                            </div>
                         </div>
                     </div>
                 </div>
