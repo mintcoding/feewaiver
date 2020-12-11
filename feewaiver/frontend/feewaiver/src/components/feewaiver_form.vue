@@ -1,5 +1,5 @@
 <template lang="html">
-    <div class="container">
+    <div :class="containingClass">
         <!--strong> fill in form</strong-->
         <!--a class="navbar-brand" href="{% url 'ds_home' %}"><div style="inline"><img src="{% static 'feewaiver/img/dpaw_small.png' %}">Staff login</div></a-->
         <!--a class="navbar-brand pull-right" href="/"><div style="inline"><img src="/static/feewaiver/img/dpaw_small.png">Staff login</div></a-->
@@ -156,7 +156,7 @@
         props:{
             feeWaiverId:{
                 type: String,
-                required: true,
+                //required: true,
             }
         },
         data:function () {
@@ -187,6 +187,15 @@
             FileField,
         },
         computed: {
+            containingClass: function() {
+                let cclass = 'container';
+                if (this.feeWaiverId) {
+                    //cclass = 'col-sm-12';
+                    cclass = '';
+                }
+                console.log(cclass);
+                return cclass;
+            },
             documentActionUrl: function() {
                 let url = '';
                 if (this.contactDetails && this.contactDetails.id) {

@@ -245,119 +245,24 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
         else:
             return Response()
 
-    #def get_object(self):
-
-    #    check_db_connection()
-    #    try:
-    #        obj = super(FeeWaiverViewSet, self).get_object()
-    #    except Exception, e:
-    #        # because current queryset excludes migrated licences
-    #        #import ipdb; ipdb.set_trace()
-    #        #obj = get_object_or_404(Proposal, id=self.kwargs['id'])
-    #        obj_id = self.kwargs['id'] if 'id' in self.kwargs else self.kwargs['pk']
-    #        obj = get_object_or_404(FeeWaiver, id=obj_id)
-    #    return obj
-
-    #def get_serializer_class(self):
-    #    try:
-    #        application_type = self.get_object().application_type.name
-    #        if application_type in (ApplicationType.APIARY, ApplicationType.SITE_TRANSFER, ApplicationType.TEMPORARY_USE):
-    #            return ProposalApiaryTypeSerializer
-    #        else:
-    #            return ProposalSerializer
-    #    except serializers.ValidationError:
-    #        print(traceback.print_exc())
-    #        raise
-    #    except ValidationError as e:
-    #        if hasattr(e,'error_dict'):
-    #            raise serializers.ValidationError(repr(e.error_dict))
-    #        else:
-    #            raise serializers.ValidationError(repr(e[0].encode('utf-8')))
-    #    except Exception as e:
-    #        print(traceback.print_exc())
-    #        raise serializers.ValidationError(str(e))
-
-    #@detail_route(methods=['POST'])
-    #@renderer_classes((JSONRenderer,))
-    #def process_document(self, request, *args, **kwargs):
-    #    try:
-    #        #import ipdb; ipdb.set_trace()
-    #        instance = self.get_object()
-    #        action = request.POST.get('action')
-    #        section = request.POST.get('input_name')
-    #        if action == 'list' and 'input_name' in request.POST:
-    #            pass
-
-    #        elif action == 'delete' and 'document_id' in request.POST:
-    #            document_id = request.POST.get('document_id')
-    #            document = instance.documents.get(id=document_id)
-
-    #            if document._file and os.path.isfile(document._file.path) and document.can_delete:
-    #                os.remove(document._file.path)
-
-    #            document.delete()
-    #            instance.save(version_comment='Approval File Deleted: {}'.format(document.name)) # to allow revision to be added to reversion history
-    #            #instance.current_proposal.save(version_comment='File Deleted: {}'.format(document.name)) # to allow revision to be added to reversion history
-
-    #        elif action == 'hide' and 'document_id' in request.POST:
-    #            document_id = request.POST.get('document_id')
-    #            document = instance.documents.get(id=document_id)
-
-    #            document.hidden=True
-    #            document.save()
-    #            instance.save(version_comment='File hidden: {}'.format(document.name)) # to allow revision to be added to reversion history
-
-    #        elif action == 'save' and 'input_name' in request.POST and 'filename' in request.POST:
-    #            proposal_id = request.POST.get('proposal_id')
-    #            filename = request.POST.get('filename')
-    #            _file = request.POST.get('_file')
-    #            if not _file:
-    #                _file = request.FILES.get('_file')
-
-    #            document = instance.documents.get_or_create(input_name=section, name=filename)[0]
-    #            path = default_storage.save('proposals/{}/documents/{}'.format(proposal_id, filename), ContentFile(_file.read()))
-
-    #            document._file = path
-    #            #import ipdb; ipdb.set_trace()
-    #            document.save()
-    #            instance.save(version_comment='File Added: {}'.format(filename)) # to allow revision to be added to reversion history
-    #            #instance.current_proposal.save(version_comment='File Added: {}'.format(filename)) # to allow revision to be added to reversion history
-
-    #        return  Response( [dict(input_name=d.input_name, name=d.name,file=d._file.url, id=d.id, can_delete=d.can_delete, can_hide=d.can_hide) for d in instance.documents.filter(input_name=section, hidden=False) if d._file] )
-
-    #    except serializers.ValidationError:
-    #        print(traceback.print_exc())
-    #        raise
-    #    except ValidationError as e:
-    #        if hasattr(e,'error_dict'):
-    #            raise serializers.ValidationError(repr(e.error_dict))
-    #        else:
-    #            raise serializers.ValidationError(repr(e[0].encode('utf-8')))
-    #    except Exception as e:
-    #        print(traceback.print_exc())
-    #        raise serializers.ValidationError(str(e))
-
-#    def list(self, request, *args, **kwargs):
-#        #import ipdb; ipdb.set_trace()
-#        #queryset = self.get_queryset()
-#        #serializer = DTProposalSerializer(queryset, many=True)
-#        #import ipdb; ipdb.set_trace()
-#        #serializer = DTProposalSerializer(self.get_queryset(), many=True)
-#        serializer = ListProposalSerializer(self.get_queryset(), context={'request':request}, many=True)
-#        return Response(serializer.data)
-
-    #@list_route(methods=['GET',])
-    #def list_paginated(self, request, *args, **kwargs):
-    #    """
-    #    https://stackoverflow.com/questions/29128225/django-rest-framework-3-1-breaks-pagination-paginationserializer
-    #    """
-    #    proposals = self.get_queryset()
-    #    paginator = PageNumberPagination()
-    #    #paginator = LimitOffsetPagination()
-    #    paginator.page_size = 5
-    #    result_page = paginator.paginate_queryset(proposals, request)
-    #    serializer = ListProposalSerializer(result_page, context={'request':request}, many=True)
-    #    return paginator.get_paginated_response(serializer.data)
+    @detail_route(methods=['GET',])
+    def assign_request_user(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            instance.assign_officer(request,request.user)
+            #serializer = InternalProposalSerializer(instance,context={'request':request})
+            #serializer_class = self.internal_serializer_class()
+            serializer = FeeWaiverSerializer(instance,context={'request':request})
+            return Response(serializer.data)
+        except serializers.ValidationError:
+            print(traceback.print_exc())
+            raise
+        except ValidationError as e:
+            print(traceback.print_exc())
+            raise serializers.ValidationError(repr(e.error_dict))
+        except Exception as e:
+            print(traceback.print_exc())
+            raise serializers.ValidationError(str(e))
 
     @list_route(methods=['GET',])
     def filter_list(self, request, *args, **kwargs):
@@ -521,18 +426,18 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
     def assign_to(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
-            user_id = request.data.get('assessor_id',None)
+            user_id = request.data.get('assigned_officer_id',None)
             user = None
             if not user_id:
-                raise serializers.ValidationError('An assessor id is required')
+                raise serializers.ValidationError('An assigned officer id is required')
             try:
                 user = EmailUser.objects.get(id=user_id)
             except EmailUser.DoesNotExist:
                 raise serializers.ValidationError('A user with the id passed in does not exist')
             instance.assign_officer(request,user)
             #serializer = InternalProposalSerializer(instance,context={'request':request})
-            serializer_class = self.internal_serializer_class()
-            serializer = serializer_class(instance,context={'request':request})
+            #serializer_class = self.internal_serializer_class()
+            serializer = FeeWaiverSerializer(instance,context={'request':request})
             return Response(serializer.data)
         except serializers.ValidationError:
             print(traceback.print_exc())
@@ -550,8 +455,8 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
             instance = self.get_object()
             instance.unassign(request)
             #serializer = InternalProposalSerializer(instance,context={'request':request})
-            serializer_class = self.internal_serializer_class()
-            serializer = serializer_class(instance,context={'request':request})
+            #serializer_class = self.internal_serializer_class()
+            serializer = FeeWaiverSerializer(instance,context={'request':request})
             return Response(serializer.data)
         except serializers.ValidationError:
             print(traceback.print_exc())

@@ -137,6 +137,7 @@ class FeeWaiverSerializer(serializers.ModelSerializer):
     can_process = serializers.SerializerMethodField()
     assigned_officer = serializers.SerializerMethodField(read_only=True)
     action_group = serializers.SerializerMethodField(read_only=True)
+    current_officer = serializers.SerializerMethodField()
 
     class Meta:
         model = FeeWaiver
@@ -150,7 +151,9 @@ class FeeWaiverSerializer(serializers.ModelSerializer):
                 'processing_status',
                 'can_process',
                 'assigned_officer',
+                'assigned_officer_id',
                 'action_group',
+                'current_officer',
                 )
         read_only_fields = (
             'id',
@@ -186,6 +189,13 @@ class FeeWaiverSerializer(serializers.ModelSerializer):
         if obj.assigned_officer:
             return obj.assigned_officer.get_full_name()
         return None
+
+    def get_current_officer(self,obj):
+        return {
+            'id': self.context['request'].user.id,
+            'name': self.context['request'].user.get_full_name(),
+            'email': self.context['request'].user.email
+        }
 
 
 class FeeWaiverDTSerializer(serializers.ModelSerializer):

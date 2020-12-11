@@ -42,10 +42,11 @@
                                 <div class="form-group">
                                     <!--template v-if="feeWaiver.processing_status == 'With Approver'"-->
                                     <template>
-                                        <select ref="assigned_officer" :disabled="!canAction" class="form-control" v-model="feeWaiver.assigned_approver"iver>
+                                        <select ref="assigned_officer" :disabled="!canAction" class="form-control" v-model="feeWaiver.assigned_officer_id">
+                                            <option :value="null"></option>
                                             <option v-for="member in feeWaiver.action_group" :value="member.id">{{member.first_name}} {{member.last_name}}</option>
                                         </select>
-                                        <!--a v-if="canAssess && feeWaiver.assigned_approver != feeWaiver.current_assessor.id" @click.prevent="assignRequestUser()" class="actionBtn pull-right">Assign to me</a-->
+                                        <a v-if="canAssess && feeWaiver.assigned_officer != feeWaiver.current_officer.id" @click.prevent="assignRequestUser()" class="actionBtn pull-right">Assign to me</a>
                                     </template>
                                 </div>
                             </div>
@@ -364,14 +365,9 @@ export default {
           });
         },
 
-        toggleProposal:function(){
-            this.showingProposal = !this.showingProposal;
-        },
-        toggleRequirements:function(){
-            this.showingRequirements = !this.showingRequirements;
-        },
         updateAssignedOfficerSelect:function(){
             let vm = this;
+            /*
             if (vm.feeWaiver.processing_status == 'With Approver'){
                 $(vm.$refs.assigned_officer).val(vm.feeWaiver.assigned_approver);
                 $(vm.$refs.assigned_officer).trigger('change');
@@ -380,18 +376,25 @@ export default {
                 $(vm.$refs.assigned_officer).val(vm.feeWaiver.assigned_officer);
                 $(vm.$refs.assigned_officer).trigger('change');
             }
+            */
+            $(vm.$refs.assigned_officer).val(vm.feeWaiver.assigned_officer);
+            $(vm.$refs.assigned_officer).trigger('change');
         },
         assignRequestUser: function(){
             let vm = this;
-            vm.$http.get(helpers.add_endpoint_json(api_endpoints.feeWaivers,(vm.feeWaiver.id+'/assign_request_user')))
+            vm.$http.get(helpers.add_endpoint_json('/api/feewaivers',(vm.feeWaiver.id+'/assign_request_user')))
             .then((response) => {
                 vm.feeWaiver = response.body;
+                /*
                 vm.original_feeWaiver = helpers.copyObject(response.body);
                 vm.feeWaiver.applicant.address = vm.feeWaiver.applicant.address != null ? vm.feeWaiver.applicant.address : {};
+                */
                 vm.updateAssignedOfficerSelect();
             }, (error) => {
+                /*
                 vm.feeWaiver = helpers.copyObject(vm.original_feeWaiver)
                 vm.feeWaiver.applicant.address = vm.feeWaiver.applicant.address != null ? vm.feeWaiver.applicant.address : {};
+                */
                 vm.updateAssignedOfficerSelect();
                 swal(
                     'Proposal Error',
@@ -400,6 +403,7 @@ export default {
                 )
             });
         },
+        /*
         refreshFromResponse:function(response){
             let vm = this;
             vm.original_feeWaiver = helpers.copyObject(response.body);
@@ -413,10 +417,12 @@ export default {
                 vm.$refs.approval_screen.updateComponentSiteSelectionKey()
             }
         },
+        */
         assignTo: function(){
             let vm = this;
             let unassign = true;
             let data = {};
+            /*
             if (vm.processing_status == 'With Approver'){
                 unassign = vm.feeWaiver.assigned_approver != null && vm.feeWaiver.assigned_approver != 'undefined' ? false: true;
                 data = {'assessor_id': vm.feeWaiver.assigned_approver};
@@ -425,17 +431,24 @@ export default {
                 unassign = vm.feeWaiver.assigned_officer != null && vm.feeWaiver.assigned_officer != 'undefined' ? false: true;
                 data = {'assessor_id': vm.feeWaiver.assigned_officer};
             }
+            */
+            unassign = vm.feeWaiver.assigned_officer != null ? false: true;
+            data = {'assigned_officer_id': vm.feeWaiver.assigned_officer};
             if (!unassign){
-                vm.$http.post(helpers.add_endpoint_json(api_endpoints.feeWaivers,(vm.feeWaiver.id+'/assign_to')),JSON.stringify(data),{
+                vm.$http.post(helpers.add_endpoint_json('/api/feewaivers',(vm.feeWaiver.id+'/assign_to')),JSON.stringify(data),{
                     emulateJSON:true
                 }).then((response) => {
                     vm.feeWaiver = response.body;
+                    /*
                     vm.original_feeWaiver = helpers.copyObject(response.body);
                     vm.feeWaiver.applicant.address = vm.feeWaiver.applicant.address != null ? vm.feeWaiver.applicant.address : {};
+                    */
                     vm.updateAssignedOfficerSelect();
                 }, (error) => {
+                    /*
                     vm.feeWaiver = helpers.copyObject(vm.original_feeWaiver)
                     vm.feeWaiver.applicant.address = vm.feeWaiver.applicant.address != null ? vm.feeWaiver.applicant.address : {};
+                    */
                     vm.updateAssignedOfficerSelect();
                     swal(
                         'Proposal Error',
@@ -445,15 +458,19 @@ export default {
                 });
             }
             else{
-                vm.$http.get(helpers.add_endpoint_json(api_endpoints.feeWaivers,(vm.feeWaiver.id+'/unassign')))
+                vm.$http.get(helpers.add_endpoint_json('/api/feewaivers',(vm.feeWaiver.id+'/unassign')))
                 .then((response) => {
                     vm.feeWaiver = response.body;
+                    /*
                     vm.original_feeWaiver = helpers.copyObject(response.body);
                     vm.feeWaiver.applicant.address = vm.feeWaiver.applicant.address != null ? vm.feeWaiver.applicant.address : {};
+                    */
                     vm.updateAssignedOfficerSelect();
                 }, (error) => {
+                    /*
                     vm.feeWaiver = helpers.copyObject(vm.original_feeWaiver)
                     vm.feeWaiver.applicant.address = vm.feeWaiver.applicant.address != null ? vm.feeWaiver.applicant.address : {};
+                    */
                     vm.updateAssignedOfficerSelect();
                     swal(
                         'Proposal Error',
@@ -569,12 +586,15 @@ export default {
             }).
             on("select2:select",function (e) {
                 var selected = $(e.currentTarget);
+                /*
                 if (vm.feeWaiver.processing_status == 'With Approver'){
                     vm.feeWaiver.assigned_approver = selected.val();
                 }
                 else{
                     vm.feeWaiver.assigned_officer = selected.val();
                 }
+                */
+                vm.feeWaiver.assigned_officer = selected.val();
                 vm.assignTo();
             }).on("select2:unselecting", function(e) {
                 var self = $(this);
@@ -583,12 +603,15 @@ export default {
                 }, 0);
             }).on("select2:unselect",function (e) {
                 var selected = $(e.currentTarget);
+                /*
                 if (vm.feeWaiver.processing_status == 'With Approver'){
                     vm.feeWaiver.assigned_approver = null;
                 }
                 else{
                     vm.feeWaiver.assigned_officer = null;
                 }
+                */
+                vm.feeWaiver.assigned_officer = null;
                 vm.assignTo();
             });
         },
@@ -606,6 +629,9 @@ export default {
         });
     },
     updated: function(){
+        this.$nextTick(() => {
+            this.initialiseAssignedOfficerSelect()
+        });
         /*
         let vm = this;
         if (!vm.panelClickersInitialised){

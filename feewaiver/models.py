@@ -2,6 +2,8 @@ from django.db import models
 from feewaiver.main_models import CommunicationsLogEntry, UserAction, Document
 from ledger.accounts.models import EmailUser, RevisionedMixin
 from django.contrib.postgres.fields import ArrayField
+from feewaiver.exceptions import FeeWaiverNotAuthorized
+from django.db import transaction
 
 
 class Participants(models.Model):
@@ -136,14 +138,59 @@ class FeeWaiver(RevisionedMixin):
         if self.processing_status == 'with_approver':
             #group = AssessorsGroup
             qs = EmailUser.objects.filter
-            return AssessorsGroup.objects.first().members.all()
+            return ApproversGroup.objects.first().members.all()
         else:
             #group = ApproversGroup
-            return ApproversGroup.objects.first().members.all()
+            return AssessorsGroup.objects.first().members.all()
         #return group.members.all() if group else []
         #import ipdb; ipdb.set_trace()
         #esult_list = [member in member in group.members
         #return group.all_members if group else []
+
+    def assign_officer(self,request,officer):
+        with transaction.atomic():
+            try:
+                if not self.can_action(request.user):
+                    raise exceptions.FeeWaiverNotAuthorized()
+                if officer != self.assigned_officer:
+                    self.assigned_officer = officer
+                    self.save()
+                    # Create a log entry for the feewaiver
+                    #self.log_user_action(ProposalUserAction.ACTION_ASSIGN_TO_ASSESSOR.format(self.lodgement_number, '{}({})'.format(officer.get_full_name(), officer.email)), request)
+            except:
+                raise
+
+    def unassign(self,request):
+        with transaction.atomic():
+            try:
+                if not self.can_action(request.user):
+                    raise exceptions.FeeWaiverNotAuthorized()
+                if self.assigned_officer:
+                    self.assigned_officer = None
+                    self.save()
+                    # Create a log entry for the proposal
+                    #self.log_user_action(ProposalUserAction.ACTION_UNASSIGN_ASSESSOR.format(self.lodgement_number), request)
+            except:
+                raise
+
+    def can_action(self,user):
+        return user in self.relevant_access_group
+       # if self.processing_status == 'with_assessor':
+       #     if self.apiary_group_application_type:
+       #         # Apiary logic
+       #         return self.__assessor_group() in user.apiaryassessorgroup_set.all()
+       #     else:
+       #         # Proposal logic
+       #         return self.__assessor_group() in user.proposalassessorgroup_set.all()
+       # elif self.processing_status == 'with_approver':
+       #     if self.apiary_group_application_type:
+       #         # Apiary logic
+       #         return self.__approver_group() in user.apiaryapprovergroup_set.all()
+       #     else:
+       #         # Proposal logic
+       #         return self.__approver_group() in user.proposalapprovergroup_set.all()
+       # else:
+       #     return False
 
 
 class FeeWaiverVisit(RevisionedMixin):
