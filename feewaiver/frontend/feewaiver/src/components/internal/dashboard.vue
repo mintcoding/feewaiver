@@ -1,5 +1,6 @@
 <template id="proposal_dashboard">
-    <FormSection>
+    <div class="container">
+        <FormSection>
                     <div class="row">
                         <div class="col-md-3">
                             <label for="">Lodged From</label>
@@ -54,7 +55,8 @@
                             <datatable ref="feewaiver_datatable" :id="datatable_id" :dtOptions="feewaiver_options" :dtHeaders="feewaiver_headers"/>
                         </div>
                     </div>
-    </FormSection>
+        </FormSection>
+        </div>
 </template>
 <script>
 

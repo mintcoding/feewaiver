@@ -130,11 +130,30 @@
             :parksList="parksList"
             />
         </div>
+        <div>
+            <input type="hidden" name="csrfmiddlewaretoken" :value="csrf_token"/>
+            <!--input type='hidden' name="schema" :value="JSON.stringify(proposal)" /-->
+            <!--input type='hidden' name="proposal_id" :value="1" /-->
+            <div class="row" style="margin-bottom: 50px">
+              <div class="navbar navbar-fixed-bottom" style="background-color: #f5f5f5;">
+                <div class="navbar-inner">
+                    <div v-if="feeWaiverId" class="container">
+                      <p class="pull-right">
+                        <button class="btn btn-primary pull-right" style="margin-top:5px;" @click.prevent="save()">Save Changes</button>
+                      </p>
+                    </div>
+                    <div v-else class="container">
+                      <p class="pull-right">
+                        <input type="button" @click.prevent="addVisit" class="btn btn-primary" value="Add another visit"/>
+                        <button class="btn btn-primary" type="submit">Submit</button>
+                      </p>
+                    </div>
+                </div>
+              </div>
+            </div>
 
-        <button class="btn btn-primary pull-right" type="submit">Submit</button>
-        <!--input type="button" @click="submit" class="btn btn-primary pull-right" value="Submit"/-->
-        <input type="button" @click.prevent="addVisit" class="btn btn-primary pull-right" value="Add another visit"/>
-        <!--button v-else disabled class="btn btn-primary"><i class="fa fa-spin fa-spinner"></i>&nbsp;Submitting</button-->
+        </div>
+
     </form>
     </div>
 </template>
@@ -187,6 +206,9 @@
             FileField,
         },
         computed: {
+            csrf_token: function() {
+              return helpers.getCookie('csrftoken')
+            },
             containingClass: function() {
                 let cclass = 'container';
                 if (this.feeWaiverId) {
@@ -408,6 +430,9 @@
     }
     textarea:required {
         border: 1px solid red;
+    }
+    .actionBtn {
+        cursor: pointer;
     }
     */
     .input_file_wrapper {

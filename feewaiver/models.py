@@ -147,6 +147,10 @@ class FeeWaiver(RevisionedMixin):
         #esult_list = [member in member in group.members
         #return group.all_members if group else []
 
+    def log_user_action(self, action, request):
+        #import ipdb; ipdb.set_trace()
+        return FeeWaiverUserAction.log_action(self, action, request.user)
+
     def assign_officer(self,request,officer):
         with transaction.atomic():
             try:
@@ -156,7 +160,8 @@ class FeeWaiver(RevisionedMixin):
                     self.assigned_officer = officer
                     self.save()
                     # Create a log entry for the feewaiver
-                    #self.log_user_action(ProposalUserAction.ACTION_ASSIGN_TO_ASSESSOR.format(self.lodgement_number, '{}({})'.format(officer.get_full_name(), officer.email)), request)
+                    self.log_user_action(FeeWaiverUserAction.ACTION_ASSIGN_TO_OFFICER.format(self.lodgement_number, '{}({})'.format(officer.get_full_name(), officer.email)),
+                            request)
             except:
                 raise
 
@@ -169,7 +174,8 @@ class FeeWaiver(RevisionedMixin):
                     self.assigned_officer = None
                     self.save()
                     # Create a log entry for the proposal
-                    #self.log_user_action(ProposalUserAction.ACTION_UNASSIGN_ASSESSOR.format(self.lodgement_number), request)
+                    self.log_user_action(FeeWaiverUserAction.ACTION_UNASSIGN_OFFICER.format(self.lodgement_number), 
+                            request)
             except:
                 raise
 
@@ -277,12 +283,15 @@ class FeeWaiverUserAction(UserAction):
     #ACTION_AMEND_APPROVAL = "Create amendment Proposal for approval {}"
     #ACTION_APPROVAL_PDF_VIEW ="View approval PDF for approval {}"
     #ACTION_UPDATE_NO_CHARGE_DATE_UNTIL = "'Do not charge annual site fee until' date updated to {} for approval {}"
+    ACTION_ASSIGN_TO_OFFICER = "Assign Fee Waiver {} to {}"
+    ACTION_UNASSIGN_OFFICER = "Remove officer assignment from Fee Waiver {}"
 
     class Meta:
         app_label = 'feewaiver'
 
     @classmethod
     def log_action(cls, fee_waiver, action, user):
+        #import ipdb; ipdb.set_trace()
         #if approval.apiary_approval:
          #   action = action.replace('Approval', 'Licence').replace('approval', 'licence').replace('proposal', 'application').replace('Proposal', 'Application')
         return cls.objects.create(
@@ -291,7 +300,7 @@ class FeeWaiverUserAction(UserAction):
             what=str(action)
         )
 
-    contact_details = models.ForeignKey(FeeWaiver, related_name='action_logs')
+    fee_waiver = models.ForeignKey(FeeWaiver, related_name='action_logs')
 
 
 class AssessorsGroup(models.Model):
