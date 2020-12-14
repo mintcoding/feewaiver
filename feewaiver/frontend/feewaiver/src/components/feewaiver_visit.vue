@@ -25,7 +25,7 @@
                     <div :key="feeWaiverId" class="form-group">
                         <div class="row">
                             <label class="col-sm-4">Applicable camping waiver</label>
-                                <select required class="form-control" v-model="visit.camping_assessment">
+                                <select :disabled="!canProcess" class="form-control" v-model="visit.camping_assessment">
                                     <option v-for="choice in campingChoices" :value="Object.keys(choice)[0]">{{Object.values(choice)[0]}}</option>
                                 </select>
                         </div>
@@ -131,6 +131,9 @@
             feeWaiverId:{
                 type: String,
                 //required: true,
+            },
+            canProcess:{
+                type: Boolean,
             },
             Index: String,
             label: String,

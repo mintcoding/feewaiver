@@ -130,6 +130,7 @@
             :parksList="parksList"
             :campingChoices="campingChoices"
             :feeWaiverId="feeWaiverId"
+            :canProcess="feeWaiver.can_process"
             />
         </div>
         <FormSection :formCollapse="false" label="Comments to applicant" :Index="'comments_to_applicant' + feeWaiverId">
@@ -137,7 +138,7 @@
                 <div class="row">
                   <label class="col-sm-4 control-label">Comments</label>
                   <div class="col-sm-8">
-                      <textarea required class="form-control" v-model="feeWaiver.comments_to_applicant"/>
+                      <textarea :disabled="!feeWaiver.can_process" class="form-control" v-model="feeWaiver.comments_to_applicant"/>
                   </div>
                 </div>
             </div>
@@ -436,11 +437,14 @@
 
                 const returnVal = await this.$http.get(url);
                 //console.log(url);
-                //console.log(returnVal);
+                console.log(returnVal.body.fee_waiver);
                 this.feeWaiver.id = returnVal.body.fee_waiver.id;
                 this.feeWaiver.lodgement_number = returnVal.body.fee_waiver.lodgement_number;
                 this.feeWaiver.fee_waiver_purpose = returnVal.body.fee_waiver.fee_waiver_purpose;
                 this.feeWaiver.comments_to_applicant = returnVal.body.fee_waiver.comments_to_applicant;
+                this.feeWaiver.assigned_officer = returnVal.body.fee_waiver.assigned_officer;
+                this.feeWaiver.assigned_officer_id = returnVal.body.fee_waiver.assigned_officer_id;
+                this.feeWaiver.can_process = returnVal.body.fee_waiver.can_process;
                 // visits should be empty if reading from backend
                 this.visits = []
                 this.visitIdx = -1;
