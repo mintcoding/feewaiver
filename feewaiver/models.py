@@ -97,35 +97,15 @@ class FeeWaiver(RevisionedMixin):
     fee_waiver_purpose = models.TextField(blank=True)
     assigned_officer = models.ForeignKey(EmailUser, blank=True, null=True, related_name='feewaiver_assigned', on_delete=models.SET_NULL)
     comments_to_applicant = models.TextField(blank=True)
-    #fee_waiver_description = models.TextField(blank=True)
-    #date_from = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=False,verbose_name="Date from", help_text='')
-    #date_to = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=False,verbose_name="Date to", help_text='')
-    #parks = models.ManyToManyField(Park)
-    #number_of_vehicles = models.IntegerField(default=0)
-    #AGE_CHOICES = (
-    #    ('15', 'Under 15 yrs'),
-    #    ('24', '15-24 yrs'),
-    #    ('25', '25-39 yrs'),
-    #    ('40', '40-59 yrs'),
-    #    ('60', '60 yrs and over')
-    #)
-    #age_of_participants = models.CharField(max_length=100, choices=AGE_CHOICES, null=True, blank=True,
-    #                         verbose_name='Age of Participants', help_text='')
 
-
-    #def __str__(self):
-     #   return 'Contact details: {}, Number of vehicles: {}'.format(self.contact_details, self.number_of_vehicles)
     def __str__(self):
         return self.lodgement_number
 
     class Meta:
         app_label = 'feewaiver'
 
-    #def save(self, *args, **kwargs):
-    #    super(FeeWaiver, self).save(*args,**kwargs)
-    #    if self.lodgement_number == '':
-    #        self.lodgement_number = 'EFWR{0:06d}'.format(self.next_id)
-    #        self.save()
+    def propose_issue(self, request):
+        print(request.user)
 
     def save(self, *args, **kwargs):
         super(FeeWaiver, self).save(*args,**kwargs)

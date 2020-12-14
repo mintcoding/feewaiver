@@ -43,7 +43,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-sm-12">
-                                            <button style="width:80%;" class="btn btn-primary" :disabled="false" @click.prevent="switchStatus('with_assessor')">Propose..</button><br/>
+                                            <button style="width:80%;" class="btn btn-primary" :disabled="false" @click.prevent="workflowAction('propose_issue')">Propose Issue Fee Waiver</button><br/>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -63,6 +63,7 @@
             <div class="row">
                 <FeeWaiverForm 
                 :feeWaiverId="feeWaiverId"
+                 ref="fee_waiver_form"
                 :key="feeWaiverId"/>
             </div>
         </div>
@@ -441,6 +442,14 @@ export default {
                 });
             }
         },
+        workflowAction: function(action) {
+            this.$refs.fee_waiver_form.save(false);
+            this.$http.post(`/api/feewaivers/${this.feeWaiverId}/workflow_action/`, {"action": action})
+            this.$router.push({
+                name: 'fee-waiver-dash',
+            });
+        },
+        /*
         switchStatus: function(status){
             let vm = this;
             //vm.save_wo();
@@ -533,6 +542,7 @@ export default {
             });
             }
         },
+        */
 
         initialiseAssignedOfficerSelect:function(reinit=false){
             let vm = this;

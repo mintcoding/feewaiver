@@ -366,7 +366,7 @@
                 });
 
             },
-            save: async function() {
+            save: async function(confirmSave=true) {
                 this.$nextTick(async () => {
                     /*
                     payload = {
@@ -393,17 +393,16 @@
                         }
                         // add to payload
                         payload.visits.push(visit);
-
-                    //console.log(payload);
-                    //console.log(JSON.stringify(payload));
+                    }
                     let url = `/api/feewaivers/${this.feeWaiverId}/assessor_save/`;
                     //await this.$http.post(url, JSON.stringify(payload));
                     await this.$http.post(url, payload);
-                    swal(
-                        'Saved',
-                        'Fee Waiver has been saved',
-                        'success'
-                    );
+                    if (confirmSave) {
+                        swal(
+                            'Saved',
+                            'Fee Waiver has been saved',
+                            'success'
+                        );
                     }
                 });
             },

@@ -15,7 +15,8 @@ export default
     children: [
         {
             path: '/',
-            component: InternalDashboard
+            component: InternalDashboard,
+            name:"fee-waiver-dash"
         },
         {
             path: 'fee_waiver',

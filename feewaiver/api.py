@@ -648,41 +648,63 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
 
     @detail_route(methods=['POST'])
     @renderer_classes((JSONRenderer,))
+    def workflow_action(self, request, *args, **kwargs):
+        try:
+            with transaction.atomic():
+                #import ipdb; ipdb.set_trace()
+                instance = self.get_object()
+                action = request.data.get("action")
+                if action == 'propose_issue':
+                    instance.propose_issue(request)
+                return Response()
+
+        except serializers.ValidationError:
+            print(traceback.print_exc())
+            raise
+        except ValidationError as e:
+            raise serializers.ValidationError(repr(e.error_dict))
+        except Exception as e:
+            print(traceback.print_exc())
+            raise serializers.ValidationError(str(e))
+
+    @detail_route(methods=['POST'])
+    @renderer_classes((JSONRenderer,))
     def assessor_save(self, request, *args, **kwargs):
         try:
-            #import ipdb; ipdb.set_trace()
-            instance = self.get_object()
-            #save_assessor_data(instance,request,self)
-            #return redirect(reverse('external'))
-            contact_details_data = request.data.get('contact_details')
-            contact_serializer = ContactDetailsSaveSerializer(instance.contact_details, data=contact_details_data)
-            contact_serializer.is_valid(raise_exception=True)
-            contact_details_obj = contact_serializer.save()
+            with transaction.atomic():
+                #import ipdb; ipdb.set_trace()
+                instance = self.get_object()
+                #save_assessor_data(instance,request,self)
+                #return redirect(reverse('external'))
+                contact_details_data = request.data.get('contact_details')
+                contact_serializer = ContactDetailsSaveSerializer(instance.contact_details, data=contact_details_data)
+                contact_serializer.is_valid(raise_exception=True)
+                contact_details_obj = contact_serializer.save()
 
-            fee_waiver_data = request.data.get('fee_waiver')
-            #print("fee_waiver_data")
-            #print(fee_waiver_data)
-            #fee_waiver_data.update({'contact_details_id': contact_details_obj.id})
-            waiver_serializer = FeeWaiverSaveSerializer(instance, data=fee_waiver_data)
-            #waiver_serializer = FeeWaiverSerializer(data=fee_waiver_data,context={'request':request})
-            waiver_serializer.is_valid(raise_exception=True)
-            fee_waiver_obj = waiver_serializer.save()
+                fee_waiver_data = request.data.get('fee_waiver')
+                #print("fee_waiver_data")
+                #print(fee_waiver_data)
+                #fee_waiver_data.update({'contact_details_id': contact_details_obj.id})
+                waiver_serializer = FeeWaiverSaveSerializer(instance, data=fee_waiver_data)
+                #waiver_serializer = FeeWaiverSerializer(data=fee_waiver_data,context={'request':request})
+                waiver_serializer.is_valid(raise_exception=True)
+                fee_waiver_obj = waiver_serializer.save()
 
-            visits_data = request.data.get('visits')
-            for visit in visits_data:
-                #visit['fee_waiver_id'] = fee_waiver_obj.id
-                visit_obj = FeeWaiverVisit.objects.get(id=visit['id'])
-                visit_serializer = FeeWaiverVisitSaveSerializer(visit_obj, data=visit)
-                visit_serializer.is_valid(raise_exception=True)
-                visit_obj = visit_serializer.save()
-                # add parks
-                parks_data = visit.get('selected_park_ids')
-                if parks_data:
-                    for park_id in parks_data:
-                        if park_id not in visit_obj.parks.all().values_list('id', flat=True):
-                            visit_obj.parks.add(Park.objects.get(id=park_id))
+                visits_data = request.data.get('visits')
+                for visit in visits_data:
+                    #visit['fee_waiver_id'] = fee_waiver_obj.id
+                    visit_obj = FeeWaiverVisit.objects.get(id=visit['id'])
+                    visit_serializer = FeeWaiverVisitSaveSerializer(visit_obj, data=visit)
+                    visit_serializer.is_valid(raise_exception=True)
+                    visit_obj = visit_serializer.save()
+                    # add parks
+                    parks_data = visit.get('selected_park_ids')
+                    if parks_data:
+                        for park_id in parks_data:
+                            if park_id not in visit_obj.parks.all().values_list('id', flat=True):
+                                visit_obj.parks.add(Park.objects.get(id=park_id))
 
-            return Response()
+                return Response()
         except serializers.ValidationError:
             print(traceback.print_exc())
             raise
