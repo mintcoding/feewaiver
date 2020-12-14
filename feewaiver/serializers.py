@@ -55,6 +55,31 @@ class FeeWaiverLogEntrySerializer(CommunicationLogEntrySerializer):
     def get_documents(self,obj):
         return [[d.name,d._file.url] for d in obj.documents.all()]
 
+class ContactDetailsSaveSerializer(serializers.ModelSerializer):
+    participants_id = serializers.IntegerField(write_only=True)
+
+    class Meta:
+        model = ContactDetails
+        fields = (
+                'id',
+                'organisation',
+                'organisation_description',
+                'contact_name',
+                'postal_address',
+                'suburb',                     
+                'state',                     
+                'postcode',                     
+                'phone',
+                'email',
+                'participants_id',
+                'organisation_description'
+                )
+        read_only_fields = (
+            'id',
+        )
+
+    def get_participants_code(self,obj):
+        return obj.participants_id
 
 class ContactDetailsSerializer(serializers.ModelSerializer):
     participants_id = serializers.IntegerField(write_only=True)
@@ -97,12 +122,34 @@ class ParkSerializer(serializers.ModelSerializer):
             'id',
         )
 
+class FeeWaiverVisitSaveSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FeeWaiverVisit
+        fields = (
+                'id',
+                #'fee_waiver_id',
+                'description',     
+                'camping_requested',
+                'date_from',     
+                'date_to',     
+                #'selected_park_ids',    
+                'number_of_vehicles',     
+                'age_of_participants_array', 
+                #'camping_assessment_choices',
+                'camping_assessment',
+                )
+        read_only_fields = (
+            'id',
+        )
+
 
 class FeeWaiverVisitSerializer(serializers.ModelSerializer):
     #fee_waiver = FeeWaiverSerializer()
     selected_park_ids = serializers.SerializerMethodField()
     fee_waiver_id = serializers.IntegerField(
             required=True, write_only=True, allow_null=False)
+    #camping_assessment_choices = serializers.SerializerMethodField()
 
 
     class Meta:
@@ -117,6 +164,8 @@ class FeeWaiverVisitSerializer(serializers.ModelSerializer):
                 'selected_park_ids',    
                 'number_of_vehicles',     
                 'age_of_participants_array', 
+                #'camping_assessment_choices',
+                'camping_assessment',
                 )
         read_only_fields = (
             'id',
@@ -127,6 +176,32 @@ class FeeWaiverVisitSerializer(serializers.ModelSerializer):
         for park in obj.parks.all():
             park_id_list.append(str(park.id))
         return park_id_list
+
+
+class FeeWaiverSaveSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FeeWaiver
+        fields = (
+                'id',
+                'lodgement_number',
+                'lodgement_date',
+                #'contact_details_id',     
+                'fee_waiver_purpose',     
+                'comments_to_applicant',
+                #'visits',
+                #'processing_status',
+                #'can_process',
+                #'assigned_officer',
+                #'assigned_officer_id',
+                #'action_group',
+                #'current_officer',
+                )
+        read_only_fields = (
+            'id',
+            'lodgement_number',
+            'lodgement_date',
+        )
 
 
 class FeeWaiverSerializer(serializers.ModelSerializer):
@@ -154,6 +229,7 @@ class FeeWaiverSerializer(serializers.ModelSerializer):
                 'assigned_officer_id',
                 'action_group',
                 'current_officer',
+                'comments_to_applicant',
                 )
         read_only_fields = (
             'id',

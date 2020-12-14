@@ -22,6 +22,16 @@
                     </div>
                 </div>
                 <div class="col-sm-10">
+                    <div :key="feeWaiverId" class="form-group">
+                        <div class="row">
+                            <label class="col-sm-4">Applicable camping waiver</label>
+                                <select required class="form-control" v-model="visit.camping_assessment">
+                                    <option v-for="choice in campingChoices" :value="Object.keys(choice)[0]">{{Object.values(choice)[0]}}</option>
+                                </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-10">
                     <div class="form-group">
                         <div class="row">
                             <label class="col-sm-4 control-label">Date from</label>
@@ -113,6 +123,14 @@
             parksList: {
                 type: Array,
                 required:true,
+            },
+            campingChoices: {
+                type: Array,
+                required:true,
+            },
+            feeWaiverId:{
+                type: String,
+                //required: true,
             },
             Index: String,
             label: String,

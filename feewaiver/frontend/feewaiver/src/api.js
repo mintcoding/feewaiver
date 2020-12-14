@@ -9,6 +9,7 @@ module.exports = {
     feewaivers: '/api/feewaivers/',
     participants: '/api/participants/participants_list',
     parks: '/api/parks/parks_list',
+    camping_choices: '/api/feewaivers/camping_choices',
     filter_list: '/api/feewaivers/filter_list/',
     temporary_document: '/api/temporary_document/',
     /*

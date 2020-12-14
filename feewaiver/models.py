@@ -96,6 +96,7 @@ class FeeWaiver(RevisionedMixin):
     contact_details = models.OneToOneField(ContactDetails, related_name="fee_waiver")
     fee_waiver_purpose = models.TextField(blank=True)
     assigned_officer = models.ForeignKey(EmailUser, blank=True, null=True, related_name='feewaiver_assigned', on_delete=models.SET_NULL)
+    comments_to_applicant = models.TextField(blank=True)
     #fee_waiver_description = models.TextField(blank=True)
     #date_from = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=False,verbose_name="Date from", help_text='')
     #date_to = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=False,verbose_name="Date to", help_text='')
@@ -222,6 +223,13 @@ class FeeWaiverVisit(RevisionedMixin):
             default=[],
             #null=True,
             )
+    CAMPING_CHOICES = (
+            ('', '-----'),
+            ('child_rate', 'Adult camping fees at child rate'),
+            ('full_waiver', 'Full camping waiver'),
+            )
+    camping_assessment = models.CharField(max_length=100, choices=CAMPING_CHOICES, default='',
+                             verbose_name='Camping Assessment', help_text='')
 
     def __str__(self):
         return 'Fee Waiver: {}, Visit: {}'.format(self.fee_waiver.id, self.id)

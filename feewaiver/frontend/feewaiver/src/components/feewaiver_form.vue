@@ -128,8 +128,20 @@
             :visit="visit"
             :participantGroupList="participantGroupList"
             :parksList="parksList"
+            :campingChoices="campingChoices"
+            :feeWaiverId="feeWaiverId"
             />
         </div>
+        <FormSection :formCollapse="false" label="Comments to applicant" :Index="'comments_to_applicant' + feeWaiverId">
+            <div class="form-group">
+                <div class="row">
+                  <label class="col-sm-4 control-label">Comments</label>
+                  <div class="col-sm-8">
+                      <textarea required class="form-control" v-model="feeWaiver.comments_to_applicant"/>
+                  </div>
+                </div>
+            </div>
+        </FormSection>
         <div>
             <input type="hidden" name="csrfmiddlewaretoken" :value="csrf_token"/>
             <!--input type='hidden' name="schema" :value="JSON.stringify(proposal)" /-->
@@ -188,6 +200,7 @@
                 participantGroupList: [],
                 temporary_document_collection_id: null,
                 parksList: [],
+                campingChoices: [],
                 //selected_park_ids: [],
                 visitIdx: 0,
                 visits: [
@@ -352,6 +365,48 @@
                 });
 
             },
+            save: async function() {
+                this.$nextTick(async () => {
+                    /*
+                    payload = {
+                        'contact_details': this.contactDetails,
+                        'fee_waiver': this.feeWaiver,
+                        //'parks': this.selected_park_ids,
+                        'visits': [],
+                        'temporary_document_collection_id': this.temporary_document_collection_id,
+                    }
+                    */
+                    let payload = {}
+                    payload.contact_details = Object.assign({},this.contactDetails);
+                    payload.fee_waiver = Object.assign({}, this.feeWaiver);
+                    payload.visits = []
+                    payload.temporary_document_collection_id = this.temporary_document_collection_id
+                    for (let visitData of this.visits) {
+                        let visit = Object.assign({}, visitData);
+                        // convert date strings
+                        if (visit.date_from) {
+                            visit.date_from = moment(visit.date_from, 'DD/MM/YYYY').format('YYYY-MM-DD');
+                        }
+                        if (visit.date_to) {
+                            visit.date_to = moment(visit.date_to, 'DD/MM/YYYY').format('YYYY-MM-DD');
+                        }
+                        // add to payload
+                        payload.visits.push(visit);
+
+                    //console.log(payload);
+                    //console.log(JSON.stringify(payload));
+                    let url = `/api/feewaivers/${this.feeWaiverId}/assessor_save/`;
+                    //await this.$http.post(url, JSON.stringify(payload));
+                    await this.$http.post(url, payload);
+                    swal(
+                        'Saved',
+                        'Fee Waiver has been saved',
+                        'success'
+                    );
+                    }
+                });
+            },
+
             fetchParticipantsGroupList: async function() {
                 this.participantGroupList = [];
                 const response = await this.$http.get(api_endpoints.participants)
@@ -366,6 +421,46 @@
                     this.parksList.push(group)
                 }
             },
+            fetchCampingChoices: async function() {
+                console.log("camping choices")
+                this.campingChoices = [];
+                const response = await this.$http.get(api_endpoints.camping_choices)
+                for (let choice of response.body) {
+                    this.campingChoices.push(choice)
+                }
+            },
+            loadFeeWaiverData: async function() {
+                await this.fetchCampingChoices();
+                console.log(this.feeWaiverId);
+                const url = api_endpoints.feewaivers + this.feeWaiverId + '/feewaiver_contactdetails_pack/';
+
+                const returnVal = await this.$http.get(url);
+                //console.log(url);
+                //console.log(returnVal);
+                this.feeWaiver.id = returnVal.body.fee_waiver.id;
+                this.feeWaiver.lodgement_number = returnVal.body.fee_waiver.lodgement_number;
+                this.feeWaiver.fee_waiver_purpose = returnVal.body.fee_waiver.fee_waiver_purpose;
+                this.feeWaiver.comments_to_applicant = returnVal.body.fee_waiver.comments_to_applicant;
+                // visits should be empty if reading from backend
+                this.visits = []
+                this.visitIdx = -1;
+                for (let retrievedVisit of returnVal.body.fee_waiver.visits) {
+                    let visit = Object.assign({}, retrievedVisit);
+                    //visit.index = visit.id;
+                    visit.index = ++this.visitIdx;
+                    visit.date_to = moment(visit.date_to, 'YYYY-MM-DD').format('DD/MM/YYYY');
+                    visit.date_from = moment(visit.date_from, 'YYYY-MM-DD').format('DD/MM/YYYY');
+                    visit.number_of_vehicles = visit.number_of_vehicles.toString()
+                    //this.feeWaiver = Object.assign({}, feeWaiverUpdate);
+                    this.visits.push(visit);
+                }
+                this.contactDetails = Object.assign({}, returnVal.body.contact_details);
+                // TODO: try to improve this
+                if (this.contactDetails.participants_code) {
+                    this.contactDetails.participants_id = this.contactDetails.participants_code;
+                }
+            },
+
         },
         created: function() {
         },
@@ -375,6 +470,9 @@
                 await this.fetchParticipantsGroupList();
                 await this.fetchParksList();
                 if (this.feeWaiverId) {
+                    await this.loadFeeWaiverData();
+                    /*
+                    await this.fetchCampingChoices();
                     console.log(this.feeWaiverId);
                     const url = api_endpoints.feewaivers + this.feeWaiverId + '/feewaiver_contactdetails_pack/';
 
@@ -402,6 +500,7 @@
                     if (this.contactDetails.participants_code) {
                         this.contactDetails.participants_id = this.contactDetails.participants_code;
                     }
+                    */
                 }
             });
         },
