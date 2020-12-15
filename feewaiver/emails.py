@@ -9,7 +9,7 @@ from django.template import loader, Template#, Context
 from django.utils.html import strip_tags
 from ledger.accounts.models import Document
 from django.utils.encoding import smart_text
-
+from feewaiver.models import AssessorsGroup, ApproversGroup
 #from disturbance.components.emails.emails import TemplateEmailBase
 from ledger.accounts.models import EmailUser
 
@@ -108,7 +108,7 @@ class FeeWaiverReceivedNotificationEmail(TemplateEmailBase):
     txt_template = 'feewaiver/email/fee_waiver_received_notification.txt'
 
 class FeeWaiverWorkflowNotificationEmail(TemplateEmailBase):
-    #subject = 'Your fee waiver request has been received'
+    subject = 'Fee Waiver request workflow notification'
     #html_template = 'feewaiver/emails/proposals/send_referral_notification.html'
     #txt_template = 'feewaiver/emails/proposals/send_referral_notification.txt'
     html_template = 'feewaiver/email/fee_waiver_workflow_notification.html'
@@ -129,8 +129,10 @@ def send_fee_waiver_received_notification(fee_waiver,request):
     #msg = email.send(fee_waiver.contact_details.email, context=context)
     _log_feewaiver_email(msg, fee_waiver, sender=sender)
 
-def send_workflow_notification(fee_waiver,request, action):
+def send_workflow_notification(fee_waiver,request, action, email_subject=None):
     email = FeeWaiverWorkflowNotificationEmail()
+    if email_subject:
+        email.subject = email_subject
     #url = request.build_absolute_uri(reverse('internal-referral-detail',kwargs={'proposal_pk':referral.proposal.id,'referral_pk':referral.id}))
 
     context = {
@@ -138,11 +140,9 @@ def send_workflow_notification(fee_waiver,request, action):
     }
 
     #def send(self, to_addresses, from_address=None, context=None, attachments=None, cc=None, bcc=None):
-    if action == "":
-        email.subject = ""
-        pass
-    # change this
-    to_addresses = feewaiver.assigned_officer.email
+    #to_addresses = fee_waiver.assigned_officer.email
+    if action == "propose_issue":
+        to_addresses = list(ApproversGroup.objects.first().members.all().values_list('email', flat=True))
     msg = email.send(to_addresses, context=context)
     sender = request.user if request else settings.DEFAULT_FROM_EMAIL
     #msg = email.send(fee_waiver.contact_details.email, context=context)

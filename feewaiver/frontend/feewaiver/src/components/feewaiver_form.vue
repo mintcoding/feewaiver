@@ -316,21 +316,10 @@
             },
 
             submit: async function(){
-                /*
-                let missingData = this.checkBlankFields();
-                if(missingData.length > 0){
-                  swal({
-                    title: "Please fix following errors before submitting",
-                    text: missingData,
-                    type:'error'
-                  })
-                //return false;
-                }
-                */
 
                 let swalTitle = "Submit Request";
                 let swalText = "Are you sure you want to submit this request?";
-                let payload = {}
+                //let payload = {}
                 /*
                 this.$nextTick(() => {
                     payload = {
@@ -354,55 +343,56 @@
                     }
                 });
                 */
-                this.updatePayload();
-
+                await this.updatePayload();
                 await swal({
                     title: swalTitle,
                     text: swalText,
                     type: "question",
                     showCancelButton: true,
                     confirmButtonText: 'Submit'
-                })
-                console.log(this.payload)
+                });
+                //console.log(this.payload)
                 const returnedFeeWaiver = await this.$http.post(api_endpoints.feewaivers,this.payload);
                 this.$router.push({
                     name: 'submit_feewaiver',
                     params: { fee_waiver: returnedFeeWaiver.body}
                 });
-
             },
-            updatePayload: function() {
-                this.$nextTick(() => {
-                    this.payload = {};
-                    this.payload = {
-                        'contact_details': this.contactDetails,
-                        'fee_waiver': this.feeWaiver,
-                        //'parks': this.selected_park_ids,
-                        'visits': [],
-                        'temporary_document_collection_id': this.temporary_document_collection_id,
+            updatePayload: async function() {
+                await this.$nextTick();
+                //await this.$nextTick(() => {
+                this.payload = {};
+                this.payload = {
+                    'contact_details': Object.assign({}, this.contactDetails),
+                    'fee_waiver': Object.assign({}, this.feeWaiver),
+                    //'parks': this.selected_park_ids,
+                    'visits': [],
+                    'temporary_document_collection_id': this.temporary_document_collection_id,
+                }
+                for (let visitData of this.visits) {
+                    let visit = Object.assign({}, visitData);
+                    // convert date strings
+                    if (visit.date_from) {
+                        visit.date_from = moment(visit.date_from, 'DD/MM/YYYY').format('YYYY-MM-DD');
                     }
-                    for (let visitData of this.visits) {
-                        let visit = Object.assign({}, visitData);
-                        // convert date strings
-                        if (visit.date_from) {
-                            visit.date_from = moment(visit.date_from, 'DD/MM/YYYY').format('YYYY-MM-DD');
-                        }
-                        if (visit.date_to) {
-                            visit.date_to = moment(visit.date_to, 'DD/MM/YYYY').format('YYYY-MM-DD');
-                        }
-                        // add to payload
-                        this.payload.visits.push(visit)
+                    if (visit.date_to) {
+                        visit.date_to = moment(visit.date_to, 'DD/MM/YYYY').format('YYYY-MM-DD');
                     }
-                });
+                    // add to payload
+                    this.payload.visits.push(visit)
+                }
+                //});
             },
             save: async function(confirmSave=true) {
                 //await this.$nextTick(async () => {
                 //let payload = {}
-                this.updatePayload()
+                await this.updatePayload()
                 let url = `/api/feewaivers/${this.feeWaiverId}/assessor_save/`;
                 //await this.$http.post(url, JSON.stringify(payload));
+                //console.log("this.payload")
+                //console.log(this.payload)
                 const feeWaiverRes = await this.$http.post(url, this.payload);
-                console.log(feeWaiverRes);
+                //console.log(feeWaiverRes);
                 if (confirmSave) {
                     swal(
                         'Saved',

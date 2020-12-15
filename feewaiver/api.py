@@ -60,7 +60,10 @@ from feewaiver.process_document import (
         save_default_document_obj,
         )
 import logging
-from feewaiver.emails import send_fee_waiver_received_notification
+from feewaiver.emails import (
+        send_fee_waiver_received_notification,
+        send_workflow_notification,
+        )
 from feewaiver.main_decorators import basic_exception_handler
 from feewaiver.main_models import TemporaryDocumentCollection
 from feewaiver.process_document import save_document, cancel_document, delete_document
@@ -677,10 +680,12 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
             with transaction.atomic():
                 #import ipdb; ipdb.set_trace()
                 instance = self.get_object()
-                action = request.data.get("action")
+                action = request.data.get("workflow_type")
+                email_subject = request.data.get("email_subject")
                 if action == 'propose_issue':
                     instance.propose_issue(request)
                 # send email
+                send_workflow_notification(instance,request, action, email_subject)
                 return Response()
 
         except serializers.ValidationError:
