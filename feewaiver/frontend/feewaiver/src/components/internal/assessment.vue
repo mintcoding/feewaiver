@@ -68,6 +68,9 @@
             </div>
         </div>
         </div>
+        <div v-if="workflowActionType">
+            <AssessmentWorkflow ref="assessment_workflow" :feeWaiver="feeWaiver" :workflow_type="workflowActionType" :key="'workflow_action_' + workflowActionType"/>
+        </div>
         <!--ProposedDecline ref="proposed_decline" :processing_status="feeWaiver.processing_status" :feeWaiver_id="feeWaiver.id" @refreshFromResponse="refreshFromResponse"></ProposedDecline>
         <AmendmentRequest 
         ref="amendment_request" 
@@ -94,6 +97,7 @@ import CommsLogs from '@common-utils/comms_logs.vue'
 import { api_endpoints, helpers } from '@/utils/hooks'
 import FeeWaiverForm from '../feewaiver_form.vue'
 import Vue from 'vue'
+import AssessmentWorkflow from './assessment_modal.vue'
 
 
 export default {
@@ -103,6 +107,7 @@ export default {
         return {
             feeWaiverId: null,
             feeWaiver: {},
+            workflowActionType: '',
             detailsBody: 'detailsBody'+vm._uid,
             addressBody: 'addressBody'+vm._uid,
             contactsBody: 'contactsBody'+vm._uid,
@@ -134,6 +139,7 @@ export default {
     components: {
         CommsLogs,
         FeeWaiverForm,
+        AssessmentWorkflow,
     },
     filters: {
         formatDate: function(data){
@@ -442,12 +448,24 @@ export default {
                 });
             }
         },
+        parentSave: async function() {
+            const feeWaiverRes = await this.$refs.fee_waiver_form.save(false);
+            console.log(feeWaiverRes);
+            return feeWaiverRes;
+        },
         workflowAction: function(action) {
+            this.workflowActionType = action;
+            this.$nextTick(() => {
+                this.$refs.assessment_workflow.isModalOpen = true;
+            });
+            // open modal
+            /*
             this.$refs.fee_waiver_form.save(false);
             this.$http.post(`/api/feewaivers/${this.feeWaiverId}/workflow_action/`, {"action": action})
             this.$router.push({
                 name: 'fee-waiver-dash',
             });
+            */
         },
         /*
         switchStatus: function(status){

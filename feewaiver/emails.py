@@ -107,6 +107,13 @@ class FeeWaiverReceivedNotificationEmail(TemplateEmailBase):
     html_template = 'feewaiver/email/fee_waiver_received_notification.html'
     txt_template = 'feewaiver/email/fee_waiver_received_notification.txt'
 
+class FeeWaiverWorkflowNotificationEmail(TemplateEmailBase):
+    #subject = 'Your fee waiver request has been received'
+    #html_template = 'feewaiver/emails/proposals/send_referral_notification.html'
+    #txt_template = 'feewaiver/emails/proposals/send_referral_notification.txt'
+    html_template = 'feewaiver/email/fee_waiver_workflow_notification.html'
+    txt_template = 'feewaiver/email/fee_waiver_workflow_notification.txt'
+
 
 def send_fee_waiver_received_notification(fee_waiver,request):
     email = FeeWaiverReceivedNotificationEmail()
@@ -118,6 +125,25 @@ def send_fee_waiver_received_notification(fee_waiver,request):
 
     #def send(self, to_addresses, from_address=None, context=None, attachments=None, cc=None, bcc=None):
     msg = email.send(fee_waiver.contact_details.email, context=context)
+    sender = request.user if request else settings.DEFAULT_FROM_EMAIL
+    #msg = email.send(fee_waiver.contact_details.email, context=context)
+    _log_feewaiver_email(msg, fee_waiver, sender=sender)
+
+def send_workflow_notification(fee_waiver,request, action):
+    email = FeeWaiverWorkflowNotificationEmail()
+    #url = request.build_absolute_uri(reverse('internal-referral-detail',kwargs={'proposal_pk':referral.proposal.id,'referral_pk':referral.id}))
+
+    context = {
+        'feewaiver': fee_waiver
+    }
+
+    #def send(self, to_addresses, from_address=None, context=None, attachments=None, cc=None, bcc=None):
+    if action == "":
+        email.subject = ""
+        pass
+    # change this
+    to_addresses = feewaiver.assigned_officer.email
+    msg = email.send(to_addresses, context=context)
     sender = request.user if request else settings.DEFAULT_FROM_EMAIL
     #msg = email.send(fee_waiver.contact_details.email, context=context)
     _log_feewaiver_email(msg, fee_waiver, sender=sender)

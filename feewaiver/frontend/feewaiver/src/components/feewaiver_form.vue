@@ -195,6 +195,7 @@
             let vm = this;
             return {
                 feeWaiver: {},
+                payload: {},
                 //feeWaiverId: null,
                 contactDetails: {},
                 email_confirmation: '',
@@ -330,6 +331,7 @@
                 let swalTitle = "Submit Request";
                 let swalText = "Are you sure you want to submit this request?";
                 let payload = {}
+                /*
                 this.$nextTick(() => {
                     payload = {
                         'contact_details': this.contactDetails,
@@ -351,6 +353,8 @@
                         payload.visits.push(visit)
                     }
                 });
+                */
+                this.updatePayload();
 
                 await swal({
                     title: swalTitle,
@@ -359,29 +363,24 @@
                     showCancelButton: true,
                     confirmButtonText: 'Submit'
                 })
-                const returnedFeeWaiver = await this.$http.post(api_endpoints.feewaivers,payload);
+                console.log(this.payload)
+                const returnedFeeWaiver = await this.$http.post(api_endpoints.feewaivers,this.payload);
                 this.$router.push({
                     name: 'submit_feewaiver',
                     params: { fee_waiver: returnedFeeWaiver.body}
                 });
 
             },
-            save: async function(confirmSave=true) {
-                this.$nextTick(async () => {
-                    /*
-                    payload = {
+            updatePayload: function() {
+                this.$nextTick(() => {
+                    this.payload = {};
+                    this.payload = {
                         'contact_details': this.contactDetails,
                         'fee_waiver': this.feeWaiver,
                         //'parks': this.selected_park_ids,
                         'visits': [],
                         'temporary_document_collection_id': this.temporary_document_collection_id,
                     }
-                    */
-                    let payload = {}
-                    payload.contact_details = Object.assign({},this.contactDetails);
-                    payload.fee_waiver = Object.assign({}, this.feeWaiver);
-                    payload.visits = []
-                    payload.temporary_document_collection_id = this.temporary_document_collection_id
                     for (let visitData of this.visits) {
                         let visit = Object.assign({}, visitData);
                         // convert date strings
@@ -392,19 +391,26 @@
                             visit.date_to = moment(visit.date_to, 'DD/MM/YYYY').format('YYYY-MM-DD');
                         }
                         // add to payload
-                        payload.visits.push(visit);
-                    }
-                    let url = `/api/feewaivers/${this.feeWaiverId}/assessor_save/`;
-                    //await this.$http.post(url, JSON.stringify(payload));
-                    await this.$http.post(url, payload);
-                    if (confirmSave) {
-                        swal(
-                            'Saved',
-                            'Fee Waiver has been saved',
-                            'success'
-                        );
+                        this.payload.visits.push(visit)
                     }
                 });
+            },
+            save: async function(confirmSave=true) {
+                //await this.$nextTick(async () => {
+                //let payload = {}
+                this.updatePayload()
+                let url = `/api/feewaivers/${this.feeWaiverId}/assessor_save/`;
+                //await this.$http.post(url, JSON.stringify(payload));
+                const feeWaiverRes = await this.$http.post(url, this.payload);
+                console.log(feeWaiverRes);
+                if (confirmSave) {
+                    swal(
+                        'Saved',
+                        'Fee Waiver has been saved',
+                        'success'
+                    );
+                }
+                return feeWaiverRes
             },
 
             fetchParticipantsGroupList: async function() {

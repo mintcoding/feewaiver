@@ -105,7 +105,13 @@ class FeeWaiver(RevisionedMixin):
         app_label = 'feewaiver'
 
     def propose_issue(self, request):
-        print(request.user)
+        #print(request.user)
+        self.assigned_officer = None
+        self.status = self.PROCESSING_STATUS_WITH_APPROVER
+        self.log_user_action(
+            FeeWaiverUserAction.ACTION_PROCESSING_STATUS_WITH_APPROVER.format(self.lodgement_number), 
+            request)
+        self.save()
 
     def save(self, *args, **kwargs):
         super(FeeWaiver, self).save(*args,**kwargs)
@@ -273,6 +279,7 @@ class FeeWaiverUserAction(UserAction):
     #ACTION_UPDATE_NO_CHARGE_DATE_UNTIL = "'Do not charge annual site fee until' date updated to {} for approval {}"
     ACTION_ASSIGN_TO_OFFICER = "Assign Fee Waiver {} to {}"
     ACTION_UNASSIGN_OFFICER = "Remove officer assignment from Fee Waiver {}"
+    ACTION_PROCESSING_STATUS_WITH_APPROVER = "Fee Waiver {} status updated to 'With Approver'"
 
     class Meta:
         app_label = 'feewaiver'
