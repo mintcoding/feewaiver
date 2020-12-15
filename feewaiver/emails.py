@@ -12,7 +12,7 @@ from django.utils.encoding import smart_text
 from feewaiver.models import AssessorsGroup, ApproversGroup
 #from disturbance.components.emails.emails import TemplateEmailBase
 from ledger.accounts.models import EmailUser
-
+import os
 logger = logging.getLogger('log')
 #logger = logging.getLogger(__name__)
 
@@ -27,6 +27,15 @@ def _render(template, context):
     if isinstance(template, six.string_types):
         template = Template(template)
     return template.render(context)
+
+def prepare_attachments(attachments):
+    returned_attachments = []
+    for document in attachments.all():
+        path, filename = os.path.split(document._file.name)    
+        returned_attachments.append(
+            (filename, document._file.read())
+        )
+    return returned_attachments
 
 
 def host_reverse(name, args=None, kwargs=None):
@@ -129,29 +138,35 @@ def send_fee_waiver_received_notification(fee_waiver,request):
     #msg = email.send(fee_waiver.contact_details.email, context=context)
     _log_feewaiver_email(msg, fee_waiver, sender=sender)
 
-def send_workflow_notification(fee_waiver,request, action, email_subject=None):
+def send_workflow_notification(fee_waiver,request, action, email_subject=None, workflow_entry=None):
     email = FeeWaiverWorkflowNotificationEmail()
     if email_subject:
         email.subject = email_subject
     #url = request.build_absolute_uri(reverse('internal-referral-detail',kwargs={'proposal_pk':referral.proposal.id,'referral_pk':referral.id}))
 
+    comments = request.data.get('comments')
     context = {
-        'feewaiver': fee_waiver
+        'feewaiver': fee_waiver,
+        'comments': comments,
     }
 
     #def send(self, to_addresses, from_address=None, context=None, attachments=None, cc=None, bcc=None):
     #to_addresses = fee_waiver.assigned_officer.email
     if action == "propose_issue":
         to_addresses = list(ApproversGroup.objects.first().members.all().values_list('email', flat=True))
-    msg = email.send(to_addresses, context=context)
     sender = request.user if request else settings.DEFAULT_FROM_EMAIL
+    if workflow_entry:
+        msg = email.send(to_addresses, sender, context=context, attachments=prepare_attachments(workflow_entry.documents))
+        _log_feewaiver_email(msg, fee_waiver, sender=sender, workflow_entry=workflow_entry)
+    else:
+        msg = email.send(to_addresses, sender, context=context)
+        _log_feewaiver_email(msg, fee_waiver, sender=sender)
     #msg = email.send(fee_waiver.contact_details.email, context=context)
-    _log_feewaiver_email(msg, fee_waiver, sender=sender)
     #if referral.proposal.applicant:
      #   _log_org_email(msg, referral.proposal.applicant, referral.referral, sender=sender)
 
 
-def _log_feewaiver_email(email_message, fee_waiver, sender=None):
+def _log_feewaiver_email(email_message, fee_waiver, sender=None, workflow_entry=None):
     from feewaiver.models import FeeWaiverLogEntry
     if isinstance(email_message, (EmailMultiAlternatives, EmailMessage,)):
         # TODO this will log the plain text body, should we log the html instead
@@ -195,7 +210,11 @@ def _log_feewaiver_email(email_message, fee_waiver, sender=None):
         'cc': all_ccs
     }
 
-    email_entry = FeeWaiverLogEntry.objects.create(**kwargs)
+    if not workflow_entry:
+        email_entry = FeeWaiverLogEntry.objects.create(**kwargs)
+    else:
+        email_entry = FeeWaiverLogEntry.objects.update_or_create(id=workflow_entry.id, defaults=kwargs)
+        #email_entry = workflow_entry.save(**kwargs)
 
     return email_entry
 

@@ -105,9 +105,10 @@ class FeeWaiver(RevisionedMixin):
         app_label = 'feewaiver'
 
     def propose_issue(self, request):
+        #import ipdb; ipdb.set_trace()
         #print(request.user)
         self.assigned_officer = None
-        self.status = self.PROCESSING_STATUS_WITH_APPROVER
+        self.processing_status = self.PROCESSING_STATUS_WITH_APPROVER
         self.log_user_action(
             FeeWaiverUserAction.ACTION_PROCESSING_STATUS_WITH_APPROVER.format(self.lodgement_number), 
             request)
@@ -119,6 +120,10 @@ class FeeWaiver(RevisionedMixin):
             new_lodgment_id = 'EFWR{0:06d}'.format(self.pk)
             self.lodgement_number = new_lodgment_id
             self.save()
+
+    @property
+    def processing_status_display(self):
+        return self.get_processing_status_display()
 
     @property
     def relevant_access_group(self):

@@ -684,8 +684,16 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
                 email_subject = request.data.get("email_subject")
                 if action == 'propose_issue':
                     instance.propose_issue(request)
+                comms_log_id = request.data.get('comms_log_id')
+                workflow_entry = None
+                if comms_log_id and comms_log_id is not 'null':
+                    workflow_entry = instance.comms_logs.get(
+                            id=comms_log_id)
+                #else:
+                 #   workflow_entry = self.add_comms_log(request, instance, workflow=True)
+
                 # send email
-                send_workflow_notification(instance,request, action, email_subject)
+                send_workflow_notification(instance,request, action, email_subject, workflow_entry)
                 return Response()
 
         except serializers.ValidationError:

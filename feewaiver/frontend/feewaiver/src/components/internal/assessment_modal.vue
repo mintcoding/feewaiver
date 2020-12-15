@@ -150,7 +150,7 @@ export default {
           let post_url = '/api/feewaivers/' + this.feeWaiver.id + '/workflow_action/'
           let payload = new FormData(this.form);
           
-          this.workflowDetails ? payload.append('details', this.workflowDetails) : null;
+          this.workflowDetails ? payload.append('comments', this.workflowDetails) : null;
           //this.advice_details ? payload.append('advice_details', this.advice_details) : null;
           this.$refs.comms_log_file.commsLogId ? payload.append('comms_log_id', this.$refs.comms_log_file.commsLogId) : null;
           this.workflow_type ? payload.append('workflow_type', this.workflow_type) : null;
