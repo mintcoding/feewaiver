@@ -152,8 +152,10 @@ def send_workflow_notification(fee_waiver,request, action, email_subject=None, w
 
     #def send(self, to_addresses, from_address=None, context=None, attachments=None, cc=None, bcc=None):
     #to_addresses = fee_waiver.assigned_officer.email
-    if action == "propose_issue":
+    if action in ["propose_issue", "propose_concession", "propose_decline"]:
         to_addresses = list(ApproversGroup.objects.first().members.all().values_list('email', flat=True))
+    if action in ["issue", "issue_concession", "decline"]:
+        to_addresses = fee_waiver.contact_details.email
     sender = request.user if request else settings.DEFAULT_FROM_EMAIL
     if workflow_entry:
         msg = email.send(to_addresses, sender, context=context, attachments=prepare_attachments(workflow_entry.documents))

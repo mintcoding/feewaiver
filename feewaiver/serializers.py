@@ -209,6 +209,7 @@ class FeeWaiverSerializer(serializers.ModelSerializer):
     contact_details_id = serializers.IntegerField(
             required=True, write_only=True, allow_null=False)
     processing_status = serializers.SerializerMethodField()
+    proposed_status = serializers.SerializerMethodField()
     can_process = serializers.SerializerMethodField()
     assigned_officer = serializers.SerializerMethodField(read_only=True)
     action_group = serializers.SerializerMethodField(read_only=True)
@@ -224,6 +225,7 @@ class FeeWaiverSerializer(serializers.ModelSerializer):
                 'fee_waiver_purpose',     
                 'visits',
                 'processing_status',
+                'proposed_status',
                 'can_process',
                 'assigned_officer',
                 'assigned_officer_id',
@@ -248,6 +250,9 @@ class FeeWaiverSerializer(serializers.ModelSerializer):
 
     def get_processing_status(self,obj):
         return obj.get_processing_status_display()
+
+    def get_proposed_status(self,obj):
+        return obj.get_proposed_status_display()
 
     def get_can_process(self,obj):
         # Check if currently logged in user has access to process the proposal
@@ -280,6 +285,7 @@ class FeeWaiverSerializer(serializers.ModelSerializer):
 class FeeWaiverDTSerializer(serializers.ModelSerializer):
     contact_name = serializers.SerializerMethodField()
     processing_status = serializers.SerializerMethodField()
+    proposed_status = serializers.SerializerMethodField()
     can_process = serializers.SerializerMethodField()
     assigned_officer = serializers.SerializerMethodField(read_only=True)
     #licence_document = serializers.CharField(source='licence_document._file.url')
@@ -293,6 +299,7 @@ class FeeWaiverDTSerializer(serializers.ModelSerializer):
                 #'contact_details',
                 #'submitter',
                 'processing_status',
+                'proposed_status',
                 #'lodgement_date',
                 'lodgement_date',
                 'can_process',
@@ -319,16 +326,20 @@ class FeeWaiverDTSerializer(serializers.ModelSerializer):
     def get_processing_status(self,obj):
         return obj.get_processing_status_display()
 
+    def get_proposed_status(self,obj):
+        return obj.get_proposed_status_display()
+
     def get_can_process(self,obj):
         # Check if currently logged in user has access to process the proposal
         #import ipdb; ipdb.set_trace()
-        request = self.context['request']
-        user = request.user
-        if obj.assigned_officer:
-            if obj.assigned_officer == user:
+        request = self.context.get('request')
+        if request:
+            user = request.user
+            if obj.assigned_officer:
+                if obj.assigned_officer == user:
+                    return True
+            elif user in obj.relevant_access_group:
                 return True
-        elif user in obj.relevant_access_group:
-            return True
         return False
 
 

@@ -684,6 +684,16 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
                 email_subject = request.data.get("email_subject")
                 if action == 'propose_issue':
                     instance.propose_issue(request)
+                if action == 'propose_concession':
+                    instance.propose_concession(request)
+                if action == 'propose_decline':
+                    instance.propose_decline(request)
+                if action == 'issue':
+                    instance.issue(request)
+                if action == 'issue_concession':
+                    instance.issue_concession(request)
+                if action == 'decline':
+                    instance.decline(request)
                 comms_log_id = request.data.get('comms_log_id')
                 workflow_entry = None
                 if comms_log_id and comms_log_id is not 'null':

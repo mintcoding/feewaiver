@@ -132,7 +132,7 @@ export default {
             apiaryTemplateGroup: false,
             */
             //feewaiver_headers:["Number","Submitter","Status","Lodged On","Document","Assigned To","Action"],
-            feewaiver_headers:["Lodgement Number", "Submitter", "Status", "Lodged on", "Document", "Assigned To", "Action"],
+            feewaiver_headers:["Lodgement Number", "Submitter", "Status", "Lodged on", "Document", "Assigned To", "Action", ""],
             feewaiver_options:{
                 language: {
                     processing: "<i class='fa fa-4x fa-spinner fa-spin'></i>"
@@ -183,6 +183,14 @@ export default {
                     },
                     {
                         data: "processing_status",
+                        mRender:function (data,type,full) {
+                            //return data != '' && data != null ? moment(data).format(vm.dateFormat): '';
+                            let fullStatus = full.processing_status;
+                            if (full.processing_status === "With Approver" && full.proposed_status) {
+                                fullStatus += '<br>(' + full.proposed_status + ')';
+                            }
+                            return fullStatus
+                        },
                         //searchable: false,
                         visible: true,
                     },
@@ -202,6 +210,11 @@ export default {
                     {
                         data: "assigned_officer",
                         visible: true,
+                        //searchable: false,
+                    },
+                    {
+                        data: "proposed_status",
+                        visible: false,
                         //searchable: false,
                     },
                     /*

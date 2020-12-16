@@ -1,6 +1,6 @@
 {%  extends 'feewaiver/email/base_email.html' %}
 
 {%  block content %}
-<p>Fee Waiver Request <strong>{{feewaiver.lodgement_number}}</strong> has been updated with status {{feewaiver.processing_status_display}}</p>
+<p>Fee Waiver Request <strong>{{feewaiver.lodgement_number}}</strong> has been updated with status {{feewaiver.processing_status_display}} ({{feewaiver.proposed_status_display}})</p>
 <p>Comments: {{comments}} </p>
 {%  endblock %}

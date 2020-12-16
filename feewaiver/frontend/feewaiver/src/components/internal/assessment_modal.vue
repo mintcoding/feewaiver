@@ -120,9 +120,18 @@ export default {
     },
     methods: {
       setModalTitle: function() {
-          console.log("modalTitle")
           if (this.workflow_type === 'propose_issue') {
               this.modalTitle = 'Propose Issue';
+          } else if (this.workflow_type === 'propose_concession') {
+              this.modalTitle = 'Propose Concession';
+          } else if (this.workflow_type === 'propose_decline') {
+              this.modalTitle = 'Propose Decline';
+          } else if (this.workflow_type === 'issue') {
+              this.modalTitle = 'Issue';
+          } else if (this.workflow_type === 'issue_concession') {
+              this.modalTitle = 'Issue Concession';
+          } else if (this.workflow_type === 'decline') {
+              this.modalTitle = 'Decline';
           }
       },
 

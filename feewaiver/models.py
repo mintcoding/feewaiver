@@ -52,44 +52,31 @@ class ContactDetails(RevisionedMixin):
 
 
 class FeeWaiver(RevisionedMixin):
-    #PROCESSING_STATUS_TEMP = 'temp'
-    #PROCESSING_STATUS_DRAFT = 'draft'
     PROCESSING_STATUS_WITH_ASSESSOR = 'with_assessor'
-    #PROCESSING_STATUS_WITH_REFERRAL = 'with_referral'
-    #PROCESSING_STATUS_WITH_ASSESSOR_REQUIREMENTS = 'with_assessor_requirements'
     PROCESSING_STATUS_WITH_APPROVER = 'with_approver'
-    #PROCESSING_STATUS_RENEWAL = 'renewal'
-    #PROCESSING_STATUS_LICENCE_AMENDMENT = 'licence_amendment'
-    #PROCESSING_STATUS_AWAITING_APPLICANT_RESPONSE = 'awaiting_applicant_response'
-    #PROCESSING_STATUS_AWAITING_ASSESSOR_RESPONSE = 'awaiting_assessor_response'
-    #PROCESSING_STATUS_AWAITING_RESPONSES = 'awaiting_responses'
-    #PROCESSING_STATUS_READY_FOR_CONDITIONS = 'ready_for_conditions'
-    #PROCESSING_STATUS_READY_TO_ISSUE = 'ready_to_issue'
-    PROCESSING_STATUS_APPROVED = 'approved'
+    PROCESSING_STATUS_ISSUED = 'issued'
+    PROCESSING_STATUS_CONCESSION = 'concession'
     PROCESSING_STATUS_DECLINED = 'declined'
-    #PROCESSING_STATUS_DISCARDED = 'discarded'
     PROCESSING_STATUS_CHOICES = (
-                                 #(PROCESSING_STATUS_TEMP, 'Temporary'),
-                                 #(PROCESSING_STATUS_DRAFT, 'Draft'),
                                  (PROCESSING_STATUS_WITH_ASSESSOR, 'With Assessor'),
-                                 #(PROCESSING_STATUS_WITH_REFERRAL, 'With Referral'),
-                                 #(PROCESSING_STATUS_WITH_ASSESSOR_REQUIREMENTS, 'With Assessor (Requirements)'),
                                  (PROCESSING_STATUS_WITH_APPROVER, 'With Approver'),
-                                 #(PROCESSING_STATUS_RENEWAL, 'Renewal'),
-                                 #(PROCESSING_STATUS_LICENCE_AMENDMENT, 'Licence Amendment'),
-                                 #(PROCESSING_STATUS_AWAITING_APPLICANT_RESPONSE, 'Awaiting Applicant Response'),
-                                 #(PROCESSING_STATUS_AWAITING_ASSESSOR_RESPONSE, 'Awaiting Assessor Response'),
-                                 #(PROCESSING_STATUS_AWAITING_RESPONSES, 'Awaiting Responses'),
-                                 #(PROCESSING_STATUS_READY_FOR_CONDITIONS, 'Ready for Conditions'),
-                                 #(PROCESSING_STATUS_READY_TO_ISSUE, 'Ready to Issue'),
-                                 (PROCESSING_STATUS_APPROVED, 'Approved'),
+                                 (PROCESSING_STATUS_ISSUED, 'Issued'),
+                                 (PROCESSING_STATUS_CONCESSION, 'Concession'),
                                  (PROCESSING_STATUS_DECLINED, 'Declined'),
-                                 #(PROCESSING_STATUS_DISCARDED, 'Discarded'),
                                  )
 
     processing_status = models.CharField('Processing Status', max_length=30, choices=PROCESSING_STATUS_CHOICES,
                                          #default=PROCESSING_STATUS_CHOICES[1][0])
                                          default=PROCESSING_STATUS_CHOICES[0][0])
+    PROPOSED_STATUS_ISSUE = 'issue'
+    PROPOSED_STATUS_CONCESSION = 'concession'
+    PROPOSED_STATUS_DECLINE = 'decline'
+    PROPOSED_STATUS_CHOICES = (
+            (PROPOSED_STATUS_ISSUE, 'Fee Waiver'),
+            (PROPOSED_STATUS_CONCESSION, 'Concession'),
+            (PROPOSED_STATUS_DECLINE, 'Decline'),
+                                 )
+    proposed_status = models.CharField('Proposed Status', max_length=30, choices=PROPOSED_STATUS_CHOICES, null=True)
     #contact_details = models.ForeignKey(ContactDetails, null=True, blank=False, related_name='fee_waivers')
     lodgement_number = models.CharField(max_length=12, blank=True, default='')
     lodgement_date = models.DateTimeField(auto_now_add=True)
@@ -105,14 +92,58 @@ class FeeWaiver(RevisionedMixin):
         app_label = 'feewaiver'
 
     def propose_issue(self, request):
-        #import ipdb; ipdb.set_trace()
-        #print(request.user)
+        self.proposed_status = self.PROPOSED_STATUS_ISSUE
+        self.move_to_approver(request)
+        self.log_user_action(
+            FeeWaiverUserAction.ACTION_PROPOSED_ISSUE.format(self.lodgement_number), 
+            request)
+
+    def propose_concession(self, request):
+        self.proposed_status = self.PROPOSED_STATUS_CONCESSION
+        self.move_to_approver(request)
+        self.log_user_action(
+            FeeWaiverUserAction.ACTION_PROPOSED_CONCESSION.format(self.lodgement_number), 
+            request)
+
+    def propose_decline(self, request):
+        self.proposed_status = self.PROPOSED_STATUS_DECLINE
+        self.move_to_approver(request)
+        self.log_user_action(
+            FeeWaiverUserAction.ACTION_PROPOSED_DECLINE.format(self.lodgement_number), 
+            request)
+
+    def move_to_approver(self, request):
         self.assigned_officer = None
         self.processing_status = self.PROCESSING_STATUS_WITH_APPROVER
+        self.save()
+
+    def issue(self, request):
+        #self.proposed_status = self.PROPOSED_STATUS_ISSUE
+        #self.move_to_approver()
+        self.processing_status = self.PROCESSING_STATUS_ISSUED
         self.log_user_action(
-            FeeWaiverUserAction.ACTION_PROCESSING_STATUS_WITH_APPROVER.format(self.lodgement_number), 
+            FeeWaiverUserAction.ACTION_ISSUE.format(self.lodgement_number), 
             request)
         self.save()
+
+    def concession(self, request):
+        #self.proposed_status = self.PROPOSED_STATUS_CONCESSION
+        #self.move_to_approver()
+        self.processing_status = self.PROCESSING_STATUS_CONCESSION
+        self.log_user_action(
+            FeeWaiverUserAction.ACTION_CONCESSION.format(self.lodgement_number), 
+            request)
+        self.save()
+
+    def decline(self, request):
+        #self.proposed_status = self.PROPOSED_STATUS_DECLINE
+        #self.move_to_approver()
+        self.processing_status = self.PROCESSING_STATUS_DECLINED
+        self.log_user_action(
+            FeeWaiverUserAction.ACTION_DECLINE.format(self.lodgement_number), 
+            request)
+        self.save()
+
 
     def save(self, *args, **kwargs):
         super(FeeWaiver, self).save(*args,**kwargs)
@@ -124,6 +155,10 @@ class FeeWaiver(RevisionedMixin):
     @property
     def processing_status_display(self):
         return self.get_processing_status_display()
+
+    @property
+    def proposed_status_display(self):
+        return self.get_proposed_status_display()
 
     @property
     def relevant_access_group(self):
@@ -199,6 +234,7 @@ class FeeWaiverVisit(RevisionedMixin):
     parks = models.ManyToManyField(Park)
     number_of_vehicles = models.IntegerField(default=0)
     camping_requested = models.BooleanField(default=False)
+    issued = models.BooleanField(default=True)
     AGE_CHOICES = (
         ('15', 'Under 15 yrs'),
         ('24', '15-24 yrs'),
@@ -206,8 +242,8 @@ class FeeWaiverVisit(RevisionedMixin):
         ('40', '40-59 yrs'),
         ('60', '60 yrs and over')
     )
-    age_of_participants = models.CharField(max_length=100, choices=AGE_CHOICES, null=True, blank=True,
-                             verbose_name='Age of Participants', help_text=''),
+    #age_of_participants = models.CharField(max_length=100, choices=AGE_CHOICES, null=True, blank=True,
+     #                        verbose_name='Age of Participants', help_text='')
     age_of_participants_array = ArrayField(
             models.CharField(max_length=100, choices=AGE_CHOICES),
             size=5,
@@ -284,7 +320,13 @@ class FeeWaiverUserAction(UserAction):
     #ACTION_UPDATE_NO_CHARGE_DATE_UNTIL = "'Do not charge annual site fee until' date updated to {} for approval {}"
     ACTION_ASSIGN_TO_OFFICER = "Assign Fee Waiver {} to {}"
     ACTION_UNASSIGN_OFFICER = "Remove officer assignment from Fee Waiver {}"
-    ACTION_PROCESSING_STATUS_WITH_APPROVER = "Fee Waiver {} status updated to 'With Approver'"
+    #ACTION_PROCESSING_STATUS_WITH_APPROVER = "Fee Waiver {} status updated to 'With Approver'"
+    ACTION_PROPOSED_ISSUE = "Officer has proposed that Fee Waiver {} be issued"
+    ACTION_PROPOSED_CONCESSION = "Officer has proposed that a concession be issued for Fee Waiver {}"
+    ACTION_PROPOSED_DECLINE = "Officer has proposed that Fee Waiver {} be declined"
+    ACTION_ISSUE = "Fee Waiver {} has been issued"
+    ACTION_CONCESSION = "Fee Waiver {} has been issued with concession"
+    ACTION_DECLINE = "Fee Waiver {} has been declined"
 
     class Meta:
         app_label = 'feewaiver'

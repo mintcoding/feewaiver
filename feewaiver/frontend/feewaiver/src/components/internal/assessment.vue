@@ -25,16 +25,16 @@
                                 <div class="form-group">
                                     <!--template v-if="feeWaiver.processing_status == 'With Approver'"-->
                                     <template>
-                                        <select ref="assigned_officer" :disabled="!canAction" class="form-control" v-model="feeWaiver.assigned_officer_id">
+                                        <select ref="assigned_officer" :disabled="!canProcess" class="form-control" v-model="feeWaiver.assigned_officer_id">
                                             <option :value="null"></option>
                                             <option v-for="member in feeWaiver.action_group" :value="member.id">{{member.first_name}} {{member.last_name}}</option>
                                         </select>
-                                        <a v-if="canAction && canAssess && feeWaiver.assigned_officer != feeWaiver.current_officer.id" @click.prevent="assignRequestUser()" class="actionBtn pull-right">Assign to me</a>
+                                        <a v-if="canProcess && feeWaiver.assigned_officer != feeWaiver.current_officer.id" @click.prevent="assignRequestUser()" class="actionBtn pull-right">Assign to me</a>
                                     </template>
                                 </div>
                             </div>
 
-                            <div class="col-sm-12 top-buffer-s" v-if="!isFinalised && canAction">
+                            <div class="col-sm-12 top-buffer-s" v-if="!isFinalised && canProcess">
                                 <template v-if="canProcessAssessor">
                                     <div class="row">
                                         <div class="col-sm-12">
@@ -211,20 +211,12 @@ export default {
             return canProcess;
         },
         isFinalised: function(){
-            return this.feeWaiver.processing_status == 'Declined' || this.feeWaiver.processing_status == 'Approved';
-        },
-        canAssess: function() {
-            return true;
+            return this.feeWaiver.processing_status == 'Declined' || this.feeWaiver.processing_status == 'Issued';
         },
         /*
-        canAssess: function(){
-            return this.feeWaiver && this.feeWaiver.assessor_mode.assessor_can_assess ? true : false;
-        },
-        */
         canAction: function() {
             return this.feeWaiver.can_process;
         },
-        /*
         hasAssessorMode:function(){
             return this.feeWaiver && this.feeWaiver.assessor_mode.has_assessor_mode ? true : false;
         },
@@ -250,6 +242,7 @@ export default {
         commaToNewline(s){
             return s.replace(/[,;]/g, '\n');
         },
+        /*
         proposedDecline: function(){
             this.save_wo();
             this.$refs.proposed_decline.decline = this.feeWaiver.feeWaiverdeclineddetails != null ? helpers.copyObject(this.feeWaiver.feeWaiverdeclineddetails): {};
@@ -378,6 +371,7 @@ export default {
           },err=>{
           });
         },
+        */
 
         updateAssignedOfficerSelect:function(){
             let vm = this;
