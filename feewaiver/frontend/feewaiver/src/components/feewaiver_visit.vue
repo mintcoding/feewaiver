@@ -5,7 +5,7 @@
                         <div class="row">
                             <label for="visit_description" class="col-sm-4 control-label">Provide the details of your visit</label>
                             <div class="col-sm-8">
-                                <textarea required class="form-control" name="visit_description" v-model="visit.description"/>
+                                <textarea :disabled="!canProcess" required class="form-control" name="visit_description" v-model="visit.description"/>
                             </div>
                         </div>
                     </div>
@@ -14,14 +14,14 @@
                     <div class="form-group">
                         <div class="row">
                               <label class="col-sm-4">Are you intending to camp on CALM land during your visit?</label>
-                                <input class="col-sm-1" id="yes" type="radio" v-model="visit.camping_requested" v-bind:value="true">
+                                <input :disabled="!canProcess" class="col-sm-1" id="yes" type="radio" v-model="visit.camping_requested" v-bind:value="true">
                                 <label class="col-sm-1" for="yes">Yes</label>
-                                <input class="col-sm-1" id="no" type="radio" v-model="visit.camping_requested" v-bind:value="false">
+                                <input :disabled="!canProcess" class="col-sm-1" id="no" type="radio" v-model="visit.camping_requested" v-bind:value="false">
                                 <label class="col-sm-1" for="no">No</label>
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-10">
+                <div v-if="isInternal" class="col-sm-10">
                     <div :key="feeWaiverId" class="form-group">
                         <div class="row">
                             <label class="col-sm-4">Applicable camping waiver</label>
@@ -37,7 +37,7 @@
                             <label class="col-sm-4 control-label">Date from</label>
                             <div class="col-sm-4">
                                 <div class="input-group date" :id="'dateFromPicker_' + visit.index">
-                                        <input required type="text" class="form-control" placeholder="DD/MM/YYYY" v-model="visit.date_from" />
+                                        <input :disabled="!canProcess" required type="text" class="form-control" placeholder="DD/MM/YYYY" v-model="visit.date_from" />
                                         <span class="input-group-addon">
                                             <span class="glyphicon glyphicon-calendar"></span>
                                         </span>
@@ -50,7 +50,7 @@
                             <label class="col-sm-4 control-label">Date to</label>
                             <div class="col-sm-4">
                                 <div class="input-group date" :id="'dateToPicker_' + visit.index">
-                                        <input required type="text" class="form-control" placeholder="DD/MM/YYYY" v-model="visit.date_to" />
+                                        <input :disabled="!canProcess" required type="text" class="form-control" placeholder="DD/MM/YYYY" v-model="visit.date_to" />
                                         <span class="input-group-addon">
                                             <span class="glyphicon glyphicon-calendar"></span>
                                         </span>
@@ -62,7 +62,7 @@
                         <div class="row">
                             <label class="col-sm-4 control-label">Park/s</label>
                             <div class="col-sm-6">
-                                <select required :id="'parks_' + visit.index" class="form-control" multiple="multiple">
+                                <select :disabled="!canProcess" required :id="'parks_' + visit.index" class="form-control" multiple="multiple">
                                     <option value="null"></option>
                                     <option v-for="park in parksList" :value="park.id">{{park.name}}</option>
                                 </select>
@@ -73,7 +73,7 @@
                         <div class="row">
                             <label for="number_of_vehicles" class="col-sm-4 control-label">Number of vehicles used for visit</label>
                             <div class="col-sm-4">
-                                <input required type="number" class="form-control" name="number_of_vehicles" min="0" step="1" v-model="visit.number_of_vehicles">
+                                <input :disabled="!canProcess" required type="number" class="form-control" name="number_of_vehicles" min="0" step="1" v-model="visit.number_of_vehicles">
                             </div>
                         </div>
                     </div>
@@ -81,15 +81,15 @@
                         <div class="row">
                             <label class="col-sm-4 control-label">Age of participants</label>
                             <div class="col-sm-8">
-                            <input type="checkbox" id="15" value="15" v-model="visit.age_of_participants_array">
+                            <input :disabled="!canProcess" type="checkbox" id="15" value="15" v-model="visit.age_of_participants_array">
                             <label>Under 15 yrs</label>
-                            <input type="checkbox" id="24" value="24" v-model="visit.age_of_participants_array">
+                            <input :disabled="!canProcess" type="checkbox" id="24" value="24" v-model="visit.age_of_participants_array">
                             <label>15-24 yrs</label>
-                            <input type="checkbox" id="25" value="25" v-model="visit.age_of_participants_array">
+                            <input :disabled="!canProcess" type="checkbox" id="25" value="25" v-model="visit.age_of_participants_array">
                             <label>25-39 yrs</label>
-                            <input type="checkbox" id="40" value="40" v-model="visit.age_of_participants_array">
+                            <input :disabled="!canProcess" type="checkbox" id="40" value="40" v-model="visit.age_of_participants_array">
                             <label>40-59 yrs</label>
-                            <input type="checkbox" id="60" value="60" v-model="visit.age_of_participants_array">
+                            <input :disabled="!canProcess" type="checkbox" id="60" value="60" v-model="visit.age_of_participants_array">
                             <label>60 yrs and over</label>
                             </div>
                         </div>
@@ -112,6 +112,10 @@
     export default {
         name: 'FeeWaiverVisit',
         props:{
+            isInternal: {
+                type: Boolean,
+                default: false,
+            },
             visit:{
                 type: Object,
                 required:true
@@ -134,6 +138,7 @@
             },
             canProcess:{
                 type: Boolean,
+                default: false,
             },
             Index: String,
             label: String,

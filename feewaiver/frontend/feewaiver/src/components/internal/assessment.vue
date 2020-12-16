@@ -29,13 +29,13 @@
                                             <option :value="null"></option>
                                             <option v-for="member in feeWaiver.action_group" :value="member.id">{{member.first_name}} {{member.last_name}}</option>
                                         </select>
-                                        <a v-if="canAssess && feeWaiver.assigned_officer != feeWaiver.current_officer.id" @click.prevent="assignRequestUser()" class="actionBtn pull-right">Assign to me</a>
+                                        <a v-if="canAction && canAssess && feeWaiver.assigned_officer != feeWaiver.current_officer.id" @click.prevent="assignRequestUser()" class="actionBtn pull-right">Assign to me</a>
                                     </template>
                                 </div>
                             </div>
 
                             <div class="col-sm-12 top-buffer-s" v-if="!isFinalised && canAction">
-                                <template v-if="feeWaiver.processing_status == 'With Assessor'">
+                                <template v-if="canProcessAssessor">
                                     <div class="row">
                                         <div class="col-sm-12">
                                             <strong>Action</strong><br/>
@@ -48,7 +48,29 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-sm-12">
-                                            <button style="width:80%;" class="btn btn-primary top-buffer-s" :disabled="false" @click.prevent="proposedApproval()">Propose..</button><br/>
+                                            <button style="width:80%;" class="btn btn-primary top-buffer-s" :disabled="false" @click.prevent="workflowAction('propose_concession')">Propose Issue Concession</button><br/>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <button style="width:80%;" class="btn btn-primary top-buffer-s" :disabled="false" @click.prevent="workflowAction('propose_decline')">Propose Decline</button><br/>
+                                        </div>
+                                    </div>
+                                </template>
+                                <template v-if="canProcessApprover">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <button style="width:80%;" class="btn btn-primary top-buffer-s" :disabled="false" @click.prevent="workflowAction('issue')">Issue Fee Waiver</button><br/>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <button style="width:80%;" class="btn btn-primary top-buffer-s" :disabled="false" @click.prevent="workflowAction('issue_concession')">Issue Concession</button><br/>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <button style="width:80%;" class="btn btn-primary top-buffer-s" :disabled="false" @click.prevent="workflowAction('decline')">Decline</button><br/>
                                         </div>
                                     </div>
                                 </template>
@@ -64,7 +86,10 @@
                 <FeeWaiverForm 
                 :feeWaiverId="feeWaiverId"
                  ref="fee_waiver_form"
-                :key="feeWaiverId"/>
+                :key="feeWaiverId"
+                 :isInternal="true"
+                 :canProcess="canProcess"
+                />
             </div>
         </div>
         </div>
@@ -164,6 +189,27 @@ export default {
             }
             */
         },
+        canProcess: function() {
+            let process = false;
+            if (this.feeWaiver && this.feeWaiver.can_process) {
+                process = true;
+            }
+            return process;
+        },
+        canProcessAssessor: function() {
+            let canProcess = false;
+            if (this.feeWaiver.processing_status === 'With Assessor' && this.feeWaiver.can_process) {
+                canProcess = true;
+            }
+            return canProcess;
+        },
+        canProcessApprover: function() {
+            let canProcess = false;
+            if (this.feeWaiver.processing_status === 'With Approver' && this.feeWaiver.can_process) {
+                canProcess = true;
+            }
+            return canProcess;
+        },
         isFinalised: function(){
             return this.feeWaiver.processing_status == 'Declined' || this.feeWaiver.processing_status == 'Approved';
         },
@@ -176,7 +222,7 @@ export default {
         },
         */
         canAction: function() {
-            return true;
+            return this.feeWaiver.can_process;
         },
         /*
         hasAssessorMode:function(){
