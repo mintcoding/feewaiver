@@ -133,6 +133,7 @@ class FeeWaiverVisitSaveSerializer(serializers.ModelSerializer):
                 'camping_requested',
                 'date_from',     
                 'date_to',     
+                'issued',
                 #'selected_park_ids',    
                 'number_of_vehicles',     
                 'age_of_participants_array', 
@@ -166,6 +167,7 @@ class FeeWaiverVisitSerializer(serializers.ModelSerializer):
                 'age_of_participants_array', 
                 #'camping_assessment_choices',
                 'camping_assessment',
+                'issued',
                 )
         read_only_fields = (
             'id',

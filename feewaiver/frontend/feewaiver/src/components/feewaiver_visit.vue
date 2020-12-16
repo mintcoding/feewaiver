@@ -94,6 +94,10 @@
                             </div>
                         </div>
                     </div>
+                    <div v-if="isInternal" class="pull-right">
+                        <label>Issue?</label>
+                        <input :disabled="readonly" type="checkbox" id="visit_issue" :value="true" v-model="visit.issued">
+                    </div>
                 </div>
             </FormSection>
 
