@@ -126,7 +126,7 @@ class FeeWaiver(RevisionedMixin):
             request)
         self.save()
 
-    def concession(self, request):
+    def issue_concession(self, request):
         #self.proposed_status = self.PROPOSED_STATUS_CONCESSION
         #self.move_to_approver()
         self.processing_status = self.PROCESSING_STATUS_CONCESSION
