@@ -17,11 +17,11 @@
                     <div class="row">
                     <label for="" class="col-sm-2 control-label">Organisation</label>
                     <div class="col-sm-4">
-                        <input :disabled="!canProcess" required type="text" class="form-control" name="organisation" placeholder="" v-model="contactDetails.organisation">
+                        <input :disabled="readonly" required type="text" class="form-control" name="organisation" placeholder="" v-model="contactDetails.organisation">
                     </div>
                     <label for="" class="col-sm-2 control-label">Contact</label>
                     <div class="col-sm-4">
-                        <input :disabled="!canProcess" required type="text" class="form-control" name="contact_name" placeholder="" v-model="contactDetails.contact_name">
+                        <input :disabled="readonly" required type="text" class="form-control" name="contact_name" placeholder="" v-model="contactDetails.contact_name">
                     </div>
                     </div>
                 </div>
@@ -29,7 +29,7 @@
                     <div class="row">
                     <label for="" class="col-sm-2 control-label">Postal Address</label>
                     <div class="col-sm-4">
-                        <input :disabled="!canProcess" required type="text" class="form-control" name="postal_address" placeholder="" v-model="contactDetails.postal_address">
+                        <input :disabled="readonly" required type="text" class="form-control" name="postal_address" placeholder="" v-model="contactDetails.postal_address">
                     </div>
                     </div>
                 </div>
@@ -37,15 +37,15 @@
                     <div class="row">
                     <label for="suburb" class="col-sm-2 control-label">Suburb</label>
                     <div class="col-sm-4">
-                        <input :disabled="!canProcess" required type="text" class="form-control" name="suburb" placeholder="" v-model="contactDetails.suburb">
+                        <input :disabled="readonly" required type="text" class="form-control" name="suburb" placeholder="" v-model="contactDetails.suburb">
                     </div>
                     <label for="state" class="col-sm-1 control-label">State</label>
                     <div class="col-sm-2">
-                        <input :disabled="!canProcess" required type="text" class="form-control" name="state" placeholder="" v-model="contactDetails.state">
+                        <input :disabled="readonly" required type="text" class="form-control" name="state" placeholder="" v-model="contactDetails.state">
                     </div>
                     <label for="postcode" class="col-sm-1 control-label">Postcode</label>
                     <div class="col-sm-2">
-                        <input :disabled="!canProcess" required type="text" class="form-control" name="postcode" placeholder="" v-model="contactDetails.postcode">
+                        <input :disabled="readonly" required type="text" class="form-control" name="postcode" placeholder="" v-model="contactDetails.postcode">
                     </div>
                     </div>
                 </div>
@@ -53,7 +53,7 @@
                     <div class="row">
                     <label for="phone" class="col-sm-2 control-label">Phone</label>
                     <div class="col-sm-4">
-                    <input :disabled="!canProcess" required type="text" class="form-control" name="phone" placeholder="" v-model="contactDetails.phone">
+                    <input :disabled="readonly" required type="text" class="form-control" name="phone" placeholder="" v-model="contactDetails.phone">
                     </div>
                     </div>
                 </div>
@@ -61,11 +61,11 @@
                     <div class="row">
                     <label for="email" class="col-sm-2 control-label">Email</label>
                     <div class="col-sm-4">
-                        <input :disabled="!canProcess" required type="text" class="form-control" name="email" placeholder="" v-model="contactDetails.email">
+                        <input :disabled="readonly" required type="text" class="form-control" name="email" placeholder="" v-model="contactDetails.email">
                     </div>
                     <label for="email_confirmation" class="col-sm-2 control-label">Confirm Email</label>
                     <div class="col-sm-4">
-                    <input :disabled="!canProcess" required type="text" class="form-control" name="email_confirmation" placeholder="" v-model="email_confirmation">
+                    <input :disabled="readonly" required type="text" class="form-control" name="email_confirmation" placeholder="" v-model="email_confirmation">
                     </div>
                     </div>
                 </div>
@@ -73,7 +73,7 @@
                     <div class="row">
                         <label class="col-sm-4 control-label">Participants</label>
                         <div class="col-sm-6">
-                            <select :disabled="!canProcess" required ref="participants" class="form-control" v-model="contactDetails.participants_id">
+                            <select :disabled="readonly" required ref="participants" class="form-control" v-model="contactDetails.participants_id">
                                 <option value=""></option>
                                 <option v-for="group in participantGroupList" :value="group.id">{{group.name}}</option>
                             </select>
@@ -84,7 +84,7 @@
                     <div class="row">
                       <label class="col-sm-4 control-label">Provide a brief explanation of your organisation</label>
                       <div class="col-sm-8">
-                          <textarea :disabled="!canProcess" required class="form-control" v-model="contactDetails.organisation_description"/>
+                          <textarea :disabled="readonly" required class="form-control" v-model="contactDetails.organisation_description"/>
                       </div>
                     </div>
                 </div>
@@ -101,7 +101,7 @@
                               :replace_button_by_text="true"
                               @update-temp-doc-coll-id="updateTempDocCollId"
                               :key="documentActionUrl"
-                              :readonly="!canProcess"
+                              :readonly="readonly"
                           />
                       </div>
                     </div>
@@ -114,7 +114,7 @@
                     <div class="row">
                       <label for="fee_waiver_purpose" class="col-sm-4 control-label">Describe the purpose of the visit(s)</label>
                       <div class="col-sm-8">
-                          <textarea :disabled="!canProcess" required class="form-control" name="fee_waiver_purpose" v-model="feeWaiver.fee_waiver_purpose"/>
+                          <textarea :disabled="readonly" required class="form-control" name="fee_waiver_purpose" v-model="feeWaiver.fee_waiver_purpose"/>
                       </div>
                     </div>
                 </div>
@@ -132,7 +132,8 @@
             :campingChoices="campingChoices"
             :feeWaiverId="feeWaiverId"
             :canProcess="canProcess"
-             :isInternal="isInternal"
+            :isInternal="isInternal"
+            :readonly="readonly"
             />
         </div>
         <div v-if="isInternal">
@@ -141,7 +142,7 @@
                     <div class="row">
                       <label class="col-sm-4 control-label">Comments</label>
                       <div class="col-sm-8">
-                          <textarea :disabled="!canProcess" class="form-control" v-model="feeWaiver.comments_to_applicant"/>
+                          <textarea :disabled="readonly" class="form-control" v-model="feeWaiver.comments_to_applicant"/>
                       </div>
                     </div>
                 </div>
@@ -249,6 +250,13 @@
                 return process;
             },
             */
+            readonly: function() {
+                if (this.isInternal) {
+                    return !this.canProcess;
+                } else {
+                    return false;
+                }
+            },
             csrf_token: function() {
               return helpers.getCookie('csrftoken')
             },
