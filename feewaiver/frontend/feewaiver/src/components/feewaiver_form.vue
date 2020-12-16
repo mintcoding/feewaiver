@@ -195,6 +195,10 @@
                 type: String,
                 //required: true,
             },
+            isFinalised:{
+                type: Boolean,
+                //required: true,
+            },
             isInternal: {
                 type: Boolean,
                 default: false,
@@ -251,7 +255,9 @@
             },
             */
             readonly: function() {
-                if (this.isInternal) {
+                if (this.isFinalised) {
+                    return true
+                } else if (this.isInternal) {
                     return !this.canProcess;
                 } else {
                     return false;

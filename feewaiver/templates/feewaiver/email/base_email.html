@@ -1,3 +1,12 @@
+
+{% load users %}
+{% load utils %}
+{% system_maintenance_due as system_maintenance_due %}
+{% system_name_short as short_name %}
+{% dept_name as department_name %}
+{% system_name as system_name %}
+{% system_name_short as system_name_short %}
+{% support_email as support_email %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -36,7 +45,7 @@
             </p>
             <p></p>
             <p>
-                Fee Waiver section
+            {{ system_name_short }} section
             </p>
         {% endblock %}
         {% block reply_statement %}
@@ -44,8 +53,8 @@
             <p></p>
             <p>
                 <strong><em>
-                    Please do not reply directly to this email. Should you need to contact the {{settings.DEP_NAME}}, 
-                    please contact the Commercial Buisness Unit or the Apiary administrator on <a href="mailto:{{ settings.SUPPORT_EMAIL }}">{{ settings.SUPPORT_EMAIL }}</a>.
+                    Please do not reply directly to this email. Should you need to contact the {{department_name}}, 
+                    please contact the Fee Waiver administrator on <a href="mailto:{{ support_email }}">{{ support_email }}</a>.
                 </em></strong>
             </p> 
             <p>

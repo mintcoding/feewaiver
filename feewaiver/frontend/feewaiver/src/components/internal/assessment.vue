@@ -89,6 +89,7 @@
                 :key="feeWaiverId"
                  :isInternal="true"
                  :canProcess="canProcess"
+                 :isFinalised="isFinalised"
                 />
             </div>
         </div>

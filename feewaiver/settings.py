@@ -107,6 +107,7 @@ REST_FRAMEWORK = {
 #]
 
 TEMPLATES[0]['DIRS'].append(os.path.join(BASE_DIR, 'feewaiver', 'templates'))
+#TEMPLATES[0]['OPTIONS']['context_processors'].append('feewaiver.context_processors.feewaiver_url')
 #TEMPLATES[0]['DIRS'].append(os.path.join(BASE_DIR, 'feewaiver','components','organisations', 'templates'))
 #TEMPLATES[0]['DIRS'].append(os.path.join(BASE_DIR, 'feewaiver','components','emails', 'templates'))
 #BOOTSTRAP3 = {

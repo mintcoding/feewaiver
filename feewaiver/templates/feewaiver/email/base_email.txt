@@ -1,3 +1,13 @@
+
+{% load users %}
+{% load utils %}
+{% system_maintenance_due as system_maintenance_due %}
+{% system_name_short as short_name %}
+{% dept_name as department_name %}
+{% system_name as system_name %}
+{% system_name_short as system_name_short %}
+{% support_email as support_email %}
+
 {% block greetings %}
 Dear Sir/Madam,
 {% endblock %}
@@ -8,14 +18,14 @@ Dear Sir/Madam,
 {% block signature %}
 Yours sincerely,
 
-{{ settings.SYSTEM_NAME_SHORT }} Section
+{{ system_name_short }} Section
 {% endblock %}
 
 
 
 {% block reply_statement %}
-Please do not reply directly to this email. Should you need to contact the {{settings.DEP_NAME}},
-please contact the Commercial Buisness Unit or the Apiary administrator on {{ settings.SUPPORT_EMAIL }}.
+Please do not reply directly to this email. Should you need to contact the {{department_name}},
+please contact the Fee Waiver administrator on {{ support_email }}.
 This is an automated email, please don't reply to this.
 {% endblock %}
 
