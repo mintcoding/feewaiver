@@ -132,7 +132,7 @@ export default {
             apiaryTemplateGroup: false,
             */
             //feewaiver_headers:["Number","Submitter","Status","Lodged On","Document","Assigned To","Action"],
-            feewaiver_headers:["Lodgement Number", "Submitter", "Status", "Lodged on", "Document", "Assigned To", "Action", ""],
+            feewaiver_headers:["Lodgement Number", "Submitter", "Status", "Lodged on", "Document", "Assigned To", "", "", "Action"],
             feewaiver_options:{
                 language: {
                     processing: "<i class='fa fa-4x fa-spinner fa-spin'></i>"
@@ -217,6 +217,11 @@ export default {
                         visible: false,
                         //searchable: false,
                     },
+                    {
+                        data: "action_shortcut",
+                        visible: false,
+                        //searchable: false,
+                    },
                     /*
                     {
                         data: "user_action",
@@ -233,7 +238,8 @@ export default {
                     {
                         data: "can_process",
                         mRender:function (data,type,full) {
-                            let links = '';
+                            //let links = '';
+                            let links = full.action_shortcut;
                             //console.log(full)
                             if(full.can_process){
 
@@ -373,6 +379,16 @@ export default {
             })
             //console.log(vm.regions);
         },
+        actionShortcut: async function(id, workflowAction) {
+            let post_url = '/api/feewaivers/' + id + '/workflow_action/'
+            let res = await Vue.http.post(post_url, {'workflow_type': workflowAction});
+            if (res.ok) {
+                this.refreshFromResponse();
+            }
+        },
+        refreshFromResponse: function(){
+            this.$refs.feewaiver_datatable.vmDataTable.ajax.reload();
+        },
 
         addEventListeners: function(){
             let vm = this;
@@ -396,6 +412,25 @@ export default {
                     vm.filterFeeWaiverLodgedFrom = "";
                 }
             });
+            //Internal Action shortcut listeners
+            vm.$refs.feewaiver_datatable.vmDataTable.on('click', 'a[data-issue]', function(e) {
+                e.preventDefault();
+                var id = $(this).attr('data-issue');
+                vm.actionShortcut(id, 'issue');
+                //var id = $(this).attr('data-cancel-approval');
+                //vm.cancelApproval(id);
+            });
+            vm.$refs.feewaiver_datatable.vmDataTable.on('click', 'a[data-concession]', function(e) {
+                e.preventDefault();
+                var id = $(this).attr('data-concession');
+                vm.actionShortcut(id, 'issue_concession');
+            });
+            vm.$refs.feewaiver_datatable.vmDataTable.on('click', 'a[data-decline]', function(e) {
+                e.preventDefault();
+                var id = $(this).attr('data-decline');
+                vm.actionShortcut(id, 'decline');
+            });
+
             /*
             // End Proposal Date Filters
             // Internal Reissue listener

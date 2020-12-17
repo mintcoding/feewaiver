@@ -162,17 +162,13 @@ class FeeWaiver(RevisionedMixin):
 
     @property
     def relevant_access_group(self):
-        if self.processing_status == 'with_approver':
-            #group = AssessorsGroup
-            qs = EmailUser.objects.filter
+        if self.processing_status == 'with_assessor':
+            return AssessorsGroup.objects.first().members.all()
+        elif self.processing_status == 'with_approver':
             return ApproversGroup.objects.first().members.all()
         else:
-            #group = ApproversGroup
-            return AssessorsGroup.objects.first().members.all()
-        #return group.members.all() if group else []
-        #import ipdb; ipdb.set_trace()
-        #esult_list = [member in member in group.members
-        #return group.all_members if group else []
+            #return ApproversGroup.objects.first().members.none()
+            return []
 
     def log_user_action(self, action, request):
         #import ipdb; ipdb.set_trace()
