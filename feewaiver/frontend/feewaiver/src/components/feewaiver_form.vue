@@ -61,11 +61,12 @@
                     <div class="row">
                     <label for="email" class="col-sm-2 control-label">Email</label>
                     <div class="col-sm-4">
-                        <input :disabled="readonly" required type="text" class="form-control" name="email" placeholder="" v-model="contactDetails.email">
+                        <input :disabled="readonly" required type="email" class="form-control" name="email" placeholder="" v-model="contactDetails.email" id="contact_details_email">
+                        <span class="error" aria-live="polite"></span>
                     </div>
                     <label for="email_confirmation" class="col-sm-2 control-label">Confirm Email</label>
                     <div class="col-sm-4">
-                    <input :disabled="readonly" required type="text" class="form-control" name="email_confirmation" placeholder="" v-model="email_confirmation">
+                    <input :disabled="readonly" required type="email" class="form-control" name="email_confirmation" placeholder="" v-model="email_confirmation" id="email_confirmation">
                     </div>
                     </div>
                 </div>
@@ -336,14 +337,9 @@
 
                 this.visits.push(visit);
             },
+            /*
             checkBlankFields: function() {
-                //let vm=this;
                 let blankFields = []
-                /*
-                if (!(this.$refs.apiary_site_transfer.num_of_sites_selected > 0)){
-                    blank_fields.push(' You must select at least one site to transfer')
-                }
-                */
 
                 if (!this.contactDetails.email) {
                     blankFields.push(' You must select..')
@@ -356,49 +352,108 @@
                     $("#" + missingField.id).css("color", 'red');
                 }
             },
+            */
 
-            submit: async function(){
-
-                let swalTitle = "Submit Request";
-                let swalText = "Are you sure you want to submit this request?";
-                //let payload = {}
+            addEventListeners: function() {
+                let vm = this;
+                const contactDetailsEmail = document.getElementById('contact_details_email');
+                const emailConfirmation = document.getElementById('email_confirmation');
+                const emailError = document.querySelector('#contact_details_email + span.error');
                 /*
-                this.$nextTick(() => {
-                    payload = {
-                        'contact_details': this.contactDetails,
-                        'fee_waiver': this.feeWaiver,
-                        //'parks': this.selected_park_ids,
-                        'visits': [],
-                        'temporary_document_collection_id': this.temporary_document_collection_id,
-                    }
-                    for (let visitData of this.visits) {
-                        let visit = Object.assign({}, visitData);
-                        // convert date strings
-                        if (visit.date_from) {
-                            visit.date_from = moment(visit.date_from, 'DD/MM/YYYY').format('YYYY-MM-DD');
-                        }
-                        if (visit.date_to) {
-                            visit.date_to = moment(visit.date_to, 'DD/MM/YYYY').format('YYYY-MM-DD');
-                        }
-                        // add to payload
-                        payload.visits.push(visit)
-                    }
-                });
+                console.log(contactDetailsEmail);
+                console.log(emailError);
                 */
-                await this.updatePayload();
-                await swal({
-                    title: swalTitle,
-                    text: swalText,
-                    type: "question",
-                    showCancelButton: true,
-                    confirmButtonText: 'Submit'
+                contactDetailsEmail.addEventListener('input', function(evt) {
+                    //console.log("contactDetailsEmail evt");
+                    if (contactDetailsEmail.validity.valid) {
+                        emailError.textContent = '';
+                        emailError.className = 'error';
+                    } else {
+                        showEmailError();
+                        /*
+                        emailError.textContent = 'fix it';
+                        emailError.className = 'error active';
+                        */
+                    }
                 });
-                //console.log(this.payload)
-                const returnedFeeWaiver = await this.$http.post(api_endpoints.feewaivers,this.payload);
-                this.$router.push({
-                    name: 'submit_feewaiver',
-                    params: { fee_waiver: returnedFeeWaiver.body}
+                contactDetailsEmail.onpaste = e => {
+                    e.preventDefault();
+                    return false;
+                };
+                emailConfirmation.onpaste = e => {
+                    e.preventDefault();
+                    return false;
+                };
+                contactDetailsEmail.onblur = e => {
+                    //e.preventDefault();
+                    //return false;
+                    showEmailError();
+                };
+                emailConfirmation.onblur = e => {
+                    //e.preventDefault();
+                    showEmailError();
+                    //return false;
+                };
+                const form = document.getElementsByTagName('form')[0]
+                form.addEventListener('submit', function(evt) {
+                    console.log(!vm.contactDetails.email);
+                    console.log(!contactDetailsEmail.validity.valid) 
+                    //if (!contactDetailsEmail.validity.valid || !vm.contactDetails.email) {
+                    if (!contactDetailsEmail.validity.valid) {
+                        showEmailError();
+                        /*
+                        emailError.textContent = 'fix it';
+                        emailError.className = 'error active';
+                        */
+                        evt.preventDefault();
+                    }
                 });
+                function showEmailError() {
+                    console.log("show error")
+                    if (contactDetailsEmail.validity.valueMissing || !vm.contactDetails.email) {
+                        emailError.textContent = 'You need to enter an email address';
+                    } else if (contactDetailsEmail.validity.typeMismatch) {
+                        emailError.textContent = 'Entered value needs to be an email address';
+                    } else if (vm.contactDetails.email && vm.email_confirmation && vm.contactDetails.email !== vm.email_confirmation) {
+                        emailError.textContent = 'Email addresses are not identical';
+                    }
+                    emailError.className = 'error active';
+                }
+
+            },
+            submit: async function(){
+                let missingAgeOfParticipantsVisitIdx = null;
+                for (let visit of this.visits) {
+                    if (visit && visit.age_of_participants_array && visit.age_of_participants_array.length < 1) {
+                        missingAgeOfParticipantsVisitIdx = visit.index;
+                    }
+                }
+                console.log(missingAgeOfParticipantsVisitIdx);
+                const contactDetailsEmail = document.getElementById('contact_details_email');
+                if (!contactDetailsEmail.validity.valid || this.contactDetails.email !== this.email_confirmation) {
+                    contactDetailsEmail.focus();
+                } else if (missingAgeOfParticipantsVisitIdx !== null) {
+                    const ageOfParticipantsElement = document.getElementById('age_of_participants_' + missingAgeOfParticipantsVisitIdx);
+                    console.log(ageOfParticipantsElement);
+                    ageOfParticipantsElement.focus();
+                } else {
+                    let swalTitle = "Submit Request";
+                    let swalText = "Are you sure you want to submit this request?";
+                    await this.updatePayload();
+                    await swal({
+                        title: swalTitle,
+                        text: swalText,
+                        type: "question",
+                        showCancelButton: true,
+                        confirmButtonText: 'Submit'
+                    });
+                    //console.log(this.payload)
+                    const returnedFeeWaiver = await this.$http.post(api_endpoints.feewaivers,this.payload);
+                    this.$router.push({
+                        name: 'submit_feewaiver',
+                        params: { fee_waiver: returnedFeeWaiver.body}
+                    });
+                }
             },
             updatePayload: async function() {
                 await this.$nextTick();
@@ -508,6 +563,7 @@
         mounted: async function() {
             //let vm = this;
             await this.$nextTick(async () => {
+                this.addEventListeners();
                 await this.fetchParticipantsGroupList();
                 await this.fetchParksList();
                 if (this.feeWaiverId) {
@@ -608,5 +664,32 @@
     .input-file-wrapper {
         margin: 1.5em 0 0 0;
     }
+    .error {
+        color: red;
+    }
+    /*
+    input[type=email]{
+        -webkit-appearance: none;
+        appearance: none;
+
+        width: 100%;
+        border: 1px solid #333;
+        margin: 0;
+
+        font-family: inherit;
+        font-size: 90%;
+
+        box-sizing: border-box;
+    }
+    */
+/*
+    input[type=email]:invalid{
+        border-color: #900;
+        background-color: #FDD;
+    }
+    input:focus:invalid {
+        outline: none;
+    }
+    */
 </style>
 

@@ -21,13 +21,15 @@
                         </div>
                     </div>
                 </div>
-                <div v-if="isInternal" class="col-sm-10">
+                <div v-if="isInternal && visit.camping_requested" class="col-sm-10">
                     <div :key="feeWaiverId" class="form-group">
                         <div class="row">
                             <label class="col-sm-4">Applicable camping waiver</label>
-                                <select :disabled="!canProcess" class="form-control" v-model="visit.camping_assessment">
-                                    <option v-for="choice in campingChoices" :value="Object.keys(choice)[0]">{{Object.values(choice)[0]}}</option>
-                                </select>
+                                <div class="col-sm-8">
+                                    <select :disabled="!canProcess" class="form-control" v-model="visit.camping_assessment">
+                                        <option v-for="choice in campingChoices" :value="Object.keys(choice)[0]">{{Object.values(choice)[0]}}</option>
+                                    </select>
+                                </div>
                         </div>
                     </div>
                 </div>
@@ -78,7 +80,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="row">
+                        <div class="row" :id="'age_of_participants_' + visit.index" >
                             <label class="col-sm-4 control-label">Age of participants</label>
                             <div class="col-sm-8">
                             <input :disabled="readonly" type="checkbox" id="15" value="15" v-model="visit.age_of_participants_array">
@@ -91,6 +93,7 @@
                             <label>40-59 yrs</label>
                             <input :disabled="readonly" type="checkbox" id="60" value="60" v-model="visit.age_of_participants_array">
                             <label>60 yrs and over</label>
+                            <span class="error" aria-live="polite">{{ ageOfParticipantsErrorText }}</span>
                             </div>
                         </div>
                     </div>
@@ -160,6 +163,13 @@
             FormSection,
         },
         computed: {
+            ageOfParticipantsErrorText: function() {
+                let errorText = "Please select at least one participant age group";
+                if (this.visit && this.visit.age_of_participants_array && this.visit.age_of_participants_array.length > 0) {
+                    errorText = '';
+                }
+                return errorText;
+            },
         },
         methods:{
             updateJqueryData: function() {
@@ -236,6 +246,7 @@
                       vm.visit.selected_park_ids.splice(index, 1);
                   }
               });
+
             },
         },
         created: function() {
