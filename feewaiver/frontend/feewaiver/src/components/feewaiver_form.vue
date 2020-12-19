@@ -422,20 +422,21 @@
 
             },
             submit: async function(){
-                let missingAgeOfParticipantsVisitIdx = null;
+                let visitRef = null;
+                let ageOfParticipants = null;
                 for (let visit of this.visits) {
                     if (visit && visit.age_of_participants_array && visit.age_of_participants_array.length < 1) {
-                        missingAgeOfParticipantsVisitIdx = visit.index;
+                        const visitIdx = 'visit_' + visit.index;
+                        const ageOfParticipantsIdx = 'age_of_participants_' + visit.index
+                        visitRef = this.$refs[visitIdx];
+                        ageOfParticipants = visitRef[0].$refs[ageOfParticipantsIdx];
                     }
                 }
-                console.log(missingAgeOfParticipantsVisitIdx);
                 const contactDetailsEmail = document.getElementById('contact_details_email');
                 if (!contactDetailsEmail.validity.valid || this.contactDetails.email !== this.email_confirmation) {
                     contactDetailsEmail.focus();
-                } else if (missingAgeOfParticipantsVisitIdx !== null) {
-                    const ageOfParticipantsElement = document.getElementById('age_of_participants_' + missingAgeOfParticipantsVisitIdx);
-                    console.log(ageOfParticipantsElement);
-                    ageOfParticipantsElement.focus();
+                } else if (ageOfParticipants) {
+                    ageOfParticipants.focus();
                 } else {
                     let swalTitle = "Submit Request";
                     let swalText = "Are you sure you want to submit this request?";

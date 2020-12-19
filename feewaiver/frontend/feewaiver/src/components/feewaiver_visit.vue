@@ -3,7 +3,7 @@
                 <div class="col-sm-10">
                     <div class="form-group">
                         <div class="row">
-                            <label for="visit_description" class="col-sm-4 control-label">Provide the details of your visit</label>
+                            <label for="visit_description" class="col-sm-4 control-label" :id="'visit_description_' + visit.index">Provide the details of your visit</label>
                             <div class="col-sm-8">
                                 <textarea :disabled="readonly" required class="form-control" name="visit_description" v-model="visit.description"/>
                             </div>
@@ -80,10 +80,10 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="row" :id="'age_of_participants_' + visit.index" >
+                        <div class="row" >
                             <label class="col-sm-4 control-label">Age of participants</label>
                             <div class="col-sm-8">
-                            <input :disabled="readonly" type="checkbox" id="15" value="15" v-model="visit.age_of_participants_array">
+                            <input :ref="'age_of_participants_' + visit.index" :disabled="readonly" type="checkbox" id="15" value="15" v-model="visit.age_of_participants_array">
                             <label>Under 15 yrs</label>
                             <input :disabled="readonly" type="checkbox" id="24" value="24" v-model="visit.age_of_participants_array">
                             <label>15-24 yrs</label>
@@ -93,7 +93,9 @@
                             <label>40-59 yrs</label>
                             <input :disabled="readonly" type="checkbox" id="60" value="60" v-model="visit.age_of_participants_array">
                             <label>60 yrs and over</label>
-                            <span class="error" aria-live="polite">{{ ageOfParticipantsErrorText }}</span>
+                            <p>
+                                <span class="error" aria-live="polite">{{ ageOfParticipantsErrorText }}</span>
+                            </p>
                             </div>
                         </div>
                     </div>
