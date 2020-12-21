@@ -132,6 +132,8 @@ export default {
               this.modalTitle = 'Issue Concession';
           } else if (this.workflow_type === 'decline') {
               this.modalTitle = 'Decline';
+          } else if (this.workflow_type === 'return_to_assessor') {
+              this.modalTitle = 'Return to Assessor';
           }
       },
 

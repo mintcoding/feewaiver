@@ -60,8 +60,8 @@ class FeeWaiver(RevisionedMixin):
     PROCESSING_STATUS_CHOICES = (
                                  (PROCESSING_STATUS_WITH_ASSESSOR, 'With Assessor'),
                                  (PROCESSING_STATUS_WITH_APPROVER, 'With Approver'),
-                                 (PROCESSING_STATUS_ISSUED, 'Issued'),
-                                 (PROCESSING_STATUS_CONCESSION, 'Concession'),
+                                 (PROCESSING_STATUS_ISSUED, 'Issued Fee Waiver'),
+                                 (PROCESSING_STATUS_CONCESSION, 'Issued Concession'),
                                  (PROCESSING_STATUS_DECLINED, 'Declined'),
                                  )
 
@@ -143,6 +143,16 @@ class FeeWaiver(RevisionedMixin):
             FeeWaiverUserAction.ACTION_DECLINE.format(self.lodgement_number), 
             request)
         self.save()
+
+    def return_to_assessor(self, request):
+        #self.proposed_status = self.PROPOSED_STATUS_DECLINE
+        #self.move_to_approver()
+        self.processing_status = self.PROCESSING_STATUS_WITH_ASSESSOR
+        self.log_user_action(
+            FeeWaiverUserAction.ACTION_RETURN_TO_ASSESSOR.format(self.lodgement_number), 
+            request)
+        self.save()
+
 
 
     def save(self, *args, **kwargs):
@@ -323,9 +333,11 @@ class FeeWaiverUserAction(UserAction):
     ACTION_ISSUE = "Fee Waiver {} has been issued"
     ACTION_CONCESSION = "Fee Waiver {} has been issued with concession"
     ACTION_DECLINE = "Fee Waiver {} has been declined"
+    ACTION_RETURN_TO_ASSESSOR = "Fee Waiver {} has been returned to Assessor"
 
     class Meta:
         app_label = 'feewaiver'
+        ordering = ('-when',)
 
     @classmethod
     def log_action(cls, fee_waiver, action, user):

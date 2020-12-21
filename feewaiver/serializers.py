@@ -308,6 +308,7 @@ class FeeWaiverDTSerializer(serializers.ModelSerializer):
                 'can_process',
                 'assigned_officer',
                 'action_shortcut',
+                'comments_to_applicant',
                 #document,
                 #assigned_to,
                 )
@@ -350,10 +351,10 @@ class FeeWaiverDTSerializer(serializers.ModelSerializer):
         link = ""
         if self.get_can_process(obj) and obj.processing_status == 'with_approver':
             if obj.proposed_status == 'issue':
-                link +=  '<a href="{}" data-issue="{}">Issue</a><br/>'.format(obj.id, obj.id)
+                link +=  '<a href="{}" data-issue="{}">Issue Fee Waiver</a><br/>'.format(obj.id, obj.id)
             if obj.proposed_status == 'concession':
                 #link +=  '<a href="#${full.id}" data-concession="${full.id}">Concession</a><br/>'
-                link +=  '<a href="{}" data-concession="{}">Concession</a><br/>'.format(obj.id, obj.id)
+                link +=  '<a href="{}" data-concession="{}">Issue Concession</a><br/>'.format(obj.id, obj.id)
             if obj.proposed_status == 'decline':
                 #link +=  '<a href="#${full.id}" data-decline="${full.id}">Decline</a><br/>'
                 link +=  '<a href="{}" data-decline="{}">Decline</a><br/>'.format(obj.id, obj.id)

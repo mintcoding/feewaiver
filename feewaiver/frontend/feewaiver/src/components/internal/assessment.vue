@@ -60,6 +60,11 @@
                                 <template v-if="canProcessApprover">
                                     <div class="row">
                                         <div class="col-sm-12">
+                                            <button style="width:80%;" class="btn btn-primary top-buffer-s" :disabled="false" @click.prevent="workflowAction('return_to_assessor')">Return to Assessor</button><br/>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
                                             <button style="width:80%;" class="btn btn-primary top-buffer-s" :disabled="false" @click.prevent="workflowAction('issue')">Issue Fee Waiver</button><br/>
                                         </div>
                                     </div>

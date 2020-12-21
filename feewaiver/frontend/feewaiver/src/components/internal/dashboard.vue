@@ -1,6 +1,6 @@
 <template id="proposal_dashboard">
     <div class="container">
-        <FormSection>
+        <FormSection :formCollapse="false" label="Fee Waiver Requests" Index="fee_waiver_requests">
                     <div class="row">
                         <div class="col-md-3">
                             <label for="">Lodged From</label>
@@ -63,6 +63,7 @@
 import datatable from '@/utils/vue/datatable.vue'
 import Vue from 'vue'
 import FormSection from "@/components/forms/section_toggle.vue"
+import ResponsiveDatatablesHelper from "@/utils/responsive_datatable_helper.js"
 /*
 import ApprovalCancellation from '../internal/approvals/approval_cancellation.vue'
 import ApprovalSuspension from '../internal/approvals/approval_suspension.vue'
@@ -99,6 +100,7 @@ export default {
             datatable_id: 'feewaiver-datatable-'+vm._uid,
             //Profile to check if user has access to process Proposal
             profile: {},
+            popoversInitialised: false,
             /*
             approval_history: {
                 isModalOpen: false,
@@ -132,7 +134,7 @@ export default {
             apiaryTemplateGroup: false,
             */
             //feewaiver_headers:["Number","Submitter","Status","Lodged On","Document","Assigned To","Action"],
-            feewaiver_headers:["Lodgement Number", "Submitter", "Status", "Lodged on", "Document", "Assigned To", "", "", "Action"],
+            feewaiver_headers:["Lodgement Number", "Submitter", "Status", "Lodged on", "Document", "Assigned To", "", "", "Action", "Comments to applicant"],
             feewaiver_options:{
                 language: {
                     processing: "<i class='fa fa-4x fa-spinner fa-spin'></i>"
@@ -171,6 +173,19 @@ export default {
                     },
                 ],
                 columns: [
+                    /*
+                    width:[
+                        null, 
+                        null, 
+                        null, 
+                        null, 
+                        null, 
+                        null, 
+                        null, 
+                        null, 
+                        null, 
+                        null],
+                    */
                     {
                         data: "lodgement_number",
                         visible: true,
@@ -186,9 +201,11 @@ export default {
                         mRender:function (data,type,full) {
                             //return data != '' && data != null ? moment(data).format(vm.dateFormat): '';
                             let fullStatus = full.processing_status;
+                            /*
                             if (full.processing_status === "With Approver" && full.proposed_status) {
                                 fullStatus += '<br>(' + full.proposed_status + ')';
                             }
+                            */
                             return fullStatus
                         },
                         //searchable: false,
@@ -253,15 +270,53 @@ export default {
                         searchable: false,
                         orderable: false
                     },
+                    {
+                        data: "comments_to_applicant",
+                        visible: true,
+                        mRender: function (value) {
+                            var ellipsis = '...',
+                                truncated = _.truncate(value, {
+                                    length: 25,
+                                    omission: ellipsis,
+                                    separator: ' '
+                                }),
+                                result = '<span>' + truncated + '</span>',
+                                popTemplate = _.template('<a href="#" ' +
+                                    'role="button" ' +
+                                    'data-toggle="popover" ' +
+                                    'data-trigger="click" ' +
+                                    'data-placement="top auto"' +
+                                    'data-html="true" ' +
+                                    'data-content="<%= text %>" ' +
+                                    '>more</a>');
+                            if (_.endsWith(truncated, ellipsis)) {
+                                result += popTemplate({
+                                    text: value
+                                });
+                            }
+
+                            return result;
+                        },
+
+                        'createdCell': function (cell) {
+                            //TODO why this is not working?
+                            // the call to popover is done in the 'draw' event
+                            $(cell).popover();
+                        }
+                        //responsivePriority: 50,
+                        //width: "50%",
+                        //searchable: false,
+                    },
 
 
 
                 ],
                 processing: true,
-                /*
                 initComplete: function() {
+                    //vm.$refs.feewaiver_datatable.vmDataTable.columns.adjust().responsive.recalc().draw();
+                    console.log(vm.$refs.feewaiver_datatable.vmDataTable.columns)
+                    vm.$refs.feewaiver_datatable.vmDataTable.columns.adjust().draw();
                 },
-                */
             }
         }
     },
@@ -389,6 +444,64 @@ export default {
         refreshFromResponse: function(){
             this.$refs.feewaiver_datatable.vmDataTable.ajax.reload();
         },
+        initialisePopovers: function(){
+            if (!this.popoversInitialised){
+                //this.initialiseActionLogs(this._uid,this.$refs.showActionBtn,this.actionsDtOptions,this.actionsTable);
+                //this.initialiseCommLogs('-internal-proposal-'+this._uid,this.$refs.showCommsBtn,this.commsDtOptions,this.commsTable);
+                this.popoversInitialised = true;
+            }
+        },
+        initialiseDash: function(vm_uid,ref,datatable_options,table){
+            let vm = this;
+            let commsLogId = 'comms-log-table'+vm_uid;
+            let popover_name = 'popover-'+ vm._uid+'-comms';
+            $(ref).popover({
+                content: function() {
+                    return ` 
+                    <table id="${commsLogId}" class="hover table table-striped table-bordered dt-responsive " cellspacing="0" width="100%">
+                    </table>`
+                },
+                html: true,
+                title: 'Communications Log',
+                container: 'body',
+                placement: 'right',
+                trigger: "click",
+                template: `<div class="popover ${popover_name}" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>`,
+            }).on('inserted.bs.popover', function () {
+                table = $('#'+commsLogId).DataTable(datatable_options);
+
+                // activate popover when table is drawn.
+                table.on('draw.dt', function () {
+                    var $tablePopover = $(this).find('[data-toggle="popover"]');
+                    if ($tablePopover.length > 0) {
+                        $tablePopover.popover();
+                        // the next line prevents from scrolling up to the top after clicking on the popover.
+                        $($tablePopover).on('click', function (e) {
+                            e.preventDefault();
+                            return true;   
+                        });
+                    }
+                });
+            }).on('shown.bs.popover', function () {
+                var el = ref;
+                var popoverheight = parseInt($('.'+popover_name).height());
+
+                var popover_bounding_top = parseInt($('.'+popover_name)[0].getBoundingClientRect().top);
+                var popover_bounding_bottom = parseInt($('.'+popover_name)[0].getBoundingClientRect().bottom);
+
+                var el_bounding_top = parseInt($(el)[0].getBoundingClientRect().top);
+                var el_bounding_bottom = parseInt($(el)[0].getBoundingClientRect().top);
+                
+                var diff = el_bounding_top - popover_bounding_top;
+
+                var position = parseInt($('.'+popover_name).position().top);
+                var pos2 = parseInt($(el).position().top) - 5;
+
+                var x = diff + 5;
+                $('.'+popover_name).children('.arrow').css('top', x + 'px');
+            });
+
+        },
 
         addEventListeners: function(){
             let vm = this;
@@ -429,6 +542,21 @@ export default {
                 e.preventDefault();
                 var id = $(this).attr('data-decline');
                 vm.actionShortcut(id, 'decline');
+            //}).on('inserted.bs.popover', function () {
+                //table = $('#'+commsLogId).DataTable(datatable_options);
+
+                // activate popover when table is drawn.
+            }).on('draw.dt', function () {
+                var tablePopover = $(this).find('[data-toggle="popover"]');
+                //console.log(tablePopover)
+                if (tablePopover.length > 0) {
+                    tablePopover.popover();
+                    // the next line prevents from scrolling up to the top after clicking on the popover.
+                    $(tablePopover).on('click', function (e) {
+                        e.preventDefault();
+                        return true;   
+                    });
+                }
             });
 
             /*
@@ -790,6 +918,11 @@ export default {
                 $( chev ).toggleClass( "glyphicon-chevron-down glyphicon-chevron-up" );
             }, 100 );
         });
+        /*
+        this.$nextTick(() => {
+            vm.initialisePopovers();
+        });
+        */
     },
     updated: function() {
         this.$nextTick(() => {
