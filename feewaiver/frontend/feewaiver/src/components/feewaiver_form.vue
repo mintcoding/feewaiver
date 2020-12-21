@@ -135,6 +135,7 @@
             :canProcess="canProcess"
             :isInternal="isInternal"
             :readonly="readonly"
+             @recalc-visits-flag="recalcVisitsFlag"
             />
         </div>
         <div v-if="isInternal">
@@ -214,6 +215,7 @@
             return {
                 feeWaiver: {},
                 payload: {},
+                //allVisitsUnchecked: false,
                 //feeWaiverId: null,
                 contactDetails: {},
                 email_confirmation: '',
@@ -318,6 +320,17 @@
             */
         },
         methods:{
+            recalcVisitsFlag: async function() {
+                let allVisitsUnchecked = true;
+                await this.$nextTick();
+                this.allVisitsUnchecked = true;
+                for (let visit of this.visits) {
+                    if (visit.issued) {
+                        allVisitsUnchecked = false;
+                    }
+                }
+                this.$emit('all-visits-unchecked', allVisitsUnchecked);
+            },
             updateTempDocCollId: function(id) {
                 this.temporary_document_collection_id = id.temp_doc_id;
             },
@@ -569,6 +582,7 @@
                 await this.fetchParksList();
                 if (this.feeWaiverId) {
                     await this.loadFeeWaiverData();
+                    await this.recalcVisitsFlag();
                     /*
                     await this.fetchCampingChoices();
                     console.log(this.feeWaiverId);

@@ -101,7 +101,7 @@
                     </div>
                     <div v-if="isInternal" class="pull-right">
                         <label>Issue?</label>
-                        <input :disabled="readonly" type="checkbox" id="visit_issue" :value="true" v-model="visit.issued">
+                        <input :disabled="readonly" type="checkbox" id="visit_issue" :value="true" v-model="visit.issued" @change.prevent="recalcVisits">
                     </div>
                 </div>
             </FormSection>
@@ -174,6 +174,9 @@
             },
         },
         methods:{
+            recalcVisits: async function() {
+                this.$emit('recalc-visits-flag');
+            },
             updateJqueryData: function() {
                 // required when loading data from backend
                 let vm = this;

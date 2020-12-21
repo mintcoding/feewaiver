@@ -43,12 +43,12 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-sm-12">
-                                            <button style="width:80%;" class="btn btn-primary" :disabled="false" @click.prevent="workflowAction('propose_issue')">Propose Issue Fee Waiver</button><br/>
+                                            <button style="width:80%;" class="btn btn-primary" :disabled="allVisitsUnchecked" @click.prevent="workflowAction('propose_issue')">Propose Issue Fee Waiver</button><br/>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-sm-12">
-                                            <button style="width:80%;" class="btn btn-primary top-buffer-s" :disabled="false" @click.prevent="workflowAction('propose_concession')">Propose Issue Concession</button><br/>
+                                            <button style="width:80%;" class="btn btn-primary top-buffer-s" :disabled="allVisitsUnchecked" @click.prevent="workflowAction('propose_concession')">Propose Issue Concession</button><br/>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -65,12 +65,12 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-sm-12">
-                                            <button style="width:80%;" class="btn btn-primary top-buffer-s" :disabled="false" @click.prevent="workflowAction('issue')">Issue Fee Waiver</button><br/>
+                                            <button style="width:80%;" class="btn btn-primary top-buffer-s" :disabled="allVisitsUnchecked" @click.prevent="workflowAction('issue')">Issue Fee Waiver</button><br/>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-sm-12">
-                                            <button style="width:80%;" class="btn btn-primary top-buffer-s" :disabled="false" @click.prevent="workflowAction('issue_concession')">Issue Concession</button><br/>
+                                            <button style="width:80%;" class="btn btn-primary top-buffer-s" :disabled="allVisitsUnchecked" @click.prevent="workflowAction('issue_concession')">Issue Concession</button><br/>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -95,6 +95,7 @@
                  :isInternal="true"
                  :canProcess="canProcess"
                  :isFinalised="isFinalised"
+                 @all-visits-unchecked="updateVisits"
                 />
             </div>
         </div>
@@ -136,6 +137,7 @@ export default {
     data: function() {
         let vm = this;
         return {
+            allVisitsUnchecked: true,
             feeWaiverId: null,
             feeWaiver: {},
             workflowActionType: '',
@@ -245,6 +247,9 @@ export default {
         */
     },
     methods: {
+        updateVisits: function(val) {
+            this.allVisitsUnchecked = val;
+        },
         commaToNewline(s){
             return s.replace(/[,;]/g, '\n');
         },
