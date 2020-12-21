@@ -3,27 +3,26 @@ from io import BytesIO
 
 from django.conf import settings
 from docxtpl import DocxTemplate
-from disturbance.components.main.models import ApiaryGlobalSettings
+from feewaiver.main_models import GlobalSettings
 
 
 #def create_apiary_licence_pdf_contents(approval, proposal, copied_to_permit, approver, site_transfer_preview=None):
-def create_feewaiver_pdf_contents(approval, proposal, copied_to_permit, approver, site_transfer_preview=None):
+def create_feewaiver_pdf_contents(feewaiver):
 
-    licence_template = ApiaryGlobalSettings.objects.get(key=ApiaryGlobalSettings.KEY_APIARY_LICENCE_TEMPLATE_FILE)
+    feewaiver_template = GlobalSettings.objects.get(key=GlobalSettings.KEY_FEEWAIVER_TEMPLATE_FILE)
 
-    if licence_template._file:
-        path_to_template = licence_template._file.path
+    if feewaiver_template._file:
+        path_to_template = feewaiver_template._file.path
     else:
         # Use default template file
         path_to_template = os.path.join(settings.BASE_DIR, 'feewaiver', 'static', 'feewaiver', 'fee_waiver_template.docx')
 
     doc = DocxTemplate(path_to_template)
-    from disturbance.components.approvals.serializers import ApprovalSerializerForLicenceDoc
+    #from disturbance.components.approvals.serializers import ApprovalSerializerForLicenceDoc
+    from feewaiver.serializers import FeeWaiverSerializer
     serializer_context = {
-            'approver': approver,
-            'site_transfer_preview': site_transfer_preview,
             }
-    context_obj = ApprovalSerializerForLicenceDoc(approval, context=serializer_context)
+    context_obj = FeeWaiverSerializer(feewaiver, context=serializer_context)
     context = context_obj.data
     doc.render(context)
 
@@ -33,7 +32,7 @@ def create_feewaiver_pdf_contents(approval, proposal, copied_to_permit, approver
     except:
         os.mkdir(temp_directory)
 
-    f_name = temp_directory + 'apiary_licence_' + str(approval.id)
+    f_name = temp_directory + 'feewaiver_' + str(feewaiver.id)
     new_doc_file = f_name + '.docx'
     new_pdf_file = f_name + '.pdf'
     doc.save(new_doc_file)

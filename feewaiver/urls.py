@@ -15,6 +15,8 @@ from feewaiver import views, users_api, api
 #from commercialoperator.components.bookings import api as booking_api
 
 from ledger.urls import urlpatterns as ledger_patterns
+from feewaiver.management.default_data_manager import DefaultDataManager
+from feewaiver.utils import are_migrations_running
 
 # API patterns
 router = routers.DefaultRouter()
@@ -91,3 +93,8 @@ if settings.SHOW_DEBUG_TOOLBAR:
     urlpatterns = [
         url('__debug__/', include(debug_toolbar.urls)),
     ] + urlpatterns
+
+
+if not are_migrations_running():
+    DefaultDataManager()
+

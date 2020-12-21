@@ -690,6 +690,7 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
                     instance.propose_decline(request)
                 if action == 'issue':
                     instance.issue(request)
+                    #instance.generate_doc()
                 if action == 'issue_concession':
                     instance.issue_concession(request)
                 if action == 'decline':
@@ -698,7 +699,7 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
                     instance.return_to_assessor(request)
                 comms_log_id = request.data.get('comms_log_id')
                 workflow_entry = None
-                if comms_log_id and comms_log_id is not 'null':
+                if comms_log_id and comms_log_id != 'null':
                     workflow_entry = instance.comms_logs.get(
                             id=comms_log_id)
                 #else:

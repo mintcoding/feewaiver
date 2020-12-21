@@ -1,4 +1,5 @@
 import requests
+import sys
 import json
 from datetime import timedelta, date, datetime
 import pytz
@@ -57,4 +58,11 @@ def check_db_connection():
 #
 #    return from_date
 
+
+def are_migrations_running():
+    '''
+    Checks whether the app was launched with the migration-specific params
+    '''
+    # return sys.argv and ('migrate' in sys.argv or 'makemigrations' in sys.argv)
+    return sys.argv and ('migrate' in sys.argv or 'makemigrations' in sys.argv or 'showmigrations' in sys.argv or 'sqlmigrate' in sys.argv)
 
