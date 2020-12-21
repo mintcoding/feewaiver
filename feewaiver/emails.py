@@ -134,7 +134,9 @@ def send_fee_waiver_received_notification(fee_waiver,request):
 
     #def send(self, to_addresses, from_address=None, context=None, attachments=None, cc=None, bcc=None):
     msg = email.send(fee_waiver.contact_details.email, context=context)
-    sender = request.user if request else settings.DEFAULT_FROM_EMAIL
+    #sender = request.user if request else settings.DEFAULT_FROM_EMAIL
+    # should always be noreply@dbca.wa.gov.au
+    sender = settings.DEFAULT_FROM_EMAIL
     #msg = email.send(fee_waiver.contact_details.email, context=context)
     _log_feewaiver_email(msg, fee_waiver, sender=sender)
 
@@ -156,7 +158,9 @@ def send_workflow_notification(fee_waiver,request, action, email_subject=None, w
         to_addresses = list(ApproversGroup.objects.first().members.all().values_list('email', flat=True))
     if action in ["issue", "issue_concession", "decline"]:
         to_addresses = fee_waiver.contact_details.email
-    sender = request.user if request else settings.DEFAULT_FROM_EMAIL
+    #sender = request.user if request else settings.DEFAULT_FROM_EMAIL
+    # should always be noreply@dbca.wa.gov.au
+    sender = settings.DEFAULT_FROM_EMAIL
     if workflow_entry:
         msg = email.send(to_addresses, sender, context=context, attachments=prepare_attachments(workflow_entry.documents))
         _log_feewaiver_email(msg, fee_waiver, sender=sender, workflow_entry=workflow_entry)
