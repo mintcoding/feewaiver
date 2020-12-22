@@ -71,6 +71,7 @@ class ContactDetailsSaveSerializer(serializers.ModelSerializer):
                 'postcode',                     
                 'phone',
                 'email',
+                'email_confirmation',
                 'participants_id',
                 'organisation_description'
                 )
@@ -99,6 +100,7 @@ class ContactDetailsSerializer(serializers.ModelSerializer):
                 'postcode',                     
                 'phone',
                 'email',
+                'email_confirmation',
                 'participants_id',
                 'participants_code',
                 'organisation_description'

@@ -59,15 +59,15 @@
                 </div>
                 <div class="form-group">
                     <div class="row">
-                    <label for="email" class="col-sm-2 control-label">Email</label>
-                    <div class="col-sm-4">
-                        <input :disabled="readonly" required type="email" class="form-control" name="email" placeholder="" v-model="contactDetails.email" id="contact_details_email">
-                        <span class="error" aria-live="polite"></span>
-                    </div>
-                    <label for="email_confirmation" class="col-sm-2 control-label">Confirm Email</label>
-                    <div class="col-sm-4">
-                    <input :disabled="readonly" required type="email" class="form-control" name="email_confirmation" placeholder="" v-model="email_confirmation" id="email_confirmation">
-                    </div>
+                        <label for="email" class="col-sm-2 control-label">Email</label>
+                        <div class="col-sm-4">
+                            <input :disabled="readonly" required type="email" class="form-control" name="email" placeholder="" v-model="contactDetails.email" id="contact_details_email">
+                            <span class="error" aria-live="polite"></span>
+                        </div>
+                        <label for="email_confirmation" class="col-sm-2 control-label">Confirm Email</label>
+                        <div class="col-sm-4">
+                        <input :disabled="readonly" required type="email" class="form-control" name="email_confirmation" placeholder="" v-model="contactDetails.email_confirmation" id="email_confirmation">
+                        </div>
                     </div>
                 </div>
                 <div class="form-group">
@@ -218,7 +218,7 @@
                 //allVisitsUnchecked: false,
                 //feeWaiverId: null,
                 contactDetails: {},
-                email_confirmation: '',
+                //email_confirmation: '',
                 participantGroupList: [],
                 temporary_document_collection_id: null,
                 parksList: [],
@@ -427,7 +427,7 @@
                         emailError.textContent = 'You need to enter an email address';
                     } else if (contactDetailsEmail.validity.typeMismatch) {
                         emailError.textContent = 'Entered value needs to be an email address';
-                    } else if (vm.contactDetails.email && vm.email_confirmation && vm.contactDetails.email !== vm.email_confirmation) {
+                    } else if (vm.contactDetails.email && vm.contactDetails.email_confirmation && vm.contactDetails.email !== vm.contactDetails.email_confirmation) {
                         emailError.textContent = 'Email addresses are not identical';
                     }
                     emailError.className = 'error active';
@@ -446,7 +446,7 @@
                     }
                 }
                 const contactDetailsEmail = document.getElementById('contact_details_email');
-                if (!contactDetailsEmail.validity.valid || this.contactDetails.email !== this.email_confirmation) {
+                if (!contactDetailsEmail.validity.valid || this.contactDetails.email !== this.contactDetails.email_confirmation) {
                     contactDetailsEmail.focus();
                 } else if (ageOfParticipants) {
                     ageOfParticipants.focus();

@@ -45,6 +45,7 @@ class ContactDetails(RevisionedMixin):
     postcode = models.CharField(max_length=10, blank=True, null=True)
     phone = models.CharField(max_length=50, blank=True, null=True)
     email = models.EmailField()
+    email_confirmation = models.EmailField()
     # participants..?
     organisation_description = models.TextField(blank=True)
 
