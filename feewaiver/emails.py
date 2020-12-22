@@ -123,6 +123,13 @@ class FeeWaiverWorkflowNotificationEmail(TemplateEmailBase):
     html_template = 'feewaiver/email/fee_waiver_workflow_notification.html'
     txt_template = 'feewaiver/email/fee_waiver_workflow_notification.txt'
 
+class FeeWaiverApproverNotificationEmail(TemplateEmailBase):
+    subject = 'Fee Waiver request approver notification'
+    #html_template = 'feewaiver/emails/proposals/send_referral_notification.html'
+    #txt_template = 'feewaiver/emails/proposals/send_referral_notification.txt'
+    html_template = 'feewaiver/email/fee_waiver_approver_notification.html'
+    txt_template = 'feewaiver/email/fee_waiver_approver_notification.txt'
+
 
 def send_fee_waiver_received_notification(fee_waiver,request):
     email = FeeWaiverReceivedNotificationEmail()
@@ -172,6 +179,23 @@ def send_workflow_notification(fee_waiver,request, action, email_subject=None, w
     #msg = email.send(fee_waiver.contact_details.email, context=context)
     #if referral.proposal.applicant:
      #   _log_org_email(msg, referral.proposal.applicant, referral.referral, sender=sender)
+
+def send_approver_notification(fee_waiver,request, action):
+    email = FeeWaiverApproverNotificationEmail()
+    #if email_subject:
+     #   email.subject = email_subject
+
+    #comments = request.data.get('comments')
+    context = {
+        'feewaiver': fee_waiver,
+        #'comments': comments,
+    }
+    #if action in ["issue", "issue_concession", "decline"]:
+    to_addresses = fee_waiver.contact_details.email
+    sender = settings.DEFAULT_FROM_EMAIL
+    msg = email.send(to_addresses, sender, context=context, attachments=prepare_attachments(fee_waiver.documents))
+    _log_feewaiver_email(msg, fee_waiver, sender=sender)
+
 
 
 def _log_feewaiver_email(email_message, fee_waiver, sender=None, workflow_entry=None):

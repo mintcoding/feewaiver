@@ -373,10 +373,11 @@ class FeeWaiverDTSerializer(serializers.ModelSerializer):
         return link
 
     def get_latest_feewaiver_document(self, obj):
-        url = ''
-        if obj.documents.order_by('-uploaded_date'):
-            url = obj.documents.order_by('-uploaded_date')[0]._file.url
-        return url
+        #url = ''
+        #if obj.documents.order_by('-uploaded_date'):
+        #    url = obj.documents.order_by('-uploaded_date')[0]._file.url
+        #return url
+        return obj.latest_feewaiver_document
 
 
 class FeeWaiverDocSerializer(serializers.ModelSerializer):

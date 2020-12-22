@@ -267,6 +267,12 @@ class FeeWaiver(RevisionedMixin):
     #        if visit.camping_assessment in ['child_rate', 'full_waiver']:
     #            approved = True
     #    return approved
+    @property
+    def latest_feewaiver_document(self):
+        url = ''
+        if self.documents.order_by('-uploaded_date'):
+            url = self.documents.order_by('-uploaded_date')[0]._file.url
+        return url
 
 
 class FeeWaiverDocument(Document):
