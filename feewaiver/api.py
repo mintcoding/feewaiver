@@ -755,6 +755,9 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
                             if park_id not in visit_obj.parks.all().values_list('id', flat=True):
                                 visit_obj.parks.add(Park.objects.get(id=park_id))
 
+                instance.log_user_action(
+                    FeeWaiverUserAction.ACTION_SAVE.format(instance.lodgement_number, request.user.get_full_name()),
+                    request)
                 return Response()
         except serializers.ValidationError:
             print(traceback.print_exc())

@@ -363,6 +363,7 @@ class FeeWaiverUserAction(UserAction):
     ACTION_CONCESSION = "Fee Waiver {} has been issued with concession"
     ACTION_DECLINE = "Fee Waiver {} has been declined"
     ACTION_RETURN_TO_ASSESSOR = "Fee Waiver {} has been returned to Assessor"
+    ACTION_SAVE = "Fee Waiver {} has been saved by {}"
 
     class Meta:
         app_label = 'feewaiver'

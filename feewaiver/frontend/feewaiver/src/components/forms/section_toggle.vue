@@ -3,7 +3,7 @@
       <div v-if="!hideHeader" class="panel-heading">
         <h3 class="panel-title">{{label}} 
             <a :href="'#'+section_id" class="panelClicker" :id="custom_id" data-toggle="collapse" expanded="true" :aria-controls="section_id">
-                <span :class="panel_chevron_class"></span>
+                <span v-if="!noChevron" :class="panel_chevron_class"></span>
             </a>
         </h3>
       </div>
@@ -18,13 +18,16 @@ import uuid from 'uuid';
 
 export default {
     name:"FormSection",
-    props:[
-        "label", 
-        "Index", 
-        "formCollapse", 
-        "hideHeader",
-        "treeHeight",
-    ],
+    props: {
+        label: {}, 
+        Index: {}, 
+        formCollapse: {}, 
+        hideHeader: {},
+        treeHeight: {},
+        noChevron: {
+            default: false,
+        },
+    },
     data:function () {
         return {
             title:"Section title",

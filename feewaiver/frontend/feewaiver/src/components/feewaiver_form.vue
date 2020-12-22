@@ -11,7 +11,7 @@
             Please fill out the details in the form below and submit the form to the Department.  You will be notified of the outcome of your request by email.
             </strong>
         </div>
-        <FormSection :formCollapse="false" label="Contact Details" Index="contact_details">
+        <FormSection :formCollapse="false" label="Contact Details" Index="contact_details" :noChevron="!isInternal">
             <div class="col-md-12">
                 <div class="form-group">
                     <div class="row">
@@ -109,7 +109,7 @@
                 </div>
             </div>
         </FormSection>
-        <FormSection :formCollapse="false" label="Fee Waiver Request" Index="fee_waiver_request">
+        <FormSection :formCollapse="false" label="Fee Waiver Request" Index="fee_waiver_request" :noChevron="!isInternal">
             <div class="col-sm-10">
                 <div class="form-group">
                     <div class="row">
