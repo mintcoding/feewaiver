@@ -16,11 +16,11 @@
                                 <td><strong> {{feeWaiver.lodgement_date|formatDate}}</strong></td>
                             </tr>
                         </table>
-                        <!--router-link :to="{name:'external-proposals-dash'}" style="margin-top:15px;" class="btn btn-primary">Back to dashboard</router-link-->
+                        <router-link :to="{name:'external-feewaiver-form'}" style="margin-top:15px;" class="btn btn-primary">Lodge another request</router-link>
                     </div>
                     <div v-else class="col-sm-offset-3 col-sm-6 borderDecoration">
-                        <strong>Sorry it looks like there isn't any proposal currently in your session.</strong>
-                        <br /><!--router-link :to="{name:'external-proposals-dash'}" style="margin-top:15px;" class="btn btn-primary">Back to dashboard</router-link-->
+                        <strong>Sorry, it looks like there is no Fee Waiver currently in your session.</strong>
+                        <br /><router-link :to="{name:'external-feewaiver-form'}" style="margin-top:15px;" class="btn btn-primary">Return to form</router-link>
                     </div>
                 </div>
             </div>
