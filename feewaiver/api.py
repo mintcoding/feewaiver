@@ -512,6 +512,7 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
                     instance.generate_doc()
                 if action == 'issue_concession':
                     instance.issue_concession(request)
+                    instance.generate_doc()
                 if action == 'decline':
                     instance.decline(request)
 

@@ -150,6 +150,7 @@ class FeeWaiverVisitSaveSerializer(serializers.ModelSerializer):
 class FeeWaiverVisitSerializer(serializers.ModelSerializer):
     #fee_waiver = FeeWaiverSerializer()
     selected_park_ids = serializers.SerializerMethodField()
+    selected_park_names = serializers.SerializerMethodField()
     fee_waiver_id = serializers.IntegerField(
             required=True, write_only=True, allow_null=False)
     camping_approved = serializers.SerializerMethodField()
@@ -166,6 +167,7 @@ class FeeWaiverVisitSerializer(serializers.ModelSerializer):
                 'date_from',     
                 'date_to',     
                 'selected_park_ids',    
+                'selected_park_names',    
                 'number_of_vehicles',     
                 'age_of_participants_array', 
                 #'camping_assessment_choices',
@@ -183,11 +185,19 @@ class FeeWaiverVisitSerializer(serializers.ModelSerializer):
             park_id_list.append(str(park.id))
         return park_id_list
 
+    def get_selected_park_names(self, obj):
+        park_name_list = []
+        for park in obj.parks.all():
+            park_name_list.append(str(park.name))
+        return park_name_list
+
     def get_camping_approved(self, obj):
-        approved = False
-        if obj.camping_assessment in ['child_rate', 'full_waiver']:
-            approved = True
-        return approved
+        choices=FeeWaiverVisit.CAMPING_CHOICES
+        approved_text = ""
+        for i in choices:
+            if i[1]==obj.camping_assessment:
+                approved_text = i[0]
+        return approved_text
 
 
 class FeeWaiverSaveSerializer(serializers.ModelSerializer):
