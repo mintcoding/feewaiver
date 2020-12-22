@@ -65,17 +65,17 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-sm-12">
-                                            <button style="width:80%;" class="btn btn-primary top-buffer-s" :disabled="allVisitsUnchecked" @click.prevent="workflowAction('issue')">Issue Fee Waiver</button><br/>
+                                            <button style="width:80%;" class="btn btn-primary top-buffer-s" :disabled="allVisitsUnchecked" @click.prevent="finalApproval('issue')">Issue Fee Waiver</button><br/>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-sm-12">
-                                            <button style="width:80%;" class="btn btn-primary top-buffer-s" :disabled="allVisitsUnchecked" @click.prevent="workflowAction('issue_concession')">Issue Concession</button><br/>
+                                            <button style="width:80%;" class="btn btn-primary top-buffer-s" :disabled="allVisitsUnchecked" @click.prevent="finalApproval('issue_concession')">Issue Concession</button><br/>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-sm-12">
-                                            <button style="width:80%;" class="btn btn-primary top-buffer-s" :disabled="false" @click.prevent="workflowAction('decline')">Decline</button><br/>
+                                            <button style="width:80%;" class="btn btn-primary top-buffer-s" :disabled="false" @click.prevent="finalApproval('decline')">Decline</button><br/>
                                         </div>
                                     </div>
                                 </template>
@@ -253,136 +253,27 @@ export default {
         commaToNewline(s){
             return s.replace(/[,;]/g, '\n');
         },
-        /*
-        proposedDecline: function(){
-            this.save_wo();
-            this.$refs.proposed_decline.decline = this.feeWaiver.feeWaiverdeclineddetails != null ? helpers.copyObject(this.feeWaiver.feeWaiverdeclineddetails): {};
-            this.$refs.proposed_decline.isModalOpen = true;
-        },
-        proposedApproval: function(){
-            let copiedProposedIssuanceApproval = helpers.copyObject(this.feeWaiver.proposed_issuance_approval);
-            if (this.feeWaiver.feeWaiver_type == 'Renewal') {
-                copiedProposedIssuanceApproval.expiry_date = null;
-            }
-            this.$refs.proposed_approval.approval = this.feeWaiver.proposed_issuance_approval != null ? copiedProposedIssuanceApproval : {};
-            if(this.feeWaiver.proposed_issuance_approval == null){
-                var test_approval={
-                'cc_email': this.feeWaiver.referral_email_list
-            };
-            this.$refs.proposed_approval.approval=helpers.copyObject(test_approval);
-                // this.$refs.proposed_approval.$refs.bcc_email=this.feeWaiver.referral_email_list;
-            }
-            //this.$refs.proposed_approval.submitter_email=helpers.copyObject(this.feeWaiver.submitter_email);
-            // if(this.feeWaiver.applicant.email){
-            //     this.$refs.proposed_approval.applicant_email=helpers.copyObject(this.feeWaiver.applicant.email);
-            // }
-            this.$refs.proposed_approval.isModalOpen = true;
-            // Force to refresh the map to display it in case it is not shown.  
-            // When the map is in modal, it is often not shown unless the map is resized
-            this.$refs.proposed_approval.forceToRefreshMap()
-        },
-        issueProposal:function(){
-            //this.$refs.proposed_approval.approval = helpers.copyObject(this.feeWaiver.proposed_issuance_approval);
-            console.log('in issueProposal')
-            //save approval level comment before opening 'issue approval' modal
-            if(this.feeWaiver && this.feeWaiver.processing_status == 'With Approver' && this.feeWaiver.approval_level != null && this.feeWaiver.approval_level_document == null){
-                if (this.feeWaiver.approval_level_comment!='')
-                {
-                    let vm = this;
-                    let data = new FormData();
-                    data.append('approval_level_comment', vm.feeWaiver.approval_level_comment)
-                    vm.$http.post(helpers.add_endpoint_json(api_endpoints.feeWaivers,vm.feeWaiver.id+'/approval_level_comment'),data,{
-                        emulateJSON:true
-                        }).then(res=>{
-                        vm.feeWaiver = res.body;
-                    vm.refreshFromResponse(res);
-                    },err=>{
-                    console.log(err);
-                    });
-                }
-            }
-            if(this.isApprovalLevelDocument && this.feeWaiver.approval_level_comment=='')
-            {
-                swal(
-                    'Error',
-                    'Please add Approval document or comments before final approval',
-                    'error'
-                )
-            }
-            else{
-                this.$refs.proposed_approval.approval = this.feeWaiver.proposed_issuance_approval != null ? helpers.copyObject(this.feeWaiver.proposed_issuance_approval) : {};
-                this.$refs.proposed_approval.state = 'final_approval';
-                this.$refs.proposed_approval.isApprovalLevelDocument = this.isApprovalLevelDocument;
-                //this.$refs.proposed_approval.submitter_email=helpers.copyObject(this.feeWaiver.submitter_email);
-                // if(this.feeWaiver.applicant.email){
-                //     this.$refs.proposed_approval.applicant_email=helpers.copyObject(this.feeWaiver.applicant.email);
-                // }
-                this.$refs.proposed_approval.isModalOpen = true;
-
-                // Force to refresh the map to display it in case it is not shown.  
-                // When the map is in modal, it is often not shown unless the map is resized
-                this.$refs.proposed_approval.forceToRefreshMap()
-            }
-        },
-        declineProposal:function(){
-            this.$refs.proposed_decline.decline = this.feeWaiver.feeWaiverdeclineddetails != null ? helpers.copyObject(this.feeWaiver.feeWaiverdeclineddetails): {};
-            this.$refs.proposed_decline.isModalOpen = true;
-        },
-        amendmentRequest: function(){
-            this.save_wo();
-            let values = '';
-            $('.deficiency').each((i,d) => {
-                values +=  $(d).val() != '' ? `Question - ${$(d).data('question')}\nDeficiency - ${$(d).val()}\n\n`: '';
-            });
-            //this.deficientFields();
-            this.$refs.amendment_request.amendment.text = values;
-
-            this.$refs.amendment_request.isModalOpen = true;
-        },
-        highlight_deficient_fields: function(deficient_fields){
-            let vm = this;
-            for (var deficient_field of deficient_fields) {
-                $("#" + "id_"+deficient_field).css("color", 'red');
-            }
-        },
-        deficientFields(){
-            let vm=this;
-            let deficient_fields=[]
-            $('.deficiency').each((i,d) => {
-                if($(d).val() != ''){
-                    var name=$(d)[0].name
-                    var tmp=name.replace("-comment-field","")
-                    deficient_fields.push(tmp);
-                    //console.log('data', $("#"+"id_" + tmp))
-                }
-            });
-            //console.log('deficient fields', deficient_fields);
-            vm.highlight_deficient_fields(deficient_fields);
-        },
-        save: function(e) {
-          let vm = this;
-          vm.checkAssessorData();
-          let formData = new FormData(vm.form);
-          vm.$http.post(vm.feeWaiver_form_url,formData).then(res=>{
-              swal(
-                'Saved',
-                'Your feeWaiver has been saved',
-                'success'
-              )
-          },err=>{
-          });
-        },
-        save_wo: function() {
-          let vm = this;
-          vm.checkAssessorData();
-          let formData = new FormData(vm.form);
-          vm.$http.post(vm.feeWaiver_form_url,formData).then(res=>{
-
-
-          },err=>{
-          });
-        },
-        */
+        finalApproval: async function(approval_type) {
+          let post_url = '/api/feewaivers/' + this.feeWaiver.id + '/final_approval/'
+          //let payload = new FormData(this.form);
+          let payload = {"approval_type": approval_type}
+          //approval_type ? payload.append('approval_type', approval_type) : null;
+          let feeWaiverRes = await this.parentSave(false)
+          if (feeWaiverRes.ok) {
+              try {
+                  let res = await Vue.http.post(post_url, payload);
+                  if (res.ok) {    
+                      this.$router.push({
+                          name: 'fee-waiver-dash',
+                      });
+                  }
+              } catch(err) {
+                  this.errorResponse = 'Error:' + err.statusText;
+              } 
+          } else {
+              this.errorResponse = 'Error:' + feeWaiverRes.statusText;
+          }
+      },
 
         updateAssignedOfficerSelect:function(){
             let vm = this;
@@ -501,7 +392,6 @@ export default {
         },
         parentSave: async function() {
             const feeWaiverRes = await this.$refs.fee_waiver_form.save(false);
-            console.log(feeWaiverRes);
             return feeWaiverRes;
         },
         workflowAction: function(action) {
@@ -509,109 +399,7 @@ export default {
             this.$nextTick(() => {
                 this.$refs.assessment_workflow.isModalOpen = true;
             });
-            // open modal
-            /*
-            this.$refs.fee_waiver_form.save(false);
-            this.$http.post(`/api/feewaivers/${this.feeWaiverId}/workflow_action/`, {"action": action})
-            this.$router.push({
-                name: 'fee-waiver-dash',
-            });
-            */
         },
-        /*
-        switchStatus: function(status){
-            let vm = this;
-            //vm.save_wo();
-            //let vm = this;
-            if(vm.feeWaiver.processing_status == 'With Assessor' && status == 'with_assessor_requirements'){
-            vm.checkAssessorData();
-            let formData = new FormData(vm.form);
-            vm.$http.post(vm.feeWaiver_form_url,formData).then(res=>{ //save Proposal before changing status so that unsaved assessor data is saved.
-
-            let data = {'status': status, 'approver_comment': vm.approver_comment}
-            vm.$http.post(helpers.add_endpoint_json(api_endpoints.feeWaivers,(vm.feeWaiver.id+'/switch_status')),JSON.stringify(data),{
-                emulateJSON:true,
-            })
-            .then((response) => {
-                vm.feeWaiver = response.body;
-                vm.original_feeWaiver = helpers.copyObject(response.body);
-                vm.feeWaiver.applicant.address = vm.feeWaiver.applicant.address != null ? vm.feeWaiver.applicant.address : {};
-                vm.approver_comment='';
-                vm.$nextTick(() => {
-                    vm.initialiseAssignedOfficerSelect(true);
-                    vm.updateAssignedOfficerSelect();
-                });
-
-            }, (error) => {
-                vm.feeWaiver = helpers.copyObject(vm.original_feeWaiver)
-                vm.feeWaiver.applicant.address = vm.feeWaiver.applicant.address != null ? vm.feeWaiver.applicant.address : {};
-                swal(
-                    'Proposal Error',
-                    helpers.apiVueResourceError(error),
-                    'error'
-                )
-            });
-
-          },err=>{
-          });
-        }
-
-        //if approver is pushing back feeWaiver to Assessor then navigate the approver back to dashboard page
-        if(vm.feeWaiver.processing_status == 'With Approver' && (status == 'with_assessor_requirements' || status=='with_assessor')) {
-            let data = {'status': status, 'approver_comment': vm.approver_comment}
-            vm.$http.post(helpers.add_endpoint_json(api_endpoints.feeWaivers,(vm.feeWaiver.id+'/switch_status')),JSON.stringify(data),{
-                emulateJSON:true,
-            })
-            .then((response) => {
-                vm.feeWaiver = response.body;
-                vm.original_feeWaiver = helpers.copyObject(response.body);
-                vm.feeWaiver.applicant.address = vm.feeWaiver.applicant.address != null ? vm.feeWaiver.applicant.address : {};
-                vm.approver_comment='';
-                vm.$nextTick(() => {
-                    vm.initialiseAssignedOfficerSelect(true);
-                    vm.updateAssignedOfficerSelect();
-                });
-                vm.$router.push({ path: '/internal' });
-            }, (error) => {
-                vm.feeWaiver = helpers.copyObject(vm.original_feeWaiver)
-                vm.feeWaiver.applicant.address = vm.feeWaiver.applicant.address != null ? vm.feeWaiver.applicant.address : {};
-                swal(
-                    'Proposal Error',
-                    helpers.apiVueResourceError(error),
-                    'error'
-                )
-            });
-
-        }
-
-        else{
-
-
-         let data = {'status': status, 'approver_comment': vm.approver_comment}
-            vm.$http.post(helpers.add_endpoint_json(api_endpoints.feeWaivers,(vm.feeWaiver.id+'/switch_status')),JSON.stringify(data),{
-                emulateJSON:true,
-            })
-            .then((response) => {
-                vm.feeWaiver = response.body;
-                vm.original_feeWaiver = helpers.copyObject(response.body);
-                vm.feeWaiver.applicant.address = vm.feeWaiver.applicant.address != null ? vm.feeWaiver.applicant.address : {};
-                vm.approver_comment='';
-                vm.$nextTick(() => {
-                    vm.initialiseAssignedOfficerSelect(true);
-                    vm.updateAssignedOfficerSelect();
-                });
-            }, (error) => {
-                vm.feeWaiver = helpers.copyObject(vm.original_feeWaiver)
-                vm.feeWaiver.applicant.address = vm.feeWaiver.applicant.address != null ? vm.feeWaiver.applicant.address : {};
-                swal(
-                    'Proposal Error',
-                    helpers.apiVueResourceError(error),
-                    'error'
-                )
-            });
-            }
-        },
-        */
 
         initialiseAssignedOfficerSelect:function(reinit=false){
             let vm = this;
@@ -672,26 +460,6 @@ export default {
         this.$nextTick(() => {
             this.initialiseAssignedOfficerSelect()
         });
-        /*
-        let vm = this;
-        if (!vm.panelClickersInitialised){
-            $('.panelClicker[data-toggle="collapse"]').on('click', function () {
-                var chev = $(this).children()[0];
-                window.setTimeout(function () {
-                    $(chev).toggleClass("glyphicon-chevron-down glyphicon-chevron-up");
-                },100);
-            });
-            vm.panelClickersInitialised = true;
-        }
-        this.$nextTick(() => {
-            vm.initialiseOrgContactTable();
-            vm.initialiseSelects();
-            vm.form = document.forms.new_feeWaiver;
-            if(vm.hasAmendmentRequest){
-                vm.deficientFields();
-            }
-        });
-        */
     },
     created: function() {
     },
@@ -700,39 +468,6 @@ export default {
             vm.feeWaiverId = to.params.fee_waiver_id;
         })
     }
-    /*
-    beforeRouteEnter: function(to, from, next) {
-          Vue.http.get(`/api/feeWaiver/${to.params.feeWaiver_id}/internal_feeWaiver.json`).then(res => {
-              next(vm => {
-                  vm.feeWaiver = res.body;
-                  console.log(res.body)
-                  vm.original_feeWaiver = helpers.copyObject(res.body);
-                  if (vm.feeWaiver.applicant) {
-                      vm.feeWaiver.applicant.address = vm.feeWaiver.applicant.address != null ? vm.feeWaiver.applicant.address : {};
-                  }
-                  vm.hasAmendmentRequest=vm.feeWaiver.hasAmendmentRequest;
-              });
-            },
-            err => {
-              console.log(err);
-            });
-    },
-    beforeRouteUpdate: function(to, from, next) {
-        console.log("beforeRouteUpdate");
-          Vue.http.get(`/api/feeWaiver/${to.params.feeWaiver_id}.json`).then(res => {
-              next(vm => {
-                  vm.feeWaiver = res.body;
-                  vm.original_feeWaiver = helpers.copyObject(res.body);
-                  if (vm.feeWaiver.applicant) {
-                      vm.feeWaiver.applicant.address = vm.feeWaiver.applicant.address != null ? vm.feeWaiver.applicant.address : {};
-                  }
-              });
-            },
-            err => {
-              console.log(err);
-            });
-    }
-    */
 }
 </script>
 <style scoped>

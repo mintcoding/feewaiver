@@ -21,6 +21,7 @@ def create_feewaiver_pdf_contents(feewaiver):
     #from disturbance.components.approvals.serializers import ApprovalSerializerForLicenceDoc
     from feewaiver.serializers import FeeWaiverSerializer
     serializer_context = {
+            'feewaiver': feewaiver,
             }
     context_obj = FeeWaiverSerializer(feewaiver, context=serializer_context)
     context = context_obj.data

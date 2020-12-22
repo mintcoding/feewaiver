@@ -688,13 +688,13 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
                     instance.propose_concession(request)
                 if action == 'propose_decline':
                     instance.propose_decline(request)
-                if action == 'issue':
-                    instance.issue(request)
-                    #instance.generate_doc()
-                if action == 'issue_concession':
-                    instance.issue_concession(request)
-                if action == 'decline':
-                    instance.decline(request)
+                #if action == 'issue':
+                #    instance.issue(request)
+                #    instance.generate_doc()
+                #if action == 'issue_concession':
+                #    instance.issue_concession(request)
+                #if action == 'decline':
+                #    instance.decline(request)
                 if action == 'return_to_assessor':
                     instance.return_to_assessor(request)
                 comms_log_id = request.data.get('comms_log_id')
@@ -707,6 +707,36 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
 
                 # send email
                 send_workflow_notification(instance,request, action, email_subject, workflow_entry)
+                return Response()
+
+        except serializers.ValidationError:
+            print(traceback.print_exc())
+            raise
+        except ValidationError as e:
+            raise serializers.ValidationError(repr(e.error_dict))
+        except Exception as e:
+            print(traceback.print_exc())
+            raise serializers.ValidationError(str(e))
+
+    @detail_route(methods=['POST'])
+    @renderer_classes((JSONRenderer,))
+    def final_approval(self, request, *args, **kwargs):
+        try:
+            with transaction.atomic():
+                #import ipdb; ipdb.set_trace()
+                instance = self.get_object()
+                action = request.data.get("approval_type")
+                #email_subject = request.data.get("email_subject")
+                if action == 'issue':
+                    instance.issue(request)
+                    instance.generate_doc()
+                if action == 'issue_concession':
+                    instance.issue_concession(request)
+                if action == 'decline':
+                    instance.decline(request)
+
+                # send email
+                #send_workflow_notification(instance,request, action, email_subject, workflow_entry)
                 return Response()
 
         except serializers.ValidationError:

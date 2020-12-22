@@ -5,10 +5,14 @@ from django.contrib.postgres.fields import ArrayField
 from feewaiver.exceptions import FeeWaiverNotAuthorized
 from django.db import transaction
 from feewaiver.doctopdf import create_feewaiver_pdf_contents
+from django.core.files.base import ContentFile
 
 
 def update_feewaiver_doc_filename(instance, filename):
-    return 'feewaiver/{}/documents/{}'.format(instance.id,filename)
+    #import ipdb; ipdb.set_trace()
+    return 'feewaiver/{}/documents/{}'.format(instance.feewaiver.id,filename)
+    #feewaiver = instance.feewaiver_set.all()[0]
+    #return 'feewaiver/{}/documents/{}'.format(feewaiver.id,filename)
 
 
 class Participants(models.Model):
@@ -57,14 +61,6 @@ class ContactDetails(RevisionedMixin):
         verbose_name_plural = 'Contact Details'
 
 
-class FeeWaiverDocument(Document):
-    #feewaiver = models.ForeignKey(FeeWaiver,related_name='documents')
-    _file = models.FileField(upload_to=update_feewaiver_doc_filename)
-
-    class Meta:
-        app_label = 'feewaiver'
-
-
 class FeeWaiver(RevisionedMixin):
     PROCESSING_STATUS_WITH_ASSESSOR = 'with_assessor'
     PROCESSING_STATUS_WITH_APPROVER = 'with_approver'
@@ -98,7 +94,7 @@ class FeeWaiver(RevisionedMixin):
     fee_waiver_purpose = models.TextField(blank=True)
     assigned_officer = models.ForeignKey(EmailUser, blank=True, null=True, related_name='feewaiver_assigned', on_delete=models.SET_NULL)
     comments_to_applicant = models.TextField(blank=True)
-    feewaiver_document = models.ForeignKey(FeeWaiverDocument, null=True)
+    #feewaiver_document = models.ForeignKey(FeeWaiverDocument, null=True)
 
     def __str__(self):
         return self.lodgement_number
@@ -248,17 +244,25 @@ class FeeWaiver(RevisionedMixin):
     def generate_doc(self):
         #import ipdb; ipdb.set_trace()
         #self.licence_document = create_apiary_licence_pdf_contents(self, proposal, copied_to_permit, request_user)
-        self.feewaiver_document = self.create_feewaiver_document()
-        self.save(version_comment='Created Feewaiver PDF: {}'.format(self.feewaiver_document.name))
+        feewaiver_document = self.create_feewaiver_document()
+        self.save(version_comment='Created Feewaiver PDF: {}'.format(feewaiver_document.name))
 
     def create_feewaiver_document(self):
         pdf_contents = create_feewaiver_pdf_contents(self)
 
         filename = 'feewaiver-{}.pdf'.format(self.lodgement_number)
-        document = FeeWaiverDocument.objects.create(name=filename)
+        document = FeeWaiverDocument.objects.create(feewaiver=self, name=filename)
         document._file.save(filename, ContentFile(pdf_contents), save=True)
 
         return document
+
+class FeeWaiverDocument(Document):
+    feewaiver = models.ForeignKey(FeeWaiver,related_name='documents')
+    _file = models.FileField(upload_to=update_feewaiver_doc_filename)
+
+    class Meta:
+        app_label = 'feewaiver'
+
 
 
 class FeeWaiverVisit(RevisionedMixin):
