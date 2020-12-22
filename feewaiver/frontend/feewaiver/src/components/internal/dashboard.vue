@@ -219,9 +219,18 @@ export default {
                         visible: true,
                     },
                     {
-                        data: "id",
+                        data: "latest_feewaiver_document",
                         visible: true,
                         orderable: false,
+                        mRender:function(data,type,full){
+                            //console.log(full)
+                            if (data) {
+                                return `<a href="${data}" target="_blank"><i style="color:red" class="fa fa-file-pdf-o"></i></a>`;
+                            } else {
+                                return null;
+                            }
+                        },
+
                         //searchable: false,
                     },
                     {
@@ -257,7 +266,7 @@ export default {
                         mRender:function (data,type,full) {
                             //let links = '';
                             let links = full.action_shortcut;
-                            //console.log(full)
+                            console.log(full)
                             if(full.can_process){
 
                                 links +=  `<a href='/internal/fee_waiver/${full.id}'>Process</a><br/>`;
@@ -307,7 +316,11 @@ export default {
                         //width: "50%",
                         //searchable: false,
                     },
-
+                    {
+                        data: "id",
+                        visible: false,
+                        orderable: false,
+                    },
 
 
                 ],
@@ -434,9 +447,9 @@ export default {
             })
             //console.log(vm.regions);
         },
-        actionShortcut: async function(id, workflowAction) {
-            let post_url = '/api/feewaivers/' + id + '/workflow_action/'
-            let res = await Vue.http.post(post_url, {'workflow_type': workflowAction});
+        actionShortcut: async function(id, approvalType) {
+            let post_url = '/api/feewaivers/' + id + '/final_approval/'
+            let res = await Vue.http.post(post_url, {'approval_type': approvalType});
             if (res.ok) {
                 this.refreshFromResponse();
             }

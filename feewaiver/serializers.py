@@ -152,6 +152,7 @@ class FeeWaiverVisitSerializer(serializers.ModelSerializer):
     selected_park_ids = serializers.SerializerMethodField()
     fee_waiver_id = serializers.IntegerField(
             required=True, write_only=True, allow_null=False)
+    camping_approved = serializers.SerializerMethodField()
     #camping_assessment_choices = serializers.SerializerMethodField()
 
 
@@ -169,6 +170,7 @@ class FeeWaiverVisitSerializer(serializers.ModelSerializer):
                 'age_of_participants_array', 
                 #'camping_assessment_choices',
                 'camping_assessment',
+                'camping_approved',
                 'issued',
                 )
         read_only_fields = (
@@ -180,6 +182,12 @@ class FeeWaiverVisitSerializer(serializers.ModelSerializer):
         for park in obj.parks.all():
             park_id_list.append(str(park.id))
         return park_id_list
+
+    def get_camping_approved(self, obj):
+        approved = False
+        if obj.camping_assessment in ['child_rate', 'full_waiver']:
+            approved = True
+        return approved
 
 
 class FeeWaiverSaveSerializer(serializers.ModelSerializer):
@@ -293,6 +301,7 @@ class FeeWaiverDTSerializer(serializers.ModelSerializer):
     can_process = serializers.SerializerMethodField()
     action_shortcut = serializers.SerializerMethodField()
     assigned_officer = serializers.SerializerMethodField(read_only=True)
+    latest_feewaiver_document = serializers.SerializerMethodField()
     #licence_document = serializers.CharField(source='licence_document._file.url')
 
     class Meta:
@@ -311,6 +320,7 @@ class FeeWaiverDTSerializer(serializers.ModelSerializer):
                 'assigned_officer',
                 'action_shortcut',
                 'comments_to_applicant',
+                'latest_feewaiver_document',
                 #document,
                 #assigned_to,
                 )
@@ -362,13 +372,21 @@ class FeeWaiverDTSerializer(serializers.ModelSerializer):
                 link +=  '<a href="{}" data-decline="{}">Decline</a><br/>'.format(obj.id, obj.id)
         return link
 
+    def get_latest_feewaiver_document(self, obj):
+        url = ''
+        if obj.documents.order_by('-uploaded_date'):
+            url = obj.documents.order_by('-uploaded_date')[0]._file.url
+        return url
+
 
 class FeeWaiverDocSerializer(serializers.ModelSerializer):
+    visits = serializers.SerializerMethodField()
     contact_name = serializers.SerializerMethodField()
+    contact_details = ContactDetailsSerializer()
     processing_status = serializers.SerializerMethodField()
     proposed_status = serializers.SerializerMethodField()
     can_process = serializers.SerializerMethodField()
-    assigned_officer = serializers.SerializerMethodField(read_only=True)
+    assigned_officer = serializers.SerializerMethodField()
     #licence_document = serializers.CharField(source='licence_document._file.url')
 
     class Meta:
@@ -377,7 +395,7 @@ class FeeWaiverDocSerializer(serializers.ModelSerializer):
                 'id',
                 'lodgement_number',
                 'contact_name',
-                #'contact_details',
+                'contact_details',
                 #'submitter',
                 'processing_status',
                 'proposed_status',
@@ -386,6 +404,7 @@ class FeeWaiverDocSerializer(serializers.ModelSerializer):
                 'can_process',
                 'assigned_officer',
                 'comments_to_applicant',
+                'visits',
                 #document,
                 #assigned_to,
                 )
@@ -395,6 +414,12 @@ class FeeWaiverDocSerializer(serializers.ModelSerializer):
 
     #def get_lodgement_date(self, obj):
      #   return obj.lodgement_date.strftime('%d/%m/%Y')
+
+    def get_visits(self, obj):
+        visits = []
+        for visit in obj.visit.all():
+            visits.append(FeeWaiverVisitSerializer(visit).data)
+        return visits
 
     def get_assigned_officer(self,obj):
         if obj.assigned_officer:

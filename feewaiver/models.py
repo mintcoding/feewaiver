@@ -256,6 +256,19 @@ class FeeWaiver(RevisionedMixin):
 
         return document
 
+    #@property
+    #def camping_requested(self):
+     #   return True
+
+    #@property
+    #def camping_approved(self):
+    #    approved = False
+    #    for visit in self.visit.all():
+    #        if visit.camping_assessment in ['child_rate', 'full_waiver']:
+    #            approved = True
+    #    return approved
+
+
 class FeeWaiverDocument(Document):
     feewaiver = models.ForeignKey(FeeWaiver,related_name='documents')
     _file = models.FileField(upload_to=update_feewaiver_doc_filename)
