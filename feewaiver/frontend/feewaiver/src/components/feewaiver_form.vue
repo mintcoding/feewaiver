@@ -422,15 +422,24 @@
                     }
                 });
                 function showEmailError() {
-                    console.log("show error")
+                    //console.log("show error")
+                    emailError.className = 'error';
+                    emailError.textContent = '';
+                    let errorFound = false;
                     if (contactDetailsEmail.validity.valueMissing || !vm.contactDetails.email) {
                         emailError.textContent = 'You need to enter an email address';
+                        errorFound = true;
                     } else if (contactDetailsEmail.validity.typeMismatch) {
                         emailError.textContent = 'Entered value needs to be an email address';
+                        errorFound = true;
                     } else if (vm.contactDetails.email && vm.contactDetails.email_confirmation && vm.contactDetails.email !== vm.contactDetails.email_confirmation) {
                         emailError.textContent = 'Email addresses are not identical';
+                        errorFound = true;
                     }
-                    emailError.className = 'error active';
+
+                    if (errorFound) {
+                        emailError.className = 'error active';
+                    }
                 }
 
             },
@@ -461,12 +470,29 @@
                         showCancelButton: true,
                         confirmButtonText: 'Submit'
                     });
-                    //console.log(this.payload)
-                    const returnedFeeWaiver = await this.$http.post(api_endpoints.feewaivers,this.payload);
-                    this.$router.push({
-                        name: 'submit_feewaiver',
-                        params: { fee_waiver: returnedFeeWaiver.body}
-                    });
+                    console.log(this.payload)
+                    try {
+                        const returnedFeeWaiver = await this.$http.post(api_endpoints.feewaivers,this.payload);
+                        console.log(returnedFeeWaiver);
+                        this.$router.push({
+                            name: 'submit_feewaiver',
+                            params: { fee_waiver: returnedFeeWaiver.body}
+                        });
+
+                    } catch (error) {
+                        console.log(error);
+                        let swalTitle = "Error";
+                        // remove the {} from the data string with slice
+                        let swalText = error.data[0].slice(1,-1);
+                        await swal({
+                            title: swalTitle,
+                            text: swalText,
+                            type: "error",
+                            //showCancelButton: true,
+                            confirmButtonText: 'Ok'
+                        });
+                    }
+
                 }
             },
             updatePayload: async function() {

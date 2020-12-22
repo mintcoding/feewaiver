@@ -363,6 +363,69 @@ class FeeWaiverDTSerializer(serializers.ModelSerializer):
         return link
 
 
+class FeeWaiverDocSerializer(serializers.ModelSerializer):
+    contact_name = serializers.SerializerMethodField()
+    processing_status = serializers.SerializerMethodField()
+    proposed_status = serializers.SerializerMethodField()
+    can_process = serializers.SerializerMethodField()
+    assigned_officer = serializers.SerializerMethodField(read_only=True)
+    #licence_document = serializers.CharField(source='licence_document._file.url')
+
+    class Meta:
+        model = FeeWaiver
+        fields = (
+                'id',
+                'lodgement_number',
+                'contact_name',
+                #'contact_details',
+                #'submitter',
+                'processing_status',
+                'proposed_status',
+                #'lodgement_date',
+                'lodgement_date',
+                'can_process',
+                'assigned_officer',
+                'comments_to_applicant',
+                #document,
+                #assigned_to,
+                )
+        read_only_fields = (
+            'id',
+        )
+
+    #def get_lodgement_date(self, obj):
+     #   return obj.lodgement_date.strftime('%d/%m/%Y')
+
+    def get_assigned_officer(self,obj):
+        if obj.assigned_officer:
+            return obj.assigned_officer.get_full_name()
+        return None
+
+    def get_contact_name(self, obj):
+        if obj.contact_details:
+            return obj.contact_details.contact_name
+
+    def get_processing_status(self,obj):
+        return obj.get_processing_status_display()
+
+    def get_proposed_status(self,obj):
+        return obj.get_proposed_status_display()
+
+    def get_can_process(self,obj):
+        # Check if currently logged in user has access to process the proposal
+        #import ipdb; ipdb.set_trace()
+        request = self.context.get('request')
+        if request:
+            user = request.user
+            if obj.assigned_officer:
+                if obj.assigned_officer == user:
+                    return True
+            elif user in obj.relevant_access_group:
+                return True
+        return False
+
+
+
 class ParticipantsSerializer(serializers.ModelSerializer):
 
     class Meta:
