@@ -195,8 +195,8 @@ class FeeWaiverVisitSerializer(serializers.ModelSerializer):
         choices=FeeWaiverVisit.CAMPING_CHOICES
         approved_text = ""
         for i in choices:
-            if i[1]==obj.camping_assessment:
-                approved_text = i[0]
+            if i[0]==obj.camping_assessment:
+                approved_text = i[1]
         return approved_text
 
 
