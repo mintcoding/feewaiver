@@ -35,6 +35,7 @@
                             </div>
 
                             <div class="col-sm-12 top-buffer-s" v-if="!isFinalised && canProcess">
+                                <div v-if="show_spinner"><i class='fa fa-2x fa-spinner fa-spin'></i></div>
                                 <template v-if="canProcessAssessor">
                                     <div class="row">
                                         <div class="col-sm-12">
@@ -140,6 +141,7 @@ export default {
             allVisitsUnchecked: true,
             feeWaiverId: null,
             feeWaiver: {},
+            show_spinner: false,
             workflowActionType: '',
             detailsBody: 'detailsBody'+vm._uid,
             addressBody: 'addressBody'+vm._uid,
@@ -254,6 +256,7 @@ export default {
             return s.replace(/[,;]/g, '\n');
         },
         finalApproval: async function(approval_type) {
+          this.show_spinner = true;
           let post_url = '/api/feewaivers/' + this.feeWaiver.id + '/final_approval/'
           //let payload = new FormData(this.form);
           let payload = {"approval_type": approval_type}
@@ -273,6 +276,7 @@ export default {
           } else {
               this.errorResponse = 'Error:' + feeWaiverRes.statusText;
           }
+          this.show_spinner = false;
       },
 
         updateAssignedOfficerSelect:function(){
