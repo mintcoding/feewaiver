@@ -641,6 +641,8 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
                             save_default_document_obj(contact_details_obj, doc)
                         temp_doc_collection.delete()
 
+                fee_waiver_obj.log_user_action(
+                    FeeWaiverUserAction.ACTION_SUBMIT.format(fee_waiver_obj.lodgement_number))
                 return Response(waiver_serializer.data)
         except Exception as e:
             print(traceback.print_exc())

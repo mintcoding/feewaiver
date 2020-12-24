@@ -164,8 +164,6 @@ class FeeWaiver(RevisionedMixin):
             request)
         self.save()
 
-
-
     def save(self, *args, **kwargs):
         super(FeeWaiver, self).save(*args,**kwargs)
         if self.lodgement_number == '':
@@ -191,9 +189,14 @@ class FeeWaiver(RevisionedMixin):
             #return ApproversGroup.objects.first().members.none()
             return []
 
-    def log_user_action(self, action, request):
+#    def log_user_action(self, action, request):
         #import ipdb; ipdb.set_trace()
-        return FeeWaiverUserAction.log_action(self, action, request.user)
+ #       return FeeWaiverUserAction.log_action(self, action, request.user)
+    def log_user_action(self, action, request=None):
+        if request:
+            return FeeWaiverUserAction.log_action(self, action, request.user)
+        else:
+            return FeeWaiverUserAction.log_action(self, action)
 
     def assign_officer(self,request,officer):
         with transaction.atomic():
@@ -387,13 +390,14 @@ class FeeWaiverUserAction(UserAction):
     ACTION_DECLINE = "Fee Waiver {} has been declined"
     ACTION_RETURN_TO_ASSESSOR = "Fee Waiver {} has been returned to Assessor"
     ACTION_SAVE = "Fee Waiver {} has been saved by {}"
+    ACTION_SUBMIT = "Fee Waiver {} has been submitted"
 
     class Meta:
         app_label = 'feewaiver'
         ordering = ('-when',)
 
     @classmethod
-    def log_action(cls, fee_waiver, action, user):
+    def log_action(cls, fee_waiver, action, user=None):
         #import ipdb; ipdb.set_trace()
         #if approval.apiary_approval:
          #   action = action.replace('Approval', 'Licence').replace('approval', 'licence').replace('proposal', 'application').replace('Proposal', 'Application')
@@ -404,6 +408,7 @@ class FeeWaiverUserAction(UserAction):
         )
 
     fee_waiver = models.ForeignKey(FeeWaiver, related_name='action_logs')
+    who = models.ForeignKey(EmailUser, null=True, blank=True)
 
 
 class AssessorsGroup(models.Model):

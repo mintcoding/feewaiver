@@ -486,8 +486,11 @@
                     } catch (error) {
                         console.log(error);
                         let swalTitle = "Error";
-                        // remove the {} from the data string with slice
-                        let swalText = error.data[0].slice(1,-1);
+                        let swalText = error.data[0];
+                        if (error.data[0].slice(0,1) === '"{') {
+                            // remove the {} from the data string with slice
+                            swalText = error.data[0].slice(1,-1);
+                        }
                         await swal({
                             title: swalTitle,
                             text: swalText,
