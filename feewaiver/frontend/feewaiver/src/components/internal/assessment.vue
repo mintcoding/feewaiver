@@ -35,7 +35,7 @@
                             </div>
 
                             <div class="col-sm-12 top-buffer-s" v-if="!isFinalised && canProcess">
-                                <div v-if="show_spinner"><i class='fa fa-2x fa-spinner fa-spin'></i></div>
+                                <div v-if="show_spinner"><i class='fa fa-5x fa-spinner fa-spin'></i></div>
                                 <div v-else>
                                 <template v-if="canProcessAssessor">
                                     <div class="row">
@@ -106,25 +106,6 @@
         <div v-if="workflowActionType">
             <AssessmentWorkflow ref="assessment_workflow" :feeWaiver="feeWaiver" :workflow_type="workflowActionType" :key="'workflow_action_' + workflowActionType"/>
         </div>
-        <!--ProposedDecline ref="proposed_decline" :processing_status="feeWaiver.processing_status" :feeWaiver_id="feeWaiver.id" @refreshFromResponse="refreshFromResponse"></ProposedDecline>
-        <AmendmentRequest 
-        ref="amendment_request" 
-        :feeWaiver_id="feeWaiver.id" 
-        :is_apiary_feeWaiver="isApiaryProposal"
-        @refreshFromResponse="refreshFromResponse"
-        />
-        <ProposedApiaryIssuance 
-            ref="proposed_approval" 
-            :processing_status="feeWaiver.processing_status" 
-            :feeWaiver_apiary_id="apiaryProposal.id" 
-            :feeWaiver_id="feeWaiverId" 
-            :feeWaiver="feeWaiver"
-            :feeWaiver_type='feeWaiver.feeWaiver_type' 
-            :isApprovalLevelDocument="isApprovalLevelDocument" 
-            :submitter_email="feeWaiver.submitter_email" 
-            :applicant_email="applicant_email" 
-            @refreshFromResponse="refreshFromResponse"
-        /-->
     </div>
 </template>
 <script>

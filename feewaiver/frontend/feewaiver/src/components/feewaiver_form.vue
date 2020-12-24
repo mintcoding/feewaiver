@@ -1,5 +1,8 @@
 <template lang="html">
-    <div :class="containingClass">
+    <div v-if="showFormSpinner">
+        <i class='fa fa-5x fa-spinner fa-spin'></i>
+    </div>
+    <div v-else :class="containingClass">
         <!--strong> fill in form</strong-->
         <!--a class="navbar-brand" href="{% url 'ds_home' %}"><div style="inline"><img src="{% static 'feewaiver/img/dpaw_small.png' %}">Staff login</div></a-->
         <!--a class="navbar-brand pull-right" href="/"><div style="inline"><img src="/static/feewaiver/img/dpaw_small.png">Staff login</div></a-->
@@ -214,6 +217,7 @@
             let vm = this;
             return {
                 feeWaiver: {},
+                showFormSpinner: false,
                 payload: {},
                 //allVisitsUnchecked: false,
                 //feeWaiverId: null,
@@ -607,38 +611,10 @@
                 await this.fetchParticipantsGroupList();
                 await this.fetchParksList();
                 if (this.feeWaiverId) {
+                    this.showFormSpinner = true;
                     await this.loadFeeWaiverData();
                     await this.recalcVisitsFlag();
-                    /*
-                    await this.fetchCampingChoices();
-                    console.log(this.feeWaiverId);
-                    const url = api_endpoints.feewaivers + this.feeWaiverId + '/feewaiver_contactdetails_pack/';
-
-                    const returnVal = await this.$http.get(url);
-                    //console.log(url);
-                    //console.log(returnVal);
-                    this.feeWaiver.id = returnVal.body.fee_waiver.id;
-                    this.feeWaiver.lodgement_number = returnVal.body.fee_waiver.lodgement_number;
-                    this.feeWaiver.fee_waiver_purpose = returnVal.body.fee_waiver.fee_waiver_purpose;
-                    // visits should be empty if reading from backend
-                    this.visits = []
-                    this.visitIdx = -1;
-                    for (let retrievedVisit of returnVal.body.fee_waiver.visits) {
-                        let visit = Object.assign({}, retrievedVisit);
-                        //visit.index = visit.id;
-                        visit.index = ++this.visitIdx;
-                        visit.date_to = moment(visit.date_to, 'YYYY-MM-DD').format('DD/MM/YYYY');
-                        visit.date_from = moment(visit.date_from, 'YYYY-MM-DD').format('DD/MM/YYYY');
-                        visit.number_of_vehicles = visit.number_of_vehicles.toString()
-                        //this.feeWaiver = Object.assign({}, feeWaiverUpdate);
-                        this.visits.push(visit);
-                    }
-                    this.contactDetails = Object.assign({}, returnVal.body.contact_details);
-                    // TODO: try to improve this
-                    if (this.contactDetails.participants_code) {
-                        this.contactDetails.participants_id = this.contactDetails.participants_code;
-                    }
-                    */
+                    this.showFormSpinner = false;
                 }
             });
         },
