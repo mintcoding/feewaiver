@@ -64,6 +64,7 @@ import datatable from '@/utils/vue/datatable.vue'
 import Vue from 'vue'
 import FormSection from "@/components/forms/section_toggle.vue"
 import ResponsiveDatatablesHelper from "@/utils/responsive_datatable_helper.js"
+//require("bootstrap/dist/css/bootstrap.css");
 import {
     api_endpoints,
     helpers
@@ -80,6 +81,7 @@ export default {
             datatable_id: 'feewaiver-datatable-'+vm._uid,
             //Profile to check if user has access to process Proposal
             profile: {},
+            show_spinner: false, 
             popoversInitialised: false,
             filterFeeWaiverStatus: 'All',
             filterFeeWaiverLodgedFrom: '',
@@ -299,11 +301,18 @@ export default {
         },
         actionShortcut: async function(id, approvalType) {
             let vm = this;
+            let processingTableStr = `.action-${id}`;
+            let processingTable = $(processingTableStr);
+            processingTable.replaceWith("<div><i class='fa fa-2x fa-spinner fa-spin'></i></div>");
+            //processingTable.replaceWith = "<i class='fa fa-2x fa-spinner fa-spin'></i>"
+            //let table = vm.$refs.feewaiver_datatable.vmDataTable
+            //table.data("processing.dt", true);
             let post_url = '/api/feewaivers/' + id + '/final_approval/'
             let res = await Vue.http.post(post_url, {'approval_type': approvalType});
             if (res.ok) {
                 this.refreshFromResponse();
             }
+            //table.data("processing.dt", false);
         },
         refreshFromResponse: function(){
             this.$refs.feewaiver_datatable.vmDataTable.ajax.reload();
@@ -390,20 +399,30 @@ export default {
                 }
             });
             //Internal Action shortcut listeners
-            vm.$refs.feewaiver_datatable.vmDataTable.on('click', 'a[data-issue]', function(e) {
+            let table = vm.$refs.feewaiver_datatable.vmDataTable
+            table.on('processing.dt', function(e) {
+                console.log("processing");
+            })
+            table.on('click', 'a[data-issue]', async function(e) {
+                //let processingTable = $(vm.$refs.feewaiver_datatable.table).filter('[data-issue]')
                 e.preventDefault();
+                //vm.$refs.feewaiver_datatable.vmDataTable.draw();
                 var id = $(this).attr('data-issue');
-                vm.actionShortcut(id, 'issue');
-            });
-            vm.$refs.feewaiver_datatable.vmDataTable.on('click', 'a[data-concession]', function(e) {
+                /*
+                let processingTable = $(vm.$refs.feewaiver_datatable.table)
+                //processingTable.replaceWith = "<div><i class='fa fa-2x fa-spinner fa-spin'></i></div>"
+                processingTable.replaceWith('<div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>')
+                console.log(processingTable);
+                */
+                await vm.actionShortcut(id, 'issue');
+            }).on('click', 'a[data-concession]', async function(e) {
                 e.preventDefault();
                 var id = $(this).attr('data-concession');
-                vm.actionShortcut(id, 'issue_concession');
-            });
-            vm.$refs.feewaiver_datatable.vmDataTable.on('click', 'a[data-decline]', function(e) {
+                await vm.actionShortcut(id, 'issue_concession');
+            }).on('click', 'a[data-decline]', async function(e) {
                 e.preventDefault();
                 var id = $(this).attr('data-decline');
-                vm.actionShortcut(id, 'decline');
+                await vm.actionShortcut(id, 'decline');
             //}).on('inserted.bs.popover', function () {
                 //table = $('#'+commsLogId).DataTable(datatable_options);
 

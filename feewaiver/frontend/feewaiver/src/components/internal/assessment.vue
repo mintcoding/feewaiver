@@ -36,6 +36,7 @@
 
                             <div class="col-sm-12 top-buffer-s" v-if="!isFinalised && canProcess">
                                 <div v-if="show_spinner"><i class='fa fa-2x fa-spinner fa-spin'></i></div>
+                                <div v-else>
                                 <template v-if="canProcessAssessor">
                                     <div class="row">
                                         <div class="col-sm-12">
@@ -80,6 +81,7 @@
                                         </div>
                                     </div>
                                 </template>
+                                </div>
                             </div>
                         </div>
                     </div>
