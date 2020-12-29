@@ -66,6 +66,7 @@ urlpatterns = [
     url(r'^profiles/', views.ExternalView.as_view(), name='manage-profiles'),
     url(r'^help/(?P<application_type>[^/]+)/(?P<help_type>[^/]+)/$', views.HelpView.as_view(), name='help'),
     url(r'^mgt-commands/$', views.ManagementCommandsView.as_view(), name='mgt-commands'),
+    url(r'^internal/fee_waiver/(?P<feewaiver_pk>\d+)/$', views.InternalFeeWaiverView.as_view(), name='internal-feewaiver-detail'),
     #url(r'test-emails/$', proposal_views.TestEmailView.as_view(), name='test-emails'),
     ##url(r'^external/organisations/manage/$', views.ExternalView.as_view(), name='manage-org'),
     ##following url is used to include url path when sending Proposal amendment request to user.

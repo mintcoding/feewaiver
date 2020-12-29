@@ -130,6 +130,7 @@
             :label="'Visit ' + (visit.index + 1)"
             :Index="'index_' + visit.index"
             :ref="'visit_' + visit.index"
+            :id="'visit_' + visit.index"
             :visit="visit"
             :participantGroupList="participantGroupList"
             :parksList="parksList"
@@ -338,7 +339,7 @@
             updateTempDocCollId: function(id) {
                 this.temporary_document_collection_id = id.temp_doc_id;
             },
-            addVisit: function() {
+            addVisit: async function () {
                 /*
                 let visit = {};
                 visit.index = ++this.visitIdx;
@@ -353,6 +354,11 @@
                 }
 
                 this.visits.push(visit);
+                // focus on new Visit section
+                await this.$nextTick();
+                let visitRefDescriptionLabel = 'visit_description_' + visit.index;
+                let visitDescriptionRef = document.getElementById(visitRefDescriptionLabel);
+                visitDescriptionRef.focus();
             },
             /*
             checkBlankFields: function() {

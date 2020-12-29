@@ -25,6 +25,7 @@ from feewaiver.forms import *
 from django.core.management import call_command
 import json
 from decimal import Decimal
+from feewaiver.models import FeeWaiver
 
 #import logging
 #logger = logging.getLogger('payment_checkout')
@@ -186,5 +187,37 @@ class ManagementCommandsView(LoginRequiredMixin, TemplateView):
 #        import ipdb; ipdb.set_trace()
 #
 #        return render(request, self.template_name, data)
+
+
+class FeeWaiverRoutingView(TemplateView):
+    template_name = 'feewaiver/index.html'
+
+    def get(self, *args, **kwargs):
+        if self.request.user.is_authenticated():
+            if is_internal(self.request):
+                return redirect('internal')
+            return redirect('external')
+        kwargs['form'] = LoginForm
+        return super(FeeWaiverRoutingView, self).get(*args, **kwargs)
+
+#class DisturbanceContactView(TemplateView):
+#    template_name = 'disturbance/contact.html'
+#
+#class DisturbanceFurtherInformationView(TemplateView):
+#    template_name = 'disturbance/further_info.html'
+
+class InternalFeeWaiverView(DetailView):
+    #template_name = 'disturbance/index.html'
+    model = FeeWaiver
+    template_name = 'feewaiver/dash/index.html'
+
+    def get(self, *args, **kwargs):
+        if self.request.user.is_authenticated():
+            if is_internal(self.request):
+                #return redirect('internal-proposal-detail')
+                return super(InternalFeeWaiverView, self).get(*args, **kwargs)
+            #return redirect('external-proposal-detail')
+        #kwargs['form'] = LoginForm
+        #return super(FeewaiverRoutingDetailView, self).get(*args, **kwargs)
 
 

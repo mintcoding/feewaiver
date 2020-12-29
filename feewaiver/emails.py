@@ -9,6 +9,7 @@ from django.template import loader, Template#, Context
 from django.utils.html import strip_tags
 from ledger.accounts.models import Document
 from django.utils.encoding import smart_text
+from django.core.urlresolvers import reverse
 from feewaiver.models import AssessorsGroup, ApproversGroup
 #from disturbance.components.emails.emails import TemplateEmailBase
 from ledger.accounts.models import EmailUser
@@ -151,12 +152,13 @@ def send_workflow_notification(fee_waiver,request, action, email_subject=None, w
     email = FeeWaiverWorkflowNotificationEmail()
     if email_subject:
         email.subject = email_subject
-    #url = request.build_absolute_uri(reverse('internal-referral-detail',kwargs={'proposal_pk':referral.proposal.id,'referral_pk':referral.id}))
+    url = request.build_absolute_uri(reverse('internal-feewaiver-detail',kwargs={'feewaiver_pk':fee_waiver.id}))
 
     comments = request.data.get('comments')
     context = {
         'feewaiver': fee_waiver,
         'comments': comments,
+        'url': url,
     }
 
     #def send(self, to_addresses, from_address=None, context=None, attachments=None, cc=None, bcc=None):

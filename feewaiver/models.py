@@ -37,6 +37,17 @@ class Park(models.Model):
         app_label = 'feewaiver'
 
 
+class CampGround(models.Model):
+    name = models.CharField(max_length=256, blank=True, default='')
+    #email_list = models.CharField(max_length=256, blank=True, null=True, help_text='email addresses should be separated by semi-colons')
+    park = models.ForeignKey(Park, null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        app_label = 'feewaiver'
+
 
 class ContactDetails(RevisionedMixin):
     participants = models.ForeignKey(Participants, null=True, blank=True)
