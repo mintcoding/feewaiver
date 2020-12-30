@@ -320,7 +320,7 @@
                     selectionCssClass: "parkclass",
                     */
                     //containerCssClass: "parkclass",
-                    placeholder: "parks",
+                    //placeholder: "parks",
                 });
               //el_parks.css("z-index", 10);
               el_parks.on('select2:select', function(e) {
@@ -355,7 +355,7 @@
                   selectionCssClass: "campgroundclass",
                   */
                   //containerCssClass: "campgroundclass",
-                  placeholder: "campgrounds",
+                  //placeholder: "campgrounds",
               });
               el_campgrounds.on('select2:select', function(e) {
                   //console.log(e);
@@ -385,9 +385,11 @@
 
         },
 
-        created: function() {
+        mounted: function() {
         },
-        mounted: async function() {
+        created: async function() {
+            await this.$nextTick();
+            console.log("created");
             this.addEventListeners();
             this.updateJqueryData();
             await this.updateCampGrounds(this.visit.selected_park_ids);
