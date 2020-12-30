@@ -430,6 +430,7 @@ class FeeWaiverDTSerializer(serializers.ModelSerializer):
 class FeeWaiverDocSerializer(serializers.ModelSerializer):
     visits = serializers.SerializerMethodField()
     contact_name = serializers.SerializerMethodField()
+    address = serializers.SerializerMethodField()
     contact_details = ContactDetailsSerializer()
     processing_status = serializers.SerializerMethodField()
     proposed_status = serializers.SerializerMethodField()
@@ -453,6 +454,7 @@ class FeeWaiverDocSerializer(serializers.ModelSerializer):
                 'assigned_officer',
                 'comments_to_applicant',
                 'visits',
+                'address',
                 #document,
                 #assigned_to,
                 )
@@ -462,6 +464,12 @@ class FeeWaiverDocSerializer(serializers.ModelSerializer):
 
     #def get_lodgement_date(self, obj):
      #   return obj.lodgement_date.strftime('%d/%m/%Y')
+
+    def get_address(self, obj):
+        return (obj.contact_details.postal_address + '\n' +
+                obj.contact_details.suburb + '\n' +
+                obj.contact_details.state + '\n' +
+                obj.contact_details.postcode + '\n')
 
     def get_visits(self, obj):
         visits = []
