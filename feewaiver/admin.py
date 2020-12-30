@@ -22,6 +22,11 @@ class ParkAdmin(admin.ModelAdmin):
     pass
 
 
+@admin.register(CampGround)
+class CampGroundAdmin(admin.ModelAdmin):
+    pass
+
+
 @admin.register(AssessorsGroup)
 class AssessorsGroupAdmin(admin.ModelAdmin):
     filter_horizontal = ('members',)

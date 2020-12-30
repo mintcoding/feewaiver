@@ -35,6 +35,7 @@ from feewaiver.serializers import (
         FeeWaiverUserActionSerializer,
         ParticipantsSerializer,
         ParkSerializer,
+        CampGroundSerializer,
         TemporaryDocumentCollectionSerializer,
 )
 from feewaiver.models import (
@@ -46,6 +47,7 @@ from feewaiver.models import (
         FeeWaiverUserAction,
         Participants,
         Park,
+        CampGround,
 )
 from feewaiver.helpers import is_customer, is_internal, is_feewaiver_admin
 from django.core.files.base import ContentFile
@@ -565,6 +567,12 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
                         for park_id in parks_data:
                             if park_id not in visit_obj.parks.all().values_list('id', flat=True):
                                 visit_obj.parks.add(Park.objects.get(id=park_id))
+                    # add campgrounds
+                    campgrounds_data = visit.get('selected_campground_ids')
+                    if campgrounds_data:
+                        for campground_id in campgrounds_data:
+                            if campground_id not in visit_obj.campgrounds.all().values_list('id', flat=True):
+                                visit_obj.campgrounds.add(CampGround.objects.get(id=campground_id))
 
                 instance.log_user_action(
                     FeeWaiverUserAction.ACTION_SAVE.format(instance.lodgement_number, request.user.get_full_name()),
@@ -627,6 +635,11 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
                     if parks_data:
                         for park_id in parks_data:
                             visit_obj.parks.add(Park.objects.get(id=park_id))
+                    # add campgrounds
+                    campgrounds_data = visit.get('selected_campground_ids')
+                    if campgrounds_data:
+                        for campground_id in campgrounds_data:
+                            visit_obj.campgrounds.add(CampGround.objects.get(id=campground_id))
                 # send email
                 send_fee_waiver_received_notification(fee_waiver_obj,request)
                 #workflow_entry = self.add_comms_log(request, instance, workflow=True)
@@ -743,6 +756,26 @@ class ParkViewSet(viewsets.ModelViewSet):
     def parks_list(self, request, *args, **kwargs):
         #qs = Participants.objects.filter().values_list('name', flat=True)
         serializer = ParkSerializer(Park.objects.all(), many=True)
+        return Response(serializer.data)
+
+
+class CampGroundViewSet(viewsets.ModelViewSet):
+    #import ipdb; ipdb.set_trace()
+    #queryset = Proposal.objects.all()
+    queryset = CampGround.objects.none()
+    serializer_class = CampGroundSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        #import ipdb; ipdb.set_trace()
+        if is_internal(self.request): #user.is_authenticated():
+            return CampGround.objects.all()
+        return CampGround.objects.none()
+
+    @list_route(methods=['GET',])
+    def campgrounds_list(self, request, *args, **kwargs):
+        #qs = Participants.objects.filter().values_list('name', flat=True)
+        serializer = CampGroundSerializer(CampGround.objects.all(), many=True)
         return Response(serializer.data)
 
 

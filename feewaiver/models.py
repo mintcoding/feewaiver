@@ -304,6 +304,7 @@ class FeeWaiverVisit(RevisionedMixin):
     date_from = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=False,verbose_name="Date from", help_text='')
     date_to = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=False,verbose_name="Date to", help_text='')
     parks = models.ManyToManyField(Park)
+    campgrounds = models.ManyToManyField(CampGround)
     number_of_vehicles = models.IntegerField(default=0)
     camping_requested = models.BooleanField(default=False)
     issued = models.BooleanField(default=True)

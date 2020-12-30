@@ -134,6 +134,7 @@
             :visit="visit"
             :participantGroupList="participantGroupList"
             :parksList="parksList"
+            :campGroundsList="campGroundsList"
             :campingChoices="campingChoices"
             :feeWaiverId="feeWaiverId"
             :canProcess="canProcess"
@@ -227,6 +228,7 @@
                 participantGroupList: [],
                 temporary_document_collection_id: null,
                 parksList: [],
+                campGroundsList: [],
                 campingChoices: [],
                 //selected_park_ids: [],
                 visitIdx: 0,
@@ -234,6 +236,7 @@
                     {
                         index: 0,
                         selected_park_ids: [],
+                        selected_campground_ids: [],
                         age_of_participants_array: [],
                         camping_requested: false,
                     },
@@ -349,6 +352,7 @@
                 let visit = {
                     index: ++this.visitIdx,
                     selected_park_ids: [],
+                    selected_campground_ids: [],
                     age_of_participants_array: [],
                     camping_requested: false,
                 }
@@ -567,6 +571,13 @@
                     this.parksList.push(group)
                 }
             },
+            fetchCampGroundsList: async function() {
+                this.campGroundsList = [];
+                const response = await this.$http.get(api_endpoints.campgrounds)
+                for (let group of response.body) {
+                    this.campGroundsList.push(group)
+                }
+            },
             fetchCampingChoices: async function() {
                 console.log("camping choices")
                 this.campingChoices = [];
@@ -619,6 +630,7 @@
                 this.addEventListeners();
                 await this.fetchParticipantsGroupList();
                 await this.fetchParksList();
+                await this.fetchCampGroundsList();
                 if (this.feeWaiverId) {
                     this.showFormSpinner = true;
                     await this.loadFeeWaiverData();

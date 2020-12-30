@@ -9,6 +9,7 @@ from feewaiver.models import (
         FeeWaiverLogEntry,
         Participants,
         Park,
+        CampGround,
         )
 from feewaiver.main_models import TemporaryDocumentCollection
 #from disturbance.components.organisations.models import (
@@ -112,6 +113,7 @@ class ContactDetailsSerializer(serializers.ModelSerializer):
     def get_participants_code(self,obj):
         return obj.participants_id
 
+
 class ParkSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -123,6 +125,21 @@ class ParkSerializer(serializers.ModelSerializer):
         read_only_fields = (
             'id',
         )
+
+
+class CampGroundSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CampGround
+        fields = (
+                'id',
+                'name',
+                'park_id',
+                )
+        read_only_fields = (
+            'id',
+        )
+
 
 class FeeWaiverVisitSaveSerializer(serializers.ModelSerializer):
 
@@ -150,6 +167,7 @@ class FeeWaiverVisitSaveSerializer(serializers.ModelSerializer):
 class FeeWaiverVisitSerializer(serializers.ModelSerializer):
     #fee_waiver = FeeWaiverSerializer()
     selected_park_ids = serializers.SerializerMethodField()
+    selected_campground_ids = serializers.SerializerMethodField()
     selected_park_names = serializers.SerializerMethodField()
     fee_waiver_id = serializers.IntegerField(
             required=True, write_only=True, allow_null=False)
@@ -167,6 +185,7 @@ class FeeWaiverVisitSerializer(serializers.ModelSerializer):
                 'date_from',     
                 'date_to',     
                 'selected_park_ids',    
+                'selected_campground_ids',    
                 'selected_park_names',    
                 'number_of_vehicles',     
                 'age_of_participants_array', 
@@ -184,6 +203,12 @@ class FeeWaiverVisitSerializer(serializers.ModelSerializer):
         for park in obj.parks.all():
             park_id_list.append(str(park.id))
         return park_id_list
+
+    def get_selected_campground_ids(self, obj):
+        campground_id_list = []
+        for campground in obj.campgrounds.all():
+            campground_id_list.append(str(campground.id))
+        return campground_id_list
 
     def get_selected_park_names(self, obj):
         park_name_list = []

@@ -189,22 +189,16 @@ class ManagementCommandsView(LoginRequiredMixin, TemplateView):
 #        return render(request, self.template_name, data)
 
 
-class FeeWaiverRoutingView(TemplateView):
-    template_name = 'feewaiver/index.html'
-
-    def get(self, *args, **kwargs):
-        if self.request.user.is_authenticated():
-            if is_internal(self.request):
-                return redirect('internal')
-            return redirect('external')
-        kwargs['form'] = LoginForm
-        return super(FeeWaiverRoutingView, self).get(*args, **kwargs)
-
-#class DisturbanceContactView(TemplateView):
-#    template_name = 'disturbance/contact.html'
+#class FeeWaiverRoutingView(TemplateView):
+#    template_name = 'feewaiver/index.html'
 #
-#class DisturbanceFurtherInformationView(TemplateView):
-#    template_name = 'disturbance/further_info.html'
+#    def get(self, *args, **kwargs):
+#        if self.request.user.is_authenticated():
+#            if is_internal(self.request):
+#                return redirect('internal')
+#            return redirect('external')
+#        kwargs['form'] = LoginForm
+#        return super(FeeWaiverRoutingView, self).get(*args, **kwargs)
 
 class InternalFeeWaiverView(DetailView):
     #template_name = 'disturbance/index.html'

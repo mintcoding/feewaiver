@@ -20,6 +20,18 @@
                 <div class="col-sm-10">
                     <div class="form-group">
                         <div class="row">
+                            <label class="col-sm-4 control-label">Park/s</label>
+                            <div :id="'parks_parent_' + visit.index" class="col-sm-6">
+                                <select :disabled="readonly" required :id="'parks_' + visit.index" class="form-control" multiple="multiple">
+                                    <!--option value="null"></option-->
+                                    <option v-for="park in parksList" :value="park.id">{{park.name}}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="row">
                               <label class="col-sm-4">Are you intending to camp on CALM land during your visit?</label>
                                 <input :disabled="readonly" class="col-sm-1" id="yes" type="radio" v-model="visit.camping_requested" v-bind:value="true">
                                 <label class="col-sm-1" for="yes">Yes</label>
@@ -28,8 +40,8 @@
                         </div>
                     </div>
                 </div>
-                <div v-if="isInternal && visit.camping_requested" class="col-sm-10">
-                    <div :key="feeWaiverId" class="form-group">
+                <div v-if="visit.camping_requested" class="col-sm-10">
+                    <div v-if="isInternal" :key="feeWaiverId" class="form-group">
                         <div class="row">
                             <label class="col-sm-4">Applicable camping waiver</label>
                                 <div class="col-sm-8">
@@ -37,6 +49,17 @@
                                         <option v-for="choice in campingChoices" :value="Object.keys(choice)[0]">{{Object.values(choice)[0]}}</option>
                                     </select>
                                 </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <label class="col-sm-4 control-label">Campground/s</label>
+                            <div :id="'campgrounds_parent_' + visit.index" class="col-sm-6 campgroundclass">
+                                <select :disabled="readonly" required :id="'campgrounds_' + visit.index" class="form-control" multiple="multiple">
+                                    <!--option value="null"></option-->
+                                    <option v-for="campground in selectableCampGrounds" :value="campground.id">{{campground.name}}</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -64,17 +87,6 @@
                                             <span class="glyphicon glyphicon-calendar"></span>
                                         </span>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="row">
-                            <label class="col-sm-4 control-label">Park/s</label>
-                            <div class="col-sm-6">
-                                <select :disabled="readonly" required :id="'parks_' + visit.index" class="form-control" multiple="multiple">
-                                    <option value="null"></option>
-                                    <option v-for="park in parksList" :value="park.id">{{park.name}}</option>
-                                </select>
                             </div>
                         </div>
                     </div>
@@ -125,7 +137,8 @@
     import 'eonasdan-bootstrap-datetimepicker';
     require("select2/dist/css/select2.min.css");
     require("select2-bootstrap-theme/dist/select2-bootstrap.min.css");
-    require("select2");
+    //require("select2");
+    import select2 from "select2/dist/js/select2.full.js";
 
     export default {
         name: 'FeeWaiverVisit',
@@ -150,6 +163,10 @@
                 type: Array,
                 required:true,
             },
+            campGroundsList: {
+                type: Array,
+                required:true,
+            },
             campingChoices: {
                 type: Array,
                 required:true,
@@ -168,6 +185,7 @@
         data:function () {
             let vm = this;
             return {
+                selectableCampGrounds: [],
             }
         },
         components: {
@@ -181,7 +199,43 @@
                 }
                 return errorText;
             },
+            campingRequested: function() {
+                return this.visit.camping_requested;
+            },
+            selectedParks: function() {
+                return this.visit.selected_park_ids;
+            },
         },
+        watch: {
+            campingRequested: {
+                handler: async function(newVal, oldVal) {
+                    if (newVal) {
+                        await this.addCampGroundEventListener();
+                    }
+                },
+                //deep: true
+            },
+            selectedParks: {
+                handler: async function(newParks, oldParks) {
+                    //await this.$nextTick();
+                    //console.log(newParks);
+                    await this.removeCampGroundEventListener();
+                    this.selectableCampGrounds = [];
+                    for (let campGround of this.campGroundsList) {
+                        //console.log(campGround);
+                        if (!campGround.park_id || newParks.includes(campGround.park_id.toString())) {
+                        //if (!campGround.park_id) {
+                            //console.log("push");
+                            this.selectableCampGrounds.push(campGround);
+                        }
+                    }
+                    await this.addCampGroundEventListener();
+                },
+                //deep: true
+            },
+
+        },
+
         methods:{
             recalcVisits: async function() {
                 this.$emit('recalc-visits-flag');
@@ -190,9 +244,15 @@
                 // required when loading data from backend
                 let vm = this;
 
+                // parks
                 let el_parks = $('#parks_'+vm.visit.index)
                 el_parks.val(vm.visit.selected_park_ids);
                 el_parks.trigger('change');
+                // campgrounds
+                this.addCampGroundEventListener();
+                let el_campgrounds = $('#campgrounds_'+vm.visit.index)
+                el_campgrounds.val(vm.visit.selected_campground_ids);
+                el_campgrounds.trigger('change');
                 
                 let el_fr_date = $('#dateFromPicker_' + vm.visit.index);
                 el_fr_date.val(vm.visit.date_from);
@@ -242,9 +302,19 @@
               });
               // Parks
               let parkLabel = 'parks_' + vm.visit.index;
+              let parkParentLabel = 'parks_parent_' + vm.visit.index;
               //let el_parks = $(vm.$refs.refLabel);
+              //$('#parks').css("z-index", 100000);
               let el_parks = $('#' + parkLabel);
-              el_parks.select2();
+                el_parks.select2({
+                    /*
+                    dropdownParent: $('#' + parkParentLabel),
+                    selectionCssClass: "parkclass",
+                    */
+                    //containerCssClass: "parkclass",
+                    placeholder: "parks",
+                });
+              //el_parks.css("z-index", 10);
               el_parks.on('select2:select', function(e) {
                   //console.log(e);
                   let val = e.params.data;
@@ -262,7 +332,51 @@
               });
 
             },
+            addCampGroundEventListener: async function() {
+              await this.$nextTick();
+              let vm = this;
+              // CampGrounds
+              let campGroundLabel = 'campgrounds_' + vm.visit.index;
+              let campGroundParentLabel = 'campgrounds_parent_' + vm.visit.index;
+              let el_campgrounds = $('#' + campGroundLabel);
+              $('.campgroundclass').css('z-index', 5);
+              //console.log(el_campgrounds);
+              el_campgrounds.select2({
+                  /*
+                  dropdownParent: $('#' + campGroundParentLabel),
+                  selectionCssClass: "campgroundclass",
+                  */
+                  //containerCssClass: "campgroundclass",
+                  placeholder: "campgrounds",
+              });
+              el_campgrounds.on('select2:select', function(e) {
+                  //console.log(e);
+                  let val = e.params.data;
+                  if (!vm.visit.selected_campground_ids.includes(val.id)) {
+                      vm.visit.selected_campground_ids.push(val.id);
+                  }
+              }).
+              on("select2:unselect",function (e) {
+                  //console.log(e);
+                  let val = e.params.data;
+                  if (vm.visit.selected_campground_ids.includes(val.id)) {
+                      let index = vm.visit.selected_campground_ids.indexOf(val.id);
+                      vm.visit.selected_campground_ids.splice(index, 1);
+                  }
+              });
+            },
+            removeCampGroundEventListener: async function() {
+              await this.$nextTick();
+              let vm = this;
+              // CampGrounds
+              let campGroundLabel = 'campgrounds_' + vm.visit.index;
+              let el_campgrounds = $('#' + campGroundLabel);
+              el_campgrounds.select2();
+              el_campgrounds.off('select2:select').off("select2:unselect");
+            },
+
         },
+
         created: function() {
         },
         mounted: function() {
@@ -282,10 +396,12 @@
     .list-group{
         margin-bottom: 0;
     }
+    /*
     .fixed-top{
         position: fixed;
         top:56px;
     }
+    */
     .insurance-items {
         padding-inline-start: 1em;
     }
@@ -303,5 +419,22 @@
     .input-file-wrapper {
         margin: 1.5em 0 0 0;
     }
+    /*
+    .select2-container.parkclass {
+        position: relative;
+        z-index: 10;
+    }
+    .select2-container.campgroundclass {
+        position: relative;
+        z-index: 5;
+    }
+    .parkclass {
+        z-index: 10;
+    }
+    .campgroundclass {
+        z-index: 5;
+    }
+    */
+
 </style>
 
