@@ -66,6 +66,7 @@ from feewaiver.emails import (
         send_fee_waiver_received_notification,
         send_workflow_notification,
         send_approver_notification,
+        send_approval_notification,
         )
 from feewaiver.main_decorators import basic_exception_handler
 from feewaiver.main_models import TemporaryDocumentCollection
@@ -550,6 +551,11 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
 
                 # send email
                 send_approver_notification(instance, request, action)
+                for p_status in FeeWaiver.PROCESSING_STATUS_CHOICES:
+                    if p_status[0] == instance.processing_status:
+                        final_status = p_status[1]
+                email_subject = "Entry Fee Waiver Request {} has been {}".format(instance.lodgement_number, final_status)
+                send_approval_notification(instance, request, action, email_subject)
                 return Response()
 
         except serializers.ValidationError:

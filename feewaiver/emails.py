@@ -131,6 +131,13 @@ class FeeWaiverApproverNotificationEmail(TemplateEmailBase):
     html_template = 'feewaiver/email/fee_waiver_approver_notification.html'
     txt_template = 'feewaiver/email/fee_waiver_approver_notification.txt'
 
+class FeeWaiverApprovalNotificationEmail(TemplateEmailBase):
+    #subject = 'Fee Waiver request approval notification'
+    #html_template = 'feewaiver/emails/proposals/send_referral_notification.html'
+    #txt_template = 'feewaiver/emails/proposals/send_referral_notification.txt'
+    html_template = 'feewaiver/email/fee_waiver_approval_notification.html'
+    txt_template = 'feewaiver/email/fee_waiver_approval_notification.txt'
+
 
 def send_fee_waiver_received_notification(fee_waiver,request):
     email = FeeWaiverReceivedNotificationEmail()
@@ -193,12 +200,30 @@ def send_approver_notification(fee_waiver,request, action):
         #'comments': comments,
     }
     #if action in ["issue", "issue_concession", "decline"]:
-    to_addresses = fee_waiver.contact_details.email
+    if fee_waiver.assigned_officer:
+        to_addresses = fee_waiver.assigned_officer.email
+    else:
+        to_addresses = list(ApproversGroup.objects.first().members.all().values_list('email', flat=True))
+    #to_addresses = fee_waiver.contact_details.email
     sender = settings.DEFAULT_FROM_EMAIL
     msg = email.send(to_addresses, sender, context=context, attachments=prepare_attachments(fee_waiver.documents))
     _log_feewaiver_email(msg, fee_waiver, sender=sender)
 
+def send_approval_notification(fee_waiver,request, action, email_subject):
+    email = FeeWaiverApprovalNotificationEmail()
+    #if email_subject:
+    email.subject = email_subject
 
+    #comments = request.data.get('comments')
+    context = {
+        'feewaiver': fee_waiver,
+        #'comments': comments,
+    }
+    #if action in ["issue", "issue_concession", "decline"]:
+    to_addresses = fee_waiver.contact_details.email
+    sender = settings.DEFAULT_FROM_EMAIL
+    msg = email.send(to_addresses, sender, context=context, attachments=prepare_attachments(fee_waiver.documents))
+    _log_feewaiver_email(msg, fee_waiver, sender=sender)
 
 def _log_feewaiver_email(email_message, fee_waiver, sender=None, workflow_entry=None):
     from feewaiver.models import FeeWaiverLogEntry
