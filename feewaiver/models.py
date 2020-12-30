@@ -306,6 +306,7 @@ class FeeWaiverVisit(RevisionedMixin):
     parks = models.ManyToManyField(Park)
     campgrounds = models.ManyToManyField(CampGround)
     number_of_vehicles = models.IntegerField(default=0)
+    index = models.IntegerField(null=True)
     camping_requested = models.BooleanField(default=False)
     issued = models.BooleanField(default=True)
     AGE_CHOICES = (
@@ -403,6 +404,7 @@ class FeeWaiverUserAction(UserAction):
     ACTION_RETURN_TO_ASSESSOR = "Fee Waiver {} has been returned to Assessor"
     ACTION_SAVE = "Fee Waiver {} has been saved by {}"
     ACTION_SUBMIT = "Fee Waiver {} has been submitted"
+    ACTION_VISIT_FLAG = "Visit {} for Fee Waiver {} has been {}"
 
     class Meta:
         app_label = 'feewaiver'

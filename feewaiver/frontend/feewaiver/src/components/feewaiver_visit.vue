@@ -33,9 +33,9 @@
                     <div class="form-group">
                         <div class="row">
                               <label class="col-sm-4">Are you intending to camp on CALM land during your visit?</label>
-                                <input :disabled="readonly" class="col-sm-1" id="yes" type="radio" v-model="visit.camping_requested" v-bind:value="true">
+                                <input :disabled="readonly" class="col-sm-1" :id="'yes_' + visit.index" type="radio" v-model="visit.camping_requested" v-bind:value="true">
                                 <label class="col-sm-1" for="yes">Yes</label>
-                                <input :disabled="readonly" class="col-sm-1" id="no" type="radio" v-model="visit.camping_requested" v-bind:value="false">
+                                <input :disabled="readonly" class="col-sm-1" :id="'no_' + visit.index" type="radio" v-model="visit.camping_requested" v-bind:value="false">
                                 <label class="col-sm-1" for="no">No</label>
                         </div>
                     </div>
@@ -103,15 +103,15 @@
                             <label class="col-sm-4 control-label">Age of participants</label>
                             <div class="col-sm-8">
                             <p>
-                                <input :ref="'age_of_participants_' + visit.index" :disabled="readonly" type="checkbox" id="15" value="15" v-model="visit.age_of_participants_array">
+                                <input :ref="'age_of_participants_' + visit.index" :disabled="readonly" type="checkbox" :id="'15_' + visit.index" value="15" v-model="visit.age_of_participants_array">
                                 <label>Under 15 yrs</label>
-                                <input :disabled="readonly" type="checkbox" id="24" value="24" v-model="visit.age_of_participants_array">
+                                <input :disabled="readonly" type="checkbox" :id="'24_' + visit.index" value="24" v-model="visit.age_of_participants_array">
                                 <label>15-24 yrs</label>
-                                <input :disabled="readonly" type="checkbox" id="25" value="25" v-model="visit.age_of_participants_array">
+                                <input :disabled="readonly" type="checkbox" :id="'25_' + visit.index" value="25" v-model="visit.age_of_participants_array">
                                 <label>25-39 yrs</label>
-                                <input :disabled="readonly" type="checkbox" id="40" value="40" v-model="visit.age_of_participants_array">
+                                <input :disabled="readonly" type="checkbox" :id="'40_' + visit.index" value="40" v-model="visit.age_of_participants_array">
                                 <label>40-59 yrs</label>
-                                <input :disabled="readonly" type="checkbox" id="60" value="60" v-model="visit.age_of_participants_array">
+                                <input :disabled="readonly" type="checkbox" :id="'60_' + visit.index" value="60" v-model="visit.age_of_participants_array">
                                 <label>60 yrs and over</label>
                             </p>
                             <p>
@@ -217,19 +217,7 @@
             },
             selectedParks: {
                 handler: async function(newParks, oldParks) {
-                    //await this.$nextTick();
-                    //console.log(newParks);
-                    await this.removeCampGroundEventListener();
-                    this.selectableCampGrounds = [];
-                    for (let campGround of this.campGroundsList) {
-                        //console.log(campGround);
-                        if (!campGround.park_id || newParks.includes(campGround.park_id.toString())) {
-                        //if (!campGround.park_id) {
-                            //console.log("push");
-                            this.selectableCampGrounds.push(campGround);
-                        }
-                    }
-                    await this.addCampGroundEventListener();
+                    await this.updateCampGrounds(newParks);
                 },
                 //deep: true
             },
@@ -238,9 +226,27 @@
 
         methods:{
             recalcVisits: async function() {
+                await this.$nextTick();
                 this.$emit('recalc-visits-flag');
+                let url = `/api/feewaivers/${this.feeWaiverId}/log_visit_action/`;
+                await this.$http.post(url,this.visit);
             },
-            updateJqueryData: function() {
+            updateCampGrounds: async function(newParks) {
+                //await this.$nextTick();
+                //console.log(newParks);
+                await this.removeCampGroundEventListener();
+                this.selectableCampGrounds = [];
+                for (let campGround of this.campGroundsList) {
+                    //console.log(campGround);
+                    if (!campGround.park_id || newParks.includes(campGround.park_id.toString())) {
+                    //if (!campGround.park_id) {
+                        //console.log("push");
+                        this.selectableCampGrounds.push(campGround);
+                    }
+                }
+                await this.addCampGroundEventListener();
+            },
+            updateJqueryData: async function() {
                 // required when loading data from backend
                 let vm = this;
 
@@ -249,10 +255,12 @@
                 el_parks.val(vm.visit.selected_park_ids);
                 el_parks.trigger('change');
                 // campgrounds
-                this.addCampGroundEventListener();
+                /*
+                await this.addCampGroundEventListener();
                 let el_campgrounds = $('#campgrounds_'+vm.visit.index)
-                el_campgrounds.val(vm.visit.selected_campground_ids);
+                el_campgrounds.val(vm.visit.selected_campground_ids.toString());
                 el_campgrounds.trigger('change');
+                */
                 
                 let el_fr_date = $('#dateFromPicker_' + vm.visit.index);
                 el_fr_date.val(vm.visit.date_from);
@@ -379,9 +387,15 @@
 
         created: function() {
         },
-        mounted: function() {
+        mounted: async function() {
             this.addEventListeners();
             this.updateJqueryData();
+            await this.updateCampGrounds(this.visit.selected_park_ids);
+            // read in campgrounds from db
+            let vm = this;
+            let el_campgrounds = $('#campgrounds_'+vm.visit.index)
+            el_campgrounds.val(vm.visit.selected_campground_ids.toString());
+            el_campgrounds.trigger('change');
         },
     }
 </script>

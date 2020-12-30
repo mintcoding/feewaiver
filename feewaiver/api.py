@@ -502,6 +502,36 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
 
     @detail_route(methods=['POST'])
     @renderer_classes((JSONRenderer,))
+    def log_visit_action(self, request, *args, **kwargs):
+        try:
+            with transaction.atomic():
+                instance = self.get_object()
+                visit_issued = request.data.get('issued')
+                visit_index = request.data.get('index')
+                checked_unchecked = "checked" if visit_issued else "unchecked"
+                # send email
+                #send_workflow_notification(instance,request, action, email_subject, workflow_entry)
+                #ACTION_VISIT_ACTION = "Visit {} for Fee Waiver {} has been {}"
+                instance.log_user_action(
+                    FeeWaiverUserAction.ACTION_VISIT_FLAG.format(
+                        visit_index + 1, 
+                        instance.lodgement_number, 
+                        checked_unchecked, 
+                        request.user.get_full_name()),
+                    request)
+                return Response()
+
+        except serializers.ValidationError:
+            print(traceback.print_exc())
+            raise
+        except ValidationError as e:
+            raise serializers.ValidationError(repr(e.error_dict))
+        except Exception as e:
+            print(traceback.print_exc())
+            raise serializers.ValidationError(str(e))
+
+    @detail_route(methods=['POST'])
+    @renderer_classes((JSONRenderer,))
     def final_approval(self, request, *args, **kwargs):
         try:
             with transaction.atomic():
@@ -642,6 +672,8 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
                             visit_obj.campgrounds.add(CampGround.objects.get(id=campground_id))
                 # send email
                 send_fee_waiver_received_notification(fee_waiver_obj,request)
+                email_subject = "Fee Waiver {} has been submitted".format(fee_waiver_obj.lodgement_number)
+                send_workflow_notification(fee_waiver_obj,request, "submit", email_subject)
                 #workflow_entry = self.add_comms_log(request, instance, workflow=True)
                 #import ipdb; ipdb.set_trace()
                 temporary_document_collection_id = request.data.get('temporary_document_collection_id')

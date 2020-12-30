@@ -593,7 +593,7 @@
 
                 const returnVal = await this.$http.get(url);
                 //console.log(url);
-                console.log(returnVal.body.fee_waiver);
+                //console.log(returnVal.body.fee_waiver);
                 this.feeWaiver.id = returnVal.body.fee_waiver.id;
                 this.feeWaiver.lodgement_number = returnVal.body.fee_waiver.lodgement_number;
                 this.feeWaiver.fee_waiver_purpose = returnVal.body.fee_waiver.fee_waiver_purpose;
@@ -606,8 +606,8 @@
                 this.visitIdx = -1;
                 for (let retrievedVisit of returnVal.body.fee_waiver.visits) {
                     let visit = Object.assign({}, retrievedVisit);
-                    //visit.index = visit.id;
-                    visit.index = ++this.visitIdx;
+                    // we are now saving the index to db
+                    //visit.index = ++this.visitIdx;
                     visit.date_to = moment(visit.date_to, 'YYYY-MM-DD').format('DD/MM/YYYY');
                     visit.date_from = moment(visit.date_from, 'YYYY-MM-DD').format('DD/MM/YYYY');
                     visit.number_of_vehicles = visit.number_of_vehicles.toString()

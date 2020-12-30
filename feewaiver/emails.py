@@ -165,7 +165,7 @@ def send_workflow_notification(fee_waiver,request, action, email_subject=None, w
     #to_addresses = fee_waiver.assigned_officer.email
     if action in ["propose_issue", "propose_concession", "propose_decline"]:
         to_addresses = list(ApproversGroup.objects.first().members.all().values_list('email', flat=True))
-    if action == "return_to_assessor":
+    if action in ["return_to_assessor", "submit"]:
         to_addresses = list(AssessorsGroup.objects.first().members.all().values_list('email', flat=True))
     if action in ["issue", "issue_concession", "decline"]:
         to_addresses = fee_waiver.contact_details.email
