@@ -543,19 +543,23 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
                 if action == 'issue':
                     instance.issue(request)
                     instance.generate_doc()
+                    email_subject = "Entry Fee Waiver Request {} has been issued".format(instance.lodgement_number)
+                    send_approval_notification(instance, request, action, email_subject)
                 if action == 'issue_concession':
                     instance.issue_concession(request)
                     instance.generate_doc()
+                    email_subject = "Concession issued for Entry Fee Waiver Request {}".format(instance.lodgement_number)
+                    send_approval_notification(instance, request, action, email_subject)
                 if action == 'decline':
                     instance.decline(request)
+                    email_subject = "Entry Fee Waiver Request {} has been declined".format(instance.lodgement_number)
+                    send_approval_notification(instance, request, action, email_subject)
 
                 # send email
                 send_approver_notification(instance, request, action)
-                for p_status in FeeWaiver.PROCESSING_STATUS_CHOICES:
-                    if p_status[0] == instance.processing_status:
-                        final_status = p_status[1]
-                email_subject = "Entry Fee Waiver Request {} has been {}".format(instance.lodgement_number, final_status)
-                send_approval_notification(instance, request, action, email_subject)
+                #for p_status in FeeWaiver.PROCESSING_STATUS_CHOICES:
+                 #   if p_status[0] == instance.processing_status:
+                  #      final_status = p_status[1]
                 return Response()
 
         except serializers.ValidationError:
