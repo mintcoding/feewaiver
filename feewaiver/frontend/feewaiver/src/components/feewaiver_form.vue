@@ -628,19 +628,19 @@
         mounted: function() {
         },
         created: async function() {
-            await this.$nextTick();
             //let vm = this;
             //await this.$nextTick(async () => {
-                this.addEventListeners();
-                await this.fetchParticipantsGroupList();
-                await this.fetchParksList();
-                await this.fetchCampGroundsList();
-                if (this.feeWaiverId) {
+                if (this.isInternal) {
                     this.showFormSpinner = true;
                     await this.loadFeeWaiverData();
                     await this.recalcVisitsFlag();
                     this.showFormSpinner = false;
                 }
+                await this.$nextTick();
+                this.addEventListeners();
+                await this.fetchParticipantsGroupList();
+                await this.fetchParksList();
+                await this.fetchCampGroundsList();
                 ++this.uuid;
             //});
         },

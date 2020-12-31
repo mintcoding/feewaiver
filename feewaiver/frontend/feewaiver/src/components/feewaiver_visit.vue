@@ -201,7 +201,7 @@
         data:function () {
             let vm = this;
             return {
-                selectableCampGrounds: [],
+                //selectableCampGrounds: [],
             }
         },
         components: {
@@ -232,10 +232,11 @@
                 //deep: true
             },
             selectedParks: {
-                handler: function(newParks, oldParks) {
+                handler: async function(newParks, oldParks) {
+                    await this.triggerCampGroundSelector();
                     //console.log("selectedParks");
                     //await this.$nextTick();
-                    this.updateSelectableCampGrounds(newParks);
+                    //this.updateSelectableCampGrounds(newParks);
                     //this.addCampGroundEventListener();
                 },
                 //deep: true
@@ -244,12 +245,14 @@
         },
 
         methods:{
-            triggerCampGroundSelector: async function(newParks) {
+            //triggerCampGroundSelector: async function(newParks, internal) {
+            triggerCampGroundSelector: async function(internal) {
                 console.log("trigger")
                 await this.$nextTick();
                 //this.updateCampGrounds(this.visit.selected_park_ids);
                 this.addCampGroundEventListener();
-                this.updateSelectableCampGrounds(newParks);
+                //this.updateSelectableCampGrounds(newParks, internal);
+                this.updateSelectableCampGrounds(this.visit.selected_park_ids, internal);
             },
             recalcVisits: async function() {
                 await this.$nextTick();
@@ -274,7 +277,6 @@
             */
             updateSelectableCampGrounds: function(newParks, internal) {
                 let vm = this;
-                console.log(newParks);
                 //this.removeCampGroundEventListener();
                 let selectableCampGrounds = [];
                 for (let campGround of this.campGroundsList) {
@@ -283,13 +285,13 @@
                         selectableCampGrounds.push(campGround);
                     }
                 }
-                let el_campgrounds = $('#campgrounds_'+vm.visit.index)
+                let el_campgrounds = $('#campgrounds_'+vm.visit.index);
                 //el_campgrounds.val(vm.visit.selected_campground_ids.toString());
                 //console.log(vm.visit.selected_campground_ids);
                 //el_campgrounds.val(vm.visit.selected_campground_ids);
                 //console.log(el_campgrounds)
-                let existingOptions = el_campgrounds.find("option");
-                console.log(existingOptions)
+                //let existingOptions = el_campgrounds.find("option");
+                //console.log(existingOptions)
                 /*
                 for (let option of el_campgrounds.find("option")) {
                     if selectableCampGrounds.includes(option.value) {
@@ -297,20 +299,26 @@
                         */
                 let dataArr = []
                 for (let campGround of selectableCampGrounds) {
+                    let selected = false;
                     // check for previously selected campgrounds
                     for (let option of el_campgrounds.find("option")) {
                         if (campGround.id == option.value && option.selected) {
-                            campGround.selected = true;
+                            selected = true;
                         }
                     }
                     // with internal flag, load from db
-                    for (let park of newParks) {
-                        if (campGround.id == park) {
-                            campGround.selected = true;
+                    if (internal) {
+                        console.log("internal");
+                        //for (let park of newParks) {
+                        for (let camp of this.visit.selected_campground_ids) {
+                            if (campGround.id == camp) {
+                                selected = true;
+                            }
                         }
                     }
-                    dataArr.push({id: campGround.id, text: campGround.name, defaultSelected: false, selected: campGround.selected});
+                    dataArr.push({id: campGround.id, text: campGround.name, defaultSelected: false, selected: selected});
                 }
+                //el_campgrounds.val(null).trigger('change');
                 el_campgrounds.html('').select2({data: dataArr});
                 el_campgrounds.trigger('change');
 
@@ -409,6 +417,15 @@
                   if (vm.visit.selected_park_ids.includes(val.id)) {
                       let index = vm.visit.selected_park_ids.indexOf(val.id);
                       vm.visit.selected_park_ids.splice(index, 1);
+                      // remove associated campgrounds
+                      //vm.selectableCampGrounds
+                      for (let campGround of vm.campGroundsList) {
+                          if (campGround.park_id == val.id) {
+                              console.log(campGround);
+                              let index = vm.visit.selected_campground_ids.indexOf(campGround.id.toString());
+                              vm.visit.selected_campground_ids.splice(index, 1);
+                          }
+                      }
                   }
               });
               $('.parkclass').css('z-index', 10);
@@ -470,7 +487,7 @@
             this.updateJqueryData();
             if (this.isInternal) {
                 //console.log(this.visit.selected_campground_ids);
-                await this.triggerCampGroundSelector(this.visit.selected_campground_ids, true);
+                await this.triggerCampGroundSelector(true);
             }
             //this.updateCampGrounds(this.visit.selected_park_ids);
             //await this.addCampGroundEventListener();

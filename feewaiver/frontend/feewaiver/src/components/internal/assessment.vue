@@ -90,7 +90,7 @@
         </div>
         <div class="col-md-1"></div>
         <div class="col-md-8">
-            <div class="row">
+            <div v-if="feeWaiverId" class="row">
                 <FeeWaiverForm 
                 :feeWaiverId="feeWaiverId"
                  ref="fee_waiver_form"

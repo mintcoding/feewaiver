@@ -604,15 +604,25 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
                     # add parks
                     parks_data = visit.get('selected_park_ids')
                     if parks_data:
+                        # add new parks
                         for park_id in parks_data:
-                            if park_id not in visit_obj.parks.all().values_list('id', flat=True):
+                            if park_id not in [str(v_id) for v_id in visit_obj.parks.all().values_list('id', flat=True)]:
                                 visit_obj.parks.add(Park.objects.get(id=park_id))
+                        # remove unchecked parks
+                        for db_park_id in [str(v_id) for v_id in visit_obj.parks.all().values_list('id', flat=True)]:
+                            if db_park_id not in parks_data:
+                                visit_obj.parks.remove(Park.objects.get(id=db_park_id))
                     # add campgrounds
                     campgrounds_data = visit.get('selected_campground_ids')
                     if campgrounds_data:
+                        # add new campgrounds
                         for campground_id in campgrounds_data:
-                            if campground_id not in visit_obj.campgrounds.all().values_list('id', flat=True):
+                            if campground_id not in [str(c_id) for c_id in visit_obj.campgrounds.all().values_list('id', flat=True)]:
                                 visit_obj.campgrounds.add(CampGround.objects.get(id=campground_id))
+                        # remove unchecked campgrounds
+                        for db_campground_id in [str(c_id) for c_id in visit_obj.campgrounds.all().values_list('id', flat=True)]:
+                            if db_campground_id not in campgrounds_data:
+                                visit_obj.campgrounds.remove(CampGround.objects.get(id=db_campground_id))
 
                 instance.log_user_action(
                     FeeWaiverUserAction.ACTION_SAVE.format(instance.lodgement_number, request.user.get_full_name()),
