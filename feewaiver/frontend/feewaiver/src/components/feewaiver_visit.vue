@@ -21,7 +21,7 @@
                     <div class="form-group">
                         <div class="row">
                             <label class="col-sm-4 control-label">Park/s</label>
-                            <div :id="'parks_parent_' + visit.index" class="col-sm-6">
+                            <div :id="'parks_parent_' + visit.index" class="col-sm-6 parkclass">
                                 <select :disabled="readonly" required :id="'parks_' + visit.index" class="form-control" multiple="multiple">
                                     <!--option value="null"></option-->
                                     <option v-for="park in parksList" :value="park.id">{{park.name}}</option>
@@ -57,7 +57,7 @@
                             <div :id="'campgrounds_parent_' + visit.index" class="col-sm-6 campgroundclass">
                                 <select :disabled="readonly" required :id="'campgrounds_' + visit.index" class="form-control" multiple="multiple">
                                     <!--option value="null"></option-->
-                                    <option v-for="campground in selectableCampGrounds" :value="campground.id">{{campground.name}}</option>
+                                    <!--option v-for="campground in selectableCampGrounds" :value="campground.id">{{campground.name}}</option-->
                                 </select>
                             </div>
                         </div>
@@ -68,8 +68,16 @@
                         <div class="row">
                             <label class="col-sm-4 control-label">Date from</label>
                             <div class="col-sm-4">
-                                <div class="input-group date" :id="'dateFromPicker_' + visit.index">
-                                        <input :disabled="readonly" required type="text" class="form-control" placeholder="DD/MM/YYYY" v-model="visit.date_from" />
+                                <div class="input-group date" >
+                                        <input 
+                                            :disabled="readonly" 
+                                            required 
+                                            type="text" 
+                                            class="form-control" 
+                                            placeholder="DD/MM/YYYY" 
+                                            v-model="visit.date_from" 
+                                            :id="'dateFromPicker_' + visit.index"
+                                        />
                                         <span class="input-group-addon">
                                             <span class="glyphicon glyphicon-calendar"></span>
                                         </span>
@@ -81,8 +89,16 @@
                         <div class="row">
                             <label class="col-sm-4 control-label">Date to</label>
                             <div class="col-sm-4">
-                                <div class="input-group date" :id="'dateToPicker_' + visit.index">
-                                        <input :disabled="readonly" required type="text" class="form-control" placeholder="DD/MM/YYYY" v-model="visit.date_to" />
+                                <div class="input-group date" >
+                                        <input 
+                                            :disabled="readonly" 
+                                            required 
+                                            type="text" 
+                                            class="form-control" 
+                                            placeholder="DD/MM/YYYY" 
+                                            v-model="visit.date_to" 
+                                            :id="'dateToPicker_' + visit.index"
+                                            />
                                         <span class="input-group-addon">
                                             <span class="glyphicon glyphicon-calendar"></span>
                                         </span>
@@ -210,14 +226,17 @@
             campingRequested: {
                 handler: async function(newVal, oldVal) {
                     if (newVal) {
-                        await this.addCampGroundEventListener();
+                        await this.triggerCampGroundSelector();
                     }
                 },
                 //deep: true
             },
             selectedParks: {
-                handler: async function(newParks, oldParks) {
-                    await this.updateCampGrounds(newParks);
+                handler: function(newParks, oldParks) {
+                    //console.log("selectedParks");
+                    //await this.$nextTick();
+                    this.updateSelectableCampGrounds(newParks);
+                    //this.addCampGroundEventListener();
                 },
                 //deep: true
             },
@@ -225,28 +244,81 @@
         },
 
         methods:{
+            triggerCampGroundSelector: async function(newParks) {
+                console.log("trigger")
+                await this.$nextTick();
+                //this.updateCampGrounds(this.visit.selected_park_ids);
+                this.addCampGroundEventListener();
+                this.updateSelectableCampGrounds(newParks);
+            },
             recalcVisits: async function() {
                 await this.$nextTick();
                 this.$emit('recalc-visits-flag');
                 let url = `/api/feewaivers/${this.feeWaiverId}/log_visit_action/`;
                 await this.$http.post(url,this.visit);
             },
-            updateCampGrounds: async function(newParks) {
-                //await this.$nextTick();
+            /*
+            updateCampGrounds: function(newParks) {
                 //console.log(newParks);
-                await this.removeCampGroundEventListener();
+                //this.removeCampGroundEventListener();
                 this.selectableCampGrounds = [];
                 for (let campGround of this.campGroundsList) {
-                    //console.log(campGround);
-                    if (!campGround.park_id || newParks.includes(campGround.park_id.toString())) {
-                    //if (!campGround.park_id) {
-                        //console.log("push");
+                    let parkId = campGround.park_id ? campGround.park_id.toString() : null;
+                    if (!parkId || newParks.includes(parkId)) {
                         this.selectableCampGrounds.push(campGround);
                     }
                 }
-                await this.addCampGroundEventListener();
+                //console.log(this.selectableCampGrounds);
+                //this.addCampGroundEventListener();
             },
-            updateJqueryData: async function() {
+            */
+            updateSelectableCampGrounds: function(newParks, internal) {
+                let vm = this;
+                console.log(newParks);
+                //this.removeCampGroundEventListener();
+                let selectableCampGrounds = [];
+                for (let campGround of this.campGroundsList) {
+                    let parkId = campGround.park_id ? campGround.park_id.toString() : null;
+                    if (!parkId || (newParks && newParks.includes(parkId))) {
+                        selectableCampGrounds.push(campGround);
+                    }
+                }
+                let el_campgrounds = $('#campgrounds_'+vm.visit.index)
+                //el_campgrounds.val(vm.visit.selected_campground_ids.toString());
+                //console.log(vm.visit.selected_campground_ids);
+                //el_campgrounds.val(vm.visit.selected_campground_ids);
+                //console.log(el_campgrounds)
+                let existingOptions = el_campgrounds.find("option");
+                console.log(existingOptions)
+                /*
+                for (let option of el_campgrounds.find("option")) {
+                    if selectableCampGrounds.includes(option.value) {
+                        selecta
+                        */
+                let dataArr = []
+                for (let campGround of selectableCampGrounds) {
+                    // check for previously selected campgrounds
+                    for (let option of el_campgrounds.find("option")) {
+                        if (campGround.id == option.value && option.selected) {
+                            campGround.selected = true;
+                        }
+                    }
+                    // with internal flag, load from db
+                    for (let park of newParks) {
+                        if (campGround.id == park) {
+                            campGround.selected = true;
+                        }
+                    }
+                    dataArr.push({id: campGround.id, text: campGround.name, defaultSelected: false, selected: campGround.selected});
+                }
+                el_campgrounds.html('').select2({data: dataArr});
+                el_campgrounds.trigger('change');
+
+                //console.log(this.selectableCampGrounds);
+                //this.addCampGroundEventListener();
+            },
+
+            updateJqueryData: function() {
                 // required when loading data from backend
                 let vm = this;
 
@@ -308,6 +380,7 @@
                   vm.visit.date_to = "";
                 }
               });
+              $('.input-group').css('z-index', 20);
               // Parks
               let parkLabel = 'parks_' + vm.visit.index;
               let parkParentLabel = 'parks_parent_' + vm.visit.index;
@@ -338,16 +411,16 @@
                       vm.visit.selected_park_ids.splice(index, 1);
                   }
               });
+              $('.parkclass').css('z-index', 10);
 
             },
-            addCampGroundEventListener: async function() {
-              await this.$nextTick();
+            addCampGroundEventListener: function() {
+              //await this.$nextTick();
               let vm = this;
               // CampGrounds
               let campGroundLabel = 'campgrounds_' + vm.visit.index;
-              let campGroundParentLabel = 'campgrounds_parent_' + vm.visit.index;
+              //let campGroundParentLabel = 'campgrounds_parent_' + vm.visit.index;
               let el_campgrounds = $('#' + campGroundLabel);
-              $('.campgroundclass').css('z-index', 5);
               //console.log(el_campgrounds);
               el_campgrounds.select2({
                   /*
@@ -372,9 +445,11 @@
                       vm.visit.selected_campground_ids.splice(index, 1);
                   }
               });
+              $('.campgroundclass').css('z-index', 5);
             },
-            removeCampGroundEventListener: async function() {
-              await this.$nextTick();
+            /*
+            removeCampGroundEventListener: function() {
+              //await this.$nextTick();
               let vm = this;
               // CampGrounds
               let campGroundLabel = 'campgrounds_' + vm.visit.index;
@@ -382,6 +457,7 @@
               el_campgrounds.select2();
               el_campgrounds.off('select2:select').off("select2:unselect");
             },
+            */
 
         },
 
@@ -389,15 +465,25 @@
         },
         created: async function() {
             await this.$nextTick();
-            console.log("created");
+            //console.log("created");
             this.addEventListeners();
             this.updateJqueryData();
-            await this.updateCampGrounds(this.visit.selected_park_ids);
+            if (this.isInternal) {
+                //console.log(this.visit.selected_campground_ids);
+                await this.triggerCampGroundSelector(this.visit.selected_campground_ids, true);
+            }
+            //this.updateCampGrounds(this.visit.selected_park_ids);
+            //await this.addCampGroundEventListener();
             // read in campgrounds from db
+            //await this.$nextTick();
+            /*
             let vm = this;
             let el_campgrounds = $('#campgrounds_'+vm.visit.index)
-            el_campgrounds.val(vm.visit.selected_campground_ids.toString());
+            //el_campgrounds.val(vm.visit.selected_campground_ids.toString());
+            //console.log(vm.visit.selected_campground_ids);
+            el_campgrounds.val(vm.visit.selected_campground_ids);
             el_campgrounds.trigger('change');
+            */
         },
     }
 </script>

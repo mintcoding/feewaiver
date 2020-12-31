@@ -124,8 +124,10 @@
                 </div>
             </div>
         </FormSection>
-        <div v-for="visit in visits" :key="visit.id">
+        <!--div v-for="visit in visits" :key="visit.index + '_' + uuid"-->
+        <div v-for="visit in visits" >
             <VisitSection 
+            :key="'visit' + visit.index + '_' + uuid"
             :formCollapse="false" 
             :label="'Visit ' + (visit.index + 1)"
             :Index="'index_' + visit.index"
@@ -219,6 +221,7 @@
             let vm = this;
             return {
                 feeWaiver: {},
+                uuid: 0,
                 showFormSpinner: false,
                 payload: {},
                 //allVisitsUnchecked: false,
@@ -622,11 +625,12 @@
             },
 
         },
-        created: function() {
+        mounted: function() {
         },
-        mounted: async function() {
+        created: async function() {
+            await this.$nextTick();
             //let vm = this;
-            await this.$nextTick(async () => {
+            //await this.$nextTick(async () => {
                 this.addEventListeners();
                 await this.fetchParticipantsGroupList();
                 await this.fetchParksList();
@@ -637,7 +641,8 @@
                     await this.recalcVisitsFlag();
                     this.showFormSpinner = false;
                 }
-            });
+                ++this.uuid;
+            //});
         },
         /*
         // this needs to go into the internal wrapper form, which will then pass feeWaiverId to this component as a prop
