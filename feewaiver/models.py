@@ -405,6 +405,8 @@ class FeeWaiverUserAction(UserAction):
     ACTION_SAVE = "Fee Waiver {} has been saved by {}"
     ACTION_SUBMIT = "Fee Waiver {} has been submitted"
     ACTION_VISIT_FLAG = "Visit {} for Fee Waiver {} has been {}"
+    ACTION_DELETE_DOCUMENT = "Fee Waiver {} Contact Details document '{}' has been deleted"
+    ACTION_SAVE_DOCUMENT = "Fee Waiver {} Contact Details document '{}' has been saved"
 
     class Meta:
         app_label = 'feewaiver'

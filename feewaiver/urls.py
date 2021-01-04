@@ -58,6 +58,7 @@ urlpatterns = [
     url(r'', include(api_patterns)),
     url(r'^$', views.FeeWaiverRoutingView.as_view(), name='ds_home'),
     url(r'^contact/', views.FeeWaiverContactView.as_view(), name='ds_contact'),
+    url(r'^admin_data/', views.FeeWaiverAdminDataView.as_view(), name='admin_data'),
     url(r'^further_info/', views.FeeWaiverFurtherInformationView.as_view(), name='ds_further_info'),
     url(r'^internal/', views.InternalView.as_view(), name='internal'),
     #url(r'^internal/proposal/(?P<proposal_pk>\d+)/referral/(?P<referral_pk>\d+)/$', views.ReferralView.as_view(), name='internal-referral-detail'),

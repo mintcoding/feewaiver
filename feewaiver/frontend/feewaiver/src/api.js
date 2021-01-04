@@ -13,6 +13,7 @@ module.exports = {
     camping_choices: '/api/feewaivers/camping_choices',
     filter_list: '/api/feewaivers/filter_list/',
     temporary_document: '/api/temporary_document/',
+    admin_data: '/admin_data/',
     /*
     organisations: '/api/organisations.json',
     filtered_organisations: '/api/filtered_organisations',

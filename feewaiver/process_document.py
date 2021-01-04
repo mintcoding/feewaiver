@@ -4,6 +4,7 @@ from django.core.files.base import ContentFile
 import traceback
 from feewaiver.main_models import TemporaryDocument
 from django.conf import settings
+from feewaiver.models import FeeWaiverUserAction
 
 #from disturbance.components.proposals.models import ProposalApiary, Proposal, PublicLiabilityInsuranceDocument, \
  #   DeedPollDocument, SupportingApplicationDocument
@@ -88,6 +89,13 @@ def delete_document(request, instance, comms_instance, document_type, input_name
 
     if document:
         document.delete()
+        # log document action
+        instance.fee_waiver.log_user_action(
+            FeeWaiverUserAction.ACTION_DELETE_DOCUMENT.format(
+                instance.fee_waiver.lodgement_number, 
+                document.name, 
+                request.user.get_full_name()),
+            request)
 
 
 def cancel_document(request, instance, comms_instance, document_type, input_name=None):
@@ -173,6 +181,13 @@ def save_document(request, instance, comms_instance, document_type, input_name=N
         document._file = path
         document.save()
 
+        # log document action
+        instance.fee_waiver.log_user_action(
+            FeeWaiverUserAction.ACTION_SAVE_DOCUMENT.format(
+                instance.fee_waiver.lodgement_number, 
+                document.name, 
+                request.user.get_full_name()),
+            request)
 
 # For transferring files from temp doc objs to comms_log objs
 def save_comms_log_document_obj(instance, comms_instance, temp_document):

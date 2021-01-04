@@ -559,7 +559,23 @@
                 }
                 return feeWaiverRes
             },
-
+            fetchAdminData: async function() {
+                this.participantGroupList = [];
+                const response = await this.$http.get(api_endpoints.admin_data);
+                for (let group of response.body.participants_list) {
+                    this.participantGroupList.push(group)
+                }
+                for (let group of response.body.parks_list) {
+                    this.parksList.push(group)
+                }
+                for (let group of response.body.campground_list) {
+                    this.campGroundsList.push(group)
+                }
+                for (let choice of response.body.camping_choices) {
+                    this.campingChoices.push(choice)
+                }
+            },
+            /*
             fetchParticipantsGroupList: async function() {
                 this.participantGroupList = [];
                 const response = await this.$http.get(api_endpoints.participants)
@@ -589,8 +605,8 @@
                     this.campingChoices.push(choice)
                 }
             },
+            */
             loadFeeWaiverData: async function() {
-                await this.fetchCampingChoices();
                 console.log(this.feeWaiverId);
                 const url = api_endpoints.feewaivers + this.feeWaiverId + '/feewaiver_contactdetails_pack/';
 
@@ -636,11 +652,15 @@
                     await this.recalcVisitsFlag();
                     this.showFormSpinner = false;
                 }
+                await this.fetchAdminData();
                 await this.$nextTick();
                 this.addEventListeners();
+                /*
+                await this.fetchCampingChoices();
                 await this.fetchParticipantsGroupList();
                 await this.fetchParksList();
                 await this.fetchCampGroundsList();
+                */
                 ++this.uuid;
             //});
         },

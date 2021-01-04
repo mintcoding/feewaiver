@@ -320,8 +320,8 @@ class FeeWaiverSerializer(serializers.ModelSerializer):
             if obj.assigned_officer:
                 if obj.assigned_officer == user:
                     return True
-            elif user in obj.relevant_access_group:
-                return True
+                elif user in obj.relevant_access_group:
+                    return True
         return False
 
     def get_assigned_officer(self,obj):

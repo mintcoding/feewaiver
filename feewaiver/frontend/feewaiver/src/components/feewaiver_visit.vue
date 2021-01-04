@@ -138,7 +138,7 @@
                     </div>
                     <div v-if="isInternal" class="pull-right">
                         <label>Issue?</label>
-                        <input :disabled="readonly" type="checkbox" id="visit_issue" :value="true" v-model="visit.issued" @change.prevent="recalcVisits">
+                        <input :disabled="readonly" type="checkbox" :id="'visit_issue_' + visit.index" :value="true" v-model="visit.issued" @change.prevent="recalcVisits">
                     </div>
                 </div>
             </FormSection>
