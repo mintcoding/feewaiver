@@ -9,9 +9,10 @@
     <form id="feewaiver-form" @submit.prevent="submit">
         <div class="panel panel-default headerbox">
             <strong>
-            Welcome to the Entry Fee Request Waiver form.
+                <p>Welcome to the Entry Fee Request Waiver form. Please fill out the details in the form below and submit the form to the Department.  
+                You will be notified of the outcome of your request by email.</p>
+                <p>You can add multiple visits to the same fee waiver request by clicking add another visit prior to submitting</p>
 
-            Please fill out the details in the form below and submit the form to the Department.  You will be notified of the outcome of your request by email.
             </strong>
         </div>
         <FormSection :formCollapse="false" label="Contact Details" Index="contact_details" :noChevron="!isInternal">
