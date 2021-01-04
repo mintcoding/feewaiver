@@ -138,7 +138,7 @@ BOOTSTRAP3 = {
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        #'LOCATION': os.path.join(BASE_DIR, 'commercialoperator', 'cache'),
+        'LOCATION': os.path.join(BASE_DIR, 'feewaiver', 'cache'),
     }
 }
 STATIC_ROOT=os.path.join(BASE_DIR, 'staticfiles_fw')
