@@ -3,7 +3,7 @@
                 <div class="col-sm-10">
                     <div class="form-group">
                         <div class="row">
-                            <label for="visit_description" class="col-sm-4 control-label" >Provide the details of your visit</label>
+                            <label for="visit_description" class="col-sm-4 control-label" >Provide the details and purpose of your visit</label>
                             <div class="col-sm-8">
                                 <textarea 
                                     :disabled="readonly" 
@@ -111,6 +111,14 @@
                             <label for="number_of_vehicles" class="col-sm-4 control-label">Number of vehicles used for visit</label>
                             <div class="col-sm-4">
                                 <input :disabled="readonly" required type="number" class="form-control" name="number_of_vehicles" min="0" step="1" v-model="visit.number_of_vehicles">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <label for="number_of_participants" class="col-sm-4 control-label">Number of participants</label>
+                            <div class="col-sm-4">
+                                <input :disabled="readonly" required type="number" class="form-control" name="number_of_participants" min="0" step="1" v-model="visit.number_of_participants">
                             </div>
                         </div>
                     </div>

@@ -25,11 +25,11 @@
                                 <div class="form-group">
                                     <!--template v-if="feeWaiver.processing_status == 'With Approver'"-->
                                     <template>
-                                        <select ref="assigned_officer" :disabled="!canProcess" class="form-control" v-model="feeWaiver.assigned_officer_id">
+                                        <select ref="assigned_officer" :disabled="!canAssign" class="form-control" v-model="feeWaiver.assigned_officer_id">
                                             <option :value="null"></option>
                                             <option v-for="member in feeWaiver.action_group" :value="member.id">{{member.first_name}} {{member.last_name}}</option>
                                         </select>
-                                        <a v-if="canProcess && feeWaiver.assigned_officer != feeWaiver.current_officer.id" @click.prevent="assignRequestUser()" class="actionBtn pull-right">Assign to me</a>
+                                        <a v-if="canAssign && feeWaiver.assigned_officer != feeWaiver.current_officer.id" @click.prevent="assignRequestUser()" class="actionBtn pull-right">Assign to me</a>
                                     </template>
                                 </div>
                             </div>
@@ -188,6 +188,13 @@ export default {
                 process = true;
             }
             return process;
+        },
+        canAssign: function() {
+            let assign = false;
+            if (this.feeWaiver && this.feeWaiver.can_assign) {
+                assign = true;
+            }
+            return assign;
         },
         canProcessAssessor: function() {
             let canProcess = false;

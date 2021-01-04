@@ -226,26 +226,27 @@ class InternalFeeWaiverView(DetailView):
         #return super(FeewaiverRoutingDetailView, self).get(*args, **kwargs)
 
 
-class FeeWaiverAdminDataView(LoginRequiredMixin, ListView):
+#class FeeWaiverAdminDataView(LoginRequiredMixin, ListView):
+class FeeWaiverAdminDataView(ListView):
     #template_name = 'feewaiver/help.html'
 
     def get(self, *args, **kwargs):
         #context = super(HelpView, self).get_context_data(**kwargs)
         response = None
 
-        if self.request.user.is_authenticated():
-            if is_internal(self.request):
-                camping_choices = []
-                for choice in FeeWaiverVisit.CAMPING_CHOICES:
-                    camping_choices.append({choice[0]: choice[1]})
-                park_serializer = ParkSerializer(Park.objects.all(), many=True)
-                participants_serializer = ParticipantsSerializer(Participants.objects.all(), many=True)
-                campground_serializer = CampGroundSerializer(CampGround.objects.all(), many=True)
-                response = JsonResponse({
-                    "parks_list": park_serializer.data,
-                    "participants_list": participants_serializer.data,
-                    "campground_list": campground_serializer.data,
-                    "camping_choices": camping_choices,
-                    })
+        #if self.request.user.is_authenticated():
+         #   if is_internal(self.request):
+        camping_choices = []
+        for choice in FeeWaiverVisit.CAMPING_CHOICES:
+            camping_choices.append({choice[0]: choice[1]})
+        park_serializer = ParkSerializer(Park.objects.all(), many=True)
+        participants_serializer = ParticipantsSerializer(Participants.objects.all(), many=True)
+        campground_serializer = CampGroundSerializer(CampGround.objects.all(), many=True)
+        response = JsonResponse({
+            "parks_list": park_serializer.data,
+            "participants_list": participants_serializer.data,
+            "campground_list": campground_serializer.data,
+            "camping_choices": camping_choices,
+            })
         return response
 

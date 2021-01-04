@@ -156,6 +156,7 @@ class FeeWaiverVisitSaveSerializer(serializers.ModelSerializer):
                 'index',
                 #'selected_park_ids',    
                 'number_of_vehicles',     
+                'number_of_participants',     
                 'age_of_participants_array', 
                 #'camping_assessment_choices',
                 'camping_assessment',
@@ -191,6 +192,7 @@ class FeeWaiverVisitSerializer(serializers.ModelSerializer):
                 'selected_park_names',    
                 'selected_campground_names',    
                 'number_of_vehicles',     
+                'number_of_participants',     
                 'age_of_participants_array', 
                 #'camping_assessment_choices',
                 'camping_assessment',
@@ -268,6 +270,7 @@ class FeeWaiverSerializer(serializers.ModelSerializer):
     processing_status = serializers.SerializerMethodField()
     proposed_status = serializers.SerializerMethodField()
     can_process = serializers.SerializerMethodField()
+    can_assign = serializers.SerializerMethodField()
     assigned_officer = serializers.SerializerMethodField(read_only=True)
     action_group = serializers.SerializerMethodField(read_only=True)
     current_officer = serializers.SerializerMethodField()
@@ -284,6 +287,7 @@ class FeeWaiverSerializer(serializers.ModelSerializer):
                 'processing_status',
                 'proposed_status',
                 'can_process',
+                'can_assign',
                 'assigned_officer',
                 'assigned_officer_id',
                 'action_group',
@@ -320,8 +324,18 @@ class FeeWaiverSerializer(serializers.ModelSerializer):
             if obj.assigned_officer:
                 if obj.assigned_officer == user:
                     return True
-                elif user in obj.relevant_access_group:
-                    return True
+            elif user in obj.relevant_access_group:
+                return True
+        return False
+
+    def get_can_assign(self,obj):
+        # Check if currently logged in user has access to process the proposal
+        #import ipdb; ipdb.set_trace()
+        request = self.context.get('request')
+        if request:
+            user = request.user
+            if user in obj.relevant_access_group:
+                return True
         return False
 
     def get_assigned_officer(self,obj):

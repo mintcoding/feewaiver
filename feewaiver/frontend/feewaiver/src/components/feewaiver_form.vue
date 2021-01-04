@@ -23,7 +23,7 @@
                     <div class="col-sm-4">
                         <input :disabled="readonly" required type="text" class="form-control" name="organisation" placeholder="" v-model="contactDetails.organisation">
                     </div>
-                    <label for="" class="col-sm-2 control-label">Contact</label>
+                    <label for="" class="col-sm-2 control-label">Contact Name</label>
                     <div class="col-sm-4">
                         <input :disabled="readonly" required type="text" class="form-control" name="contact_name" placeholder="" v-model="contactDetails.contact_name">
                     </div>
@@ -113,7 +113,7 @@
                 </div>
             </div>
         </FormSection>
-        <FormSection :formCollapse="false" label="Fee Waiver Request" Index="fee_waiver_request" :noChevron="!isInternal">
+        <!--FormSection :formCollapse="false" label="Fee Waiver Request" Index="fee_waiver_request" :noChevron="!isInternal">
             <div class="col-sm-10">
                 <div class="form-group">
                     <div class="row">
@@ -124,7 +124,7 @@
                     </div>
                 </div>
             </div>
-        </FormSection>
+        </FormSection-->
         <!--div v-for="visit in visits" :key="visit.index + '_' + uuid"-->
         <div v-for="visit in visits" >
             <VisitSection 
@@ -563,6 +563,7 @@
             fetchAdminData: async function() {
                 this.participantGroupList = [];
                 const response = await this.$http.get(api_endpoints.admin_data);
+                //console.log(response)
                 for (let group of response.body.participants_list) {
                     this.participantGroupList.push(group)
                 }

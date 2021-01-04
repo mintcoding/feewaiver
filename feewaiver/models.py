@@ -306,6 +306,7 @@ class FeeWaiverVisit(RevisionedMixin):
     parks = models.ManyToManyField(Park)
     campgrounds = models.ManyToManyField(CampGround)
     number_of_vehicles = models.IntegerField(default=0)
+    number_of_participants = models.IntegerField(default=0)
     index = models.IntegerField(null=True)
     camping_requested = models.BooleanField(default=False)
     issued = models.BooleanField(default=True)
