@@ -361,6 +361,7 @@ class FeeWaiverDTSerializer(serializers.ModelSerializer):
     action_shortcut = serializers.SerializerMethodField()
     assigned_officer = serializers.SerializerMethodField(read_only=True)
     latest_feewaiver_document = serializers.SerializerMethodField()
+    participants = serializers.SerializerMethodField()
     #licence_document = serializers.CharField(source='licence_document._file.url')
 
     class Meta:
@@ -369,6 +370,7 @@ class FeeWaiverDTSerializer(serializers.ModelSerializer):
                 'id',
                 'lodgement_number',
                 'contact_name',
+                'participants',
                 #'contact_details',
                 #'submitter',
                 'processing_status',
@@ -389,6 +391,9 @@ class FeeWaiverDTSerializer(serializers.ModelSerializer):
 
     #def get_lodgement_date(self, obj):
      #   return obj.lodgement_date.strftime('%d/%m/%Y')
+    def get_participants(self, obj):
+        if obj.contact_details:
+            return obj.contact_details.participants.name
 
     def get_assigned_officer(self,obj):
         if obj.assigned_officer:

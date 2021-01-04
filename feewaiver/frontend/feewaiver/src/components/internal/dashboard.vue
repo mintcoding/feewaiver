@@ -98,7 +98,7 @@ export default {
                 allowInputToggle:true
             },
             feewaiver_status:[],
-            feewaiver_headers:["Lodgement Number", "Submitter", "Status", "Lodged on", "Document", "Assigned To", "", "", "Action", "Comments to applicant"],
+            feewaiver_headers:["Lodgement Number", "Participant", "Status", "Lodged on", "Document", "Assigned To", "", "", "Action", "Comments to applicant"],
             feewaiver_options:{
                 language: {
                     processing: "<i class='fa fa-4x fa-spinner fa-spin'></i>"
@@ -142,8 +142,15 @@ export default {
                         visible: true,
                         //searchable: false,
                     },
+                    /*
                     {
                         data: "contact_name",
+                        visible: true,
+                        orderable: false,
+                    },
+                    */
+                    {
+                        data: "participants",
                         visible: true,
                         orderable: false,
                     },
