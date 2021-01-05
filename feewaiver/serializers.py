@@ -546,12 +546,16 @@ class FeeWaiverDTSerializer(serializers.ModelSerializer):
 class FeeWaiverDocSerializer(serializers.ModelSerializer):
     visits = serializers.SerializerMethodField()
     contact_name = serializers.SerializerMethodField()
+    participants_name = serializers.SerializerMethodField()
     address = serializers.SerializerMethodField()
     contact_details = ContactDetailsSerializer()
     processing_status = serializers.SerializerMethodField()
     proposed_status = serializers.SerializerMethodField()
     can_process = serializers.SerializerMethodField()
     assigned_officer = serializers.SerializerMethodField()
+    full_camping_waiver_exists = serializers.SerializerMethodField()
+    part_camping_waiver_exists = serializers.SerializerMethodField()
+    concession = serializers.SerializerMethodField()
     #licence_document = serializers.CharField(source='licence_document._file.url')
 
     class Meta:
@@ -571,6 +575,10 @@ class FeeWaiverDocSerializer(serializers.ModelSerializer):
                 'comments_to_applicant',
                 'visits',
                 'address',
+                'full_camping_waiver_exists',
+                'part_camping_waiver_exists',
+                'participants_name',
+                'concession',
                 #document,
                 #assigned_to,
                 )
@@ -593,6 +601,20 @@ class FeeWaiverDocSerializer(serializers.ModelSerializer):
             visits.append(FeeWaiverVisitSerializer(visit).data)
         return visits
 
+    def get_full_camping_waiver_exists(self, obj):
+        waiver_exists = False
+        for visit in obj.visit.all():
+            if visit.camping_assessment == 'full_waiver':
+                waiver_exists = True
+        return waiver_exists
+
+    def get_part_camping_waiver_exists(self, obj):
+        waiver_exists = False
+        for visit in obj.visit.all():
+            if visit.camping_assessment == 'child_rate':
+                waiver_exists = True
+        return waiver_exists
+
     def get_assigned_officer(self,obj):
         if obj.assigned_officer:
             return obj.assigned_officer.get_full_name()
@@ -601,6 +623,10 @@ class FeeWaiverDocSerializer(serializers.ModelSerializer):
     def get_contact_name(self, obj):
         if obj.contact_details:
             return obj.contact_details.contact_name
+
+    def get_participants_name(self, obj):
+        if obj.contact_details and obj.contact_details.participants:
+            return obj.contact_details.participants.name
 
     def get_processing_status(self,obj):
         return obj.get_processing_status_display()
@@ -621,6 +647,9 @@ class FeeWaiverDocSerializer(serializers.ModelSerializer):
                 return True
         return False
 
+    def get_concession(self,obj):
+        if obj.processing_status == 'concession':
+            return True
 
 
 class ParticipantsSerializer(serializers.ModelSerializer):

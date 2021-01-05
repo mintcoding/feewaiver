@@ -172,7 +172,7 @@
                     <div v-else class="container">
                       <p class="pull-right">
                         <input type="button" @click.prevent="addVisit" class="btn btn-primary" value="Add another visit"/>
-                        <button :disabled="submitDisabled" class="btn btn-primary" type="submit">Submit</button>
+                        <button :title="submitDisabledText" :disabled="submitDisabled" class="btn btn-primary" type="submit">Submit</button>
                       </p>
                     </div>
                 </div>
@@ -221,6 +221,7 @@
             let vm = this;
             return {
                 submitDisabled: true,
+                submitDisabledText: '',
                 feeWaiver: {},
                 uuid: 0,
                 showFormSpinner: false,
@@ -307,11 +308,12 @@
         methods:{
             checkValidVisit: async function() {
                 await this.$nextTick();
-                console.log("checkValidVisit")
                 this.submitDisabled = false;
+                this.submitDisabledText = '';
                 for (let visit of this.visits) {
                     if (!visit.selected_park_ids.length && !visit.selected_free_park_ids.length) {
                         this.submitDisabled = true;
+                        this.submitDisabledText = 'You must select at least one park per visit';
                     }
                 }
             },
@@ -568,6 +570,7 @@
             }
             await this.fetchAdminData();
             await this.$nextTick();
+            await this.checkValidVisit();
             this.addEventListeners();
             ++this.uuid;
         },

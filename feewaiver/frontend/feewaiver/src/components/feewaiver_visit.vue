@@ -166,11 +166,15 @@
     import { api_endpoints, helpers }from '@/utils/hooks'
     import FormSection from "@/components/forms/section_toggle.vue"
     import 'bootstrap/dist/css/bootstrap.css';
-    import 'eonasdan-bootstrap-datetimepicker';
+    //require('eonasdan-bootstrap-datetimepicker');
+    require("moment");
     require("select2/dist/css/select2.min.css");
     require("select2-bootstrap-theme/dist/select2-bootstrap.min.css");
-    //require("select2");
     import select2 from "select2/dist/js/select2.full.js";
+    //require('../../node_modules/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css');
+    //require('../../node_modules/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js');
+    require('eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css');
+    require('eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js');
 
     export default {
         name: 'FeeWaiverVisit',
@@ -222,6 +226,14 @@
                 //paidParks: [],
                 //freeParks: [],
                 //selectableCampGrounds: [],
+                datepickerOptions:{
+                    format: 'DD/MM/YYYY',
+                    showClear:true,
+                    useCurrent:false,
+                    keepInvalid:true,
+                    allowInputToggle:true
+                },
+
             }
         },
         components: {
@@ -367,11 +379,15 @@
               let el_fr_date = $('#dateFromPicker_' + vm.visit.index);
               let el_to_date = $('#dateToPicker_' + vm.visit.index);
 
+              //el_fr_date.datetimepicker();
+              //el_to_date.datetimepicker();
               // "From" field
               el_fr_date.datetimepicker({
                 format: "DD/MM/YYYY",
+                //format: 'LT',
                 //minDate: "now",
-                showClear: true
+                showClear: true,
+                //allowInputToggle: true,
               });
               el_fr_date.on("dp.change", function(e) {
                 if (el_fr_date.data("DateTimePicker").date()) {
@@ -385,9 +401,11 @@
               // "To" field
               el_to_date.datetimepicker({
                 format: "DD/MM/YYYY",
+                //format: 'LT',
                 //minDate: "now",
                 //minDate: el_fr_date,
-                showClear: true
+                showClear: true,
+                //allowInputToggle: true,
               });
               el_to_date.on("dp.change", function(e) {
                 if (el_to_date.data("DateTimePicker").date()) {
