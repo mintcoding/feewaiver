@@ -121,6 +121,7 @@ class ParkSerializer(serializers.ModelSerializer):
         fields = (
                 'id',
                 'name',
+                'entrance_fee',
                 )
         read_only_fields = (
             'id',
@@ -167,11 +168,12 @@ class FeeWaiverVisitSaveSerializer(serializers.ModelSerializer):
 
 
 class FeeWaiverVisitSerializer(serializers.ModelSerializer):
-    #fee_waiver = FeeWaiverSerializer()
     selected_park_ids = serializers.SerializerMethodField()
-    selected_campground_ids = serializers.SerializerMethodField()
+    selected_free_park_ids = serializers.SerializerMethodField()
+    #selected_campground_ids = serializers.SerializerMethodField()
     selected_park_names = serializers.SerializerMethodField()
-    selected_campground_names = serializers.SerializerMethodField()
+    selected_free_park_names = serializers.SerializerMethodField()
+    #selected_campground_names = serializers.SerializerMethodField()
     fee_waiver_id = serializers.IntegerField(
             required=True, write_only=True, allow_null=False)
     camping_approved = serializers.SerializerMethodField()
@@ -188,9 +190,11 @@ class FeeWaiverVisitSerializer(serializers.ModelSerializer):
                 'date_from',     
                 'date_to',     
                 'selected_park_ids',    
-                'selected_campground_ids',    
+                'selected_free_park_ids',    
+                #'selected_campground_ids',    
                 'selected_park_names',    
-                'selected_campground_names',    
+                'selected_free_park_names',    
+                #'selected_campground_names',    
                 'number_of_vehicles',     
                 'number_of_participants',     
                 'age_of_participants_array', 
@@ -210,11 +214,17 @@ class FeeWaiverVisitSerializer(serializers.ModelSerializer):
             park_id_list.append(str(park.id))
         return park_id_list
 
-    def get_selected_campground_ids(self, obj):
-        campground_id_list = []
-        for campground in obj.campgrounds.all():
-            campground_id_list.append(str(campground.id))
-        return campground_id_list
+    def get_selected_free_park_ids(self, obj):
+        park_id_list = []
+        for park in obj.free_parks.all():
+            park_id_list.append(str(park.id))
+        return park_id_list
+
+    #def get_selected_campground_ids(self, obj):
+    #    campground_id_list = []
+    #    for campground in obj.campgrounds.all():
+    #        campground_id_list.append(str(campground.id))
+    #    return campground_id_list
 
     def get_selected_park_names(self, obj):
         park_name_list = []
@@ -222,11 +232,17 @@ class FeeWaiverVisitSerializer(serializers.ModelSerializer):
             park_name_list.append(str(park.name))
         return park_name_list
 
-    def get_selected_campground_names(self, obj):
-        campground_name_list = []
-        for campground in obj.campgrounds.all():
-            campground_name_list.append(str(campground.name))
-        return campground_name_list
+    def get_selected_free_park_names(self, obj):
+        park_name_list = []
+        for park in obj.free_parks.all():
+            park_name_list.append(str(park.name))
+        return park_name_list
+
+    #def get_selected_campground_names(self, obj):
+    #    campground_name_list = []
+    #    for campground in obj.campgrounds.all():
+    #        campground_name_list.append(str(campground.name))
+    #    return campground_name_list
 
     def get_camping_approved(self, obj):
         choices=FeeWaiverVisit.CAMPING_CHOICES
@@ -261,6 +277,87 @@ class FeeWaiverSaveSerializer(serializers.ModelSerializer):
             'lodgement_number',
             'lodgement_date',
         )
+
+
+class FeeWaiverMinimalSerializer(serializers.ModelSerializer):
+    processing_status = serializers.SerializerMethodField()
+    proposed_status = serializers.SerializerMethodField()
+    can_process = serializers.SerializerMethodField()
+    can_assign = serializers.SerializerMethodField()
+    assigned_officer = serializers.SerializerMethodField(read_only=True)
+    action_group = serializers.SerializerMethodField(read_only=True)
+    current_officer = serializers.SerializerMethodField()
+
+    class Meta:
+        model = FeeWaiver
+        fields = (
+                'id',
+                'lodgement_number',
+                'lodgement_date',
+                'contact_details_id',     
+                'fee_waiver_purpose',     
+                #'visits',
+                'processing_status',
+                'proposed_status',
+                'can_process',
+                'can_assign',
+                'assigned_officer',
+                'assigned_officer_id',
+                'action_group',
+                'current_officer',
+                #'comments_to_applicant',
+                )
+        read_only_fields = (
+            'id',
+            'lodgement_number',
+            'lodgement_date',
+        )
+
+    def get_action_group(self, obj):
+        return EmailUserSerializer(obj.relevant_access_group, many=True).data
+
+    def get_processing_status(self,obj):
+        return obj.get_processing_status_display()
+
+    def get_proposed_status(self,obj):
+        return obj.get_proposed_status_display()
+
+    def get_can_process(self,obj):
+        # Check if currently logged in user has access to process the proposal
+        #import ipdb; ipdb.set_trace()
+        request = self.context.get('request')
+        if request:
+            user = request.user
+            if obj.assigned_officer:
+                if obj.assigned_officer == user:
+                    return True
+            elif user in obj.relevant_access_group:
+                return True
+        return False
+
+    def get_can_assign(self,obj):
+        # Check if currently logged in user has access to process the proposal
+        #import ipdb; ipdb.set_trace()
+        request = self.context.get('request')
+        if request:
+            user = request.user
+            if user in obj.relevant_access_group:
+                return True
+        return False
+
+    def get_assigned_officer(self,obj):
+        if obj.assigned_officer:
+            return obj.assigned_officer.get_full_name()
+        return None
+
+    def get_current_officer(self,obj):
+        request = self.context.get('request')
+        if request:
+            return {
+                'id': self.context['request'].user.id,
+                'name': self.context['request'].user.get_full_name(),
+                'email': self.context['request'].user.email
+            }
 
 
 class FeeWaiverSerializer(serializers.ModelSerializer):

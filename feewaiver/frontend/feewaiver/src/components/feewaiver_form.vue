@@ -137,7 +137,6 @@
             :visit="visit"
             :participantGroupList="participantGroupList"
             :parksList="parksList"
-            :campGroundsList="campGroundsList"
             :campingChoices="campingChoices"
             :feeWaiverId="feeWaiverId"
             :canProcess="canProcess"
@@ -173,7 +172,7 @@
                     <div v-else class="container">
                       <p class="pull-right">
                         <input type="button" @click.prevent="addVisit" class="btn btn-primary" value="Add another visit"/>
-                        <button class="btn btn-primary" type="submit">Submit</button>
+                        <button :disabled="submitDisabled" class="btn btn-primary" type="submit">Submit</button>
                       </p>
                     </div>
                 </div>
@@ -221,26 +220,24 @@
         data:function () {
             let vm = this;
             return {
+                submitDisabled: true,
                 feeWaiver: {},
                 uuid: 0,
                 showFormSpinner: false,
                 payload: {},
-                //allVisitsUnchecked: false,
-                //feeWaiverId: null,
                 contactDetails: {},
-                //email_confirmation: '',
                 participantGroupList: [],
                 temporary_document_collection_id: null,
                 parksList: [],
-                campGroundsList: [],
+                //campGroundsList: [],
                 campingChoices: [],
-                //selected_park_ids: [],
                 visitIdx: 0,
                 visits: [
                     {
                         index: 0,
                         selected_park_ids: [],
-                        selected_campground_ids: [],
+                        selected_free_park_ids: [],
+                        //selected_campground_ids: [],
                         age_of_participants_array: [],
                         camping_requested: false,
                     },
@@ -253,8 +250,9 @@
             FileField,
         },
         watch: {
-            feeWaiver: {
-                handler: function() {
+            visits: {
+                handler: async function() {
+                    await this.checkValidVisit();
                 },
                 deep: true
             },
@@ -305,33 +303,18 @@
                 return url;
             },
 
-            // need temp doc
-            /*
-            let rendererDocumentUrl = helpers.add_endpoint_join(
-                api_endpoints.call_email,
-                state.call_email.id + "/process_renderer_document/"
-                )
-            //Vue.set(state.call_email, 'rendererDocumentUrl', rendererDocumentUrl); 
-            let commsLogsDocumentUrl = helpers.add_endpoint_join(
-                api_endpoints.call_email,
-                state.call_email.id + "/process_comms_log_document/"
-                )
-            //Vue.set(state.call_email, 'commsLogsDocumentUrl', commsLogsDocumentUrl); 
-            documentActionUrl: function() {
-                let rendererDocumentUrl = '';
-                if (this.call_email && this.call_email.id) {
-                    rendererDocumentUrl = this.call_email.rendererDocumentUrl;
-                } else if (this.inspection && this.inspection.id) {
-                    rendererDocumentUrl = this.inspection.rendererDocumentUrl;
-                } else if (this.physical_artifact && this.physical_artifact.id) {
-                    rendererDocumentUrl = this.physical_artifact.rendererDocumentUrl;
-                }
-                return rendererDocumentUrl;
-            },
-
-            */
         },
         methods:{
+            checkValidVisit: async function() {
+                await this.$nextTick();
+                console.log("checkValidVisit")
+                this.submitDisabled = false;
+                for (let visit of this.visits) {
+                    if (!visit.selected_park_ids.length && !visit.selected_free_park_ids.length) {
+                        this.submitDisabled = true;
+                    }
+                }
+            },
             recalcVisitsFlag: async function() {
                 let allVisitsUnchecked = true;
                 await this.$nextTick();
@@ -347,16 +330,11 @@
                 this.temporary_document_collection_id = id.temp_doc_id;
             },
             addVisit: async function () {
-                /*
-                let visit = {};
-                visit.index = ++this.visitIdx;
-                //visit.selected_park_ids = [];
-                this.$set(visit, selected_park_ids, []);
-                */
                 let visit = {
                     index: ++this.visitIdx,
                     selected_park_ids: [],
-                    selected_campground_ids: [],
+                    selected_free_park_ids: [],
+                    //selected_campground_ids: [],
                     age_of_participants_array: [],
                     camping_requested: false,
                 }
@@ -368,43 +346,18 @@
                 let visitDescriptionRef = document.getElementById(visitRefDescriptionLabel);
                 visitDescriptionRef.focus();
             },
-            /*
-            checkBlankFields: function() {
-                let blankFields = []
-
-                if (!this.contactDetails.email) {
-                    blankFields.push(' You must select..')
-                }
-                return blankFields
-            },
-            highlightMissingFields: function(){
-                //let vm = this;
-                for (let missingField of vm.missingFields) {
-                    $("#" + missingField.id).css("color", 'red');
-                }
-            },
-            */
 
             addEventListeners: function() {
                 let vm = this;
                 const contactDetailsEmail = document.getElementById('contact_details_email');
                 const emailConfirmation = document.getElementById('email_confirmation');
                 const emailError = document.querySelector('#contact_details_email + span.error');
-                /*
-                console.log(contactDetailsEmail);
-                console.log(emailError);
-                */
                 contactDetailsEmail.addEventListener('input', function(evt) {
-                    //console.log("contactDetailsEmail evt");
                     if (contactDetailsEmail.validity.valid) {
                         emailError.textContent = '';
                         emailError.className = 'error';
                     } else {
                         showEmailError();
-                        /*
-                        emailError.textContent = 'fix it';
-                        emailError.className = 'error active';
-                        */
                     }
                 });
                 contactDetailsEmail.onpaste = e => {
@@ -416,31 +369,21 @@
                     return false;
                 };
                 contactDetailsEmail.onblur = e => {
-                    //e.preventDefault();
-                    //return false;
                     showEmailError();
                 };
                 emailConfirmation.onblur = e => {
-                    //e.preventDefault();
                     showEmailError();
-                    //return false;
                 };
                 const form = document.getElementsByTagName('form')[0]
                 form.addEventListener('submit', function(evt) {
                     console.log(!vm.contactDetails.email);
                     console.log(!contactDetailsEmail.validity.valid) 
-                    //if (!contactDetailsEmail.validity.valid || !vm.contactDetails.email) {
                     if (!contactDetailsEmail.validity.valid) {
                         showEmailError();
-                        /*
-                        emailError.textContent = 'fix it';
-                        emailError.className = 'error active';
-                        */
                         evt.preventDefault();
                     }
                 });
                 function showEmailError() {
-                    //console.log("show error")
                     emailError.className = 'error';
                     emailError.textContent = '';
                     let errorFound = false;
@@ -570,44 +513,15 @@
                 for (let group of response.body.parks_list) {
                     this.parksList.push(group)
                 }
+                /*
                 for (let group of response.body.campground_list) {
                     this.campGroundsList.push(group)
                 }
+                */
                 for (let choice of response.body.camping_choices) {
                     this.campingChoices.push(choice)
                 }
             },
-            /*
-            fetchParticipantsGroupList: async function() {
-                this.participantGroupList = [];
-                const response = await this.$http.get(api_endpoints.participants)
-                for (let group of response.body) {
-                    this.participantGroupList.push(group)
-                }
-            },
-            fetchParksList: async function() {
-                this.parksList = [];
-                const response = await this.$http.get(api_endpoints.parks)
-                for (let group of response.body) {
-                    this.parksList.push(group)
-                }
-            },
-            fetchCampGroundsList: async function() {
-                this.campGroundsList = [];
-                const response = await this.$http.get(api_endpoints.campgrounds)
-                for (let group of response.body) {
-                    this.campGroundsList.push(group)
-                }
-            },
-            fetchCampingChoices: async function() {
-                console.log("camping choices")
-                this.campingChoices = [];
-                const response = await this.$http.get(api_endpoints.camping_choices)
-                for (let choice of response.body) {
-                    this.campingChoices.push(choice)
-                }
-            },
-            */
             loadFeeWaiverData: async function() {
                 console.log(this.feeWaiverId);
                 const url = api_endpoints.feewaivers + this.feeWaiverId + '/feewaiver_contactdetails_pack/';
@@ -646,34 +560,17 @@
         mounted: function() {
         },
         created: async function() {
-            //let vm = this;
-            //await this.$nextTick(async () => {
-                if (this.isInternal) {
-                    this.showFormSpinner = true;
-                    await this.loadFeeWaiverData();
-                    await this.recalcVisitsFlag();
-                    this.showFormSpinner = false;
-                }
-                await this.fetchAdminData();
-                await this.$nextTick();
-                this.addEventListeners();
-                /*
-                await this.fetchCampingChoices();
-                await this.fetchParticipantsGroupList();
-                await this.fetchParksList();
-                await this.fetchCampGroundsList();
-                */
-                ++this.uuid;
-            //});
+            if (this.isInternal) {
+                this.showFormSpinner = true;
+                await this.loadFeeWaiverData();
+                await this.recalcVisitsFlag();
+                this.showFormSpinner = false;
+            }
+            await this.fetchAdminData();
+            await this.$nextTick();
+            this.addEventListeners();
+            ++this.uuid;
         },
-        /*
-        // this needs to go into the internal wrapper form, which will then pass feeWaiverId to this component as a prop
-        beforeRouteEnter: function(to, from, next) {
-            next(vm => {
-                vm.feeWaiverId = to.params.fee_waiver_id;
-            })
-        }
-        */
     }
 </script>
 

@@ -241,11 +241,11 @@ class FeeWaiverAdminDataView(ListView):
             camping_choices.append({choice[0]: choice[1]})
         park_serializer = ParkSerializer(Park.objects.all(), many=True)
         participants_serializer = ParticipantsSerializer(Participants.objects.all(), many=True)
-        campground_serializer = CampGroundSerializer(CampGround.objects.all(), many=True)
+        #campground_serializer = CampGroundSerializer(CampGround.objects.all(), many=True)
         response = JsonResponse({
             "parks_list": park_serializer.data,
             "participants_list": participants_serializer.data,
-            "campground_list": campground_serializer.data,
+            #"campground_list": campground_serializer.data,
             "camping_choices": camping_choices,
             })
         return response

@@ -20,11 +20,11 @@
                 <div class="col-sm-10">
                     <div class="form-group">
                         <div class="row">
-                            <label class="col-sm-4 control-label">Park/s</label>
+                            <label class="col-sm-4 control-label">Paid Park/s</label>
                             <div :id="'parks_parent_' + visit.index" class="col-sm-6 parkclass">
-                                <select :disabled="readonly" required :id="'parks_' + visit.index" class="form-control" multiple="multiple">
+                                <select :disabled="readonly" :id="'parks_' + visit.index" class="form-control" multiple="multiple">
                                     <!--option value="null"></option-->
-                                    <option v-for="park in parksList" :value="park.id">{{park.name}}</option>
+                                    <option v-for="park in paidParks" :value="park.id">{{park.name}}</option>
                                 </select>
                             </div>
                         </div>
@@ -53,15 +53,23 @@
                     </div>
                     <div class="form-group">
                         <div class="row">
-                            <label class="col-sm-4 control-label">Campground/s</label>
-                            <div :id="'campgrounds_parent_' + visit.index" class="col-sm-6 campgroundclass">
-                                <select :disabled="readonly" required :id="'campgrounds_' + visit.index" class="form-control" multiple="multiple">
-                                    <!--option value="null"></option-->
-                                    <!--option v-for="campground in selectableCampGrounds" :value="campground.id">{{campground.name}}</option-->
+                            <label class="col-sm-4 control-label">Free Park/s</label>
+                            <div class="col-sm-6 campgroundclass">
+                                <select :disabled="readonly" :id="'free_parks_' + visit.index" class="form-control" multiple="multiple">
+                                    <!--option v-for="park in freeParks" :value="park.id">{{park.name}}</option-->
                                 </select>
                             </div>
                         </div>
                     </div>
+                    <!--div class="form-group">
+                        <div class="row">
+                            <label class="col-sm-4 control-label">Campground/s</label>
+                            <div :id="'campgrounds_parent_' + visit.index" class="col-sm-6 campgroundclass">
+                                <select :disabled="readonly" required :id="'campgrounds_' + visit.index" class="form-control" multiple="multiple">
+                                </select>
+                            </div>
+                        </div>
+                    </div-->
                 </div>
                 <div class="col-sm-10">
                     <div class="form-group">
@@ -187,10 +195,12 @@
                 type: Array,
                 required:true,
             },
+            /*
             campGroundsList: {
                 type: Array,
                 required:true,
             },
+            */
             campingChoices: {
                 type: Array,
                 required:true,
@@ -209,6 +219,8 @@
         data:function () {
             let vm = this;
             return {
+                //paidParks: [],
+                //freeParks: [],
                 //selectableCampGrounds: [],
             }
         },
@@ -229,31 +241,49 @@
             selectedParks: function() {
                 return this.visit.selected_park_ids;
             },
+            paidParks: function() {
+                let paid = []
+                for (let park of this.parksList) {
+                    if (park.entrance_fee) {
+                        paid.push(park);
+                    }
+                }
+                return paid;
+            },
+            freeParks: function() {
+                let free = []
+                for (let park of this.parksList) {
+                    if (!park.entrance_fee) {
+                        free.push(park);
+                    }
+                }
+                return free;
+            },
+
         },
         watch: {
             campingRequested: {
                 handler: async function(newVal, oldVal) {
                     if (newVal) {
-                        await this.triggerCampGroundSelector();
+                        //await this.triggerCampGroundSelector();
+                        await this.triggerFreeParksSelector();
                     }
                 },
                 //deep: true
             },
+            /*
             selectedParks: {
                 handler: async function(newParks, oldParks) {
                     await this.triggerCampGroundSelector();
-                    //console.log("selectedParks");
-                    //await this.$nextTick();
-                    //this.updateSelectableCampGrounds(newParks);
-                    //this.addCampGroundEventListener();
                 },
                 //deep: true
             },
+            */
 
         },
 
         methods:{
-            //triggerCampGroundSelector: async function(newParks, internal) {
+            /*
             triggerCampGroundSelector: async function(internal) {
                 console.log("trigger")
                 await this.$nextTick();
@@ -262,6 +292,15 @@
                 //this.updateSelectableCampGrounds(newParks, internal);
                 this.updateSelectableCampGrounds(this.visit.selected_park_ids, internal);
             },
+            */
+            triggerFreeParksSelector: async function(internal) {
+                console.log("trigger")
+                await this.$nextTick();
+                this.addFreeParksEventListener(internal);
+                //this.updateSelectableCampGrounds(this.visit.selected_park_ids, internal);
+            },
+
+
             recalcVisits: async function() {
                 await this.$nextTick();
                 this.$emit('recalc-visits-flag');
@@ -269,20 +308,6 @@
                 await this.$http.post(url,this.visit);
             },
             /*
-            updateCampGrounds: function(newParks) {
-                //console.log(newParks);
-                //this.removeCampGroundEventListener();
-                this.selectableCampGrounds = [];
-                for (let campGround of this.campGroundsList) {
-                    let parkId = campGround.park_id ? campGround.park_id.toString() : null;
-                    if (!parkId || newParks.includes(parkId)) {
-                        this.selectableCampGrounds.push(campGround);
-                    }
-                }
-                //console.log(this.selectableCampGrounds);
-                //this.addCampGroundEventListener();
-            },
-            */
             updateSelectableCampGrounds: function(newParks, internal) {
                 let vm = this;
                 //this.removeCampGroundEventListener();
@@ -294,17 +319,6 @@
                     }
                 }
                 let el_campgrounds = $('#campgrounds_'+vm.visit.index);
-                //el_campgrounds.val(vm.visit.selected_campground_ids.toString());
-                //console.log(vm.visit.selected_campground_ids);
-                //el_campgrounds.val(vm.visit.selected_campground_ids);
-                //console.log(el_campgrounds)
-                //let existingOptions = el_campgrounds.find("option");
-                //console.log(existingOptions)
-                /*
-                for (let option of el_campgrounds.find("option")) {
-                    if selectableCampGrounds.includes(option.value) {
-                        selecta
-                        */
                 let dataArr = []
                 for (let campGround of selectableCampGrounds) {
                     let selected = false;
@@ -326,13 +340,10 @@
                     }
                     dataArr.push({id: campGround.id, text: campGround.name, defaultSelected: false, selected: selected});
                 }
-                //el_campgrounds.val(null).trigger('change');
                 el_campgrounds.html('').select2({data: dataArr});
                 el_campgrounds.trigger('change');
-
-                //console.log(this.selectableCampGrounds);
-                //this.addCampGroundEventListener();
             },
+            */
 
             updateJqueryData: function() {
                 // required when loading data from backend
@@ -343,13 +354,6 @@
                 el_parks.val(vm.visit.selected_park_ids);
                 el_parks.trigger('change');
                 // campgrounds
-                /*
-                await this.addCampGroundEventListener();
-                let el_campgrounds = $('#campgrounds_'+vm.visit.index)
-                el_campgrounds.val(vm.visit.selected_campground_ids.toString());
-                el_campgrounds.trigger('change');
-                */
-                
                 let el_fr_date = $('#dateFromPicker_' + vm.visit.index);
                 el_fr_date.val(vm.visit.date_from);
                 el_fr_date.trigger('change');
@@ -362,10 +366,6 @@
               // Parks multi select
               let el_fr_date = $('#dateFromPicker_' + vm.visit.index);
               let el_to_date = $('#dateToPicker_' + vm.visit.index);
-              /*
-              let el_fr_date = document.getElementById('dateFromPicker_' + i);
-              let el_to_date = document.getElementById('dateToPicker_' + i);
-              */
 
               // "From" field
               el_fr_date.datetimepicker({
@@ -404,11 +404,6 @@
               //$('#parks').css("z-index", 100000);
               let el_parks = $('#' + parkLabel);
                 el_parks.select2({
-                    /*
-                    dropdownParent: $('#' + parkParentLabel),
-                    selectionCssClass: "parkclass",
-                    */
-                    //containerCssClass: "parkclass",
                     //placeholder: "parks",
                 });
               //el_parks.css("z-index", 10);
@@ -427,6 +422,7 @@
                       vm.visit.selected_park_ids.splice(index, 1);
                       // remove associated campgrounds
                       //vm.selectableCampGrounds
+                      /*
                       for (let campGround of vm.campGroundsList) {
                           if (campGround.park_id == val.id) {
                               console.log(campGround);
@@ -434,11 +430,66 @@
                               vm.visit.selected_campground_ids.splice(index, 1);
                           }
                       }
+                      */
                   }
               });
               $('.parkclass').css('z-index', 10);
 
             },
+            addFreeParksEventListener: function(internal) {
+                let vm = this;
+                // Free Parks
+                let freeParkLabel = 'free_parks_' + vm.visit.index;
+                //let parkParentLabel = 'parks_parent_' + vm.visit.index;
+                //let el_parks = $(vm.$refs.refLabel);
+                //$('#parks').css("z-index", 100000);
+                let el_free_parks = $('#' + freeParkLabel);
+                  el_free_parks.select2({
+                      //placeholder: "parks",
+                  });
+                //el_parks.css("z-index", 10);
+                el_free_parks.on('select2:select', function(e) {
+                    //console.log(e);
+                    let val = e.params.data;
+                    if (!vm.visit.selected_free_park_ids.includes(val.id)) {
+                        vm.visit.selected_free_park_ids.push(val.id);
+                    }
+                }).
+                on("select2:unselect",function (e) {
+                    //console.log(e);
+                    let val = e.params.data;
+                    if (vm.visit.selected_free_park_ids.includes(val.id)) {
+                        let index = vm.visit.selected_free_park_ids.indexOf(val.id);
+                        vm.visit.selected_free_park_ids.splice(index, 1);
+                    }
+                });
+                let dataArr = []
+                for (let park of vm.freeParks) {
+                    let selected = false;
+                    // check for previously selected campgrounds
+                    for (let option of el_free_parks.find("option")) {
+                        if (park.id == option.value && option.selected) {
+                            selected = true;
+                        }
+                    }
+                    // with internal flag, load from db
+                    if (internal) {
+                        console.log("internal");
+                        //for (let park of newParks) {
+                        for (let db_park of this.visit.selected_free_park_ids) {
+                            if (park.id == db_park) {
+                                selected = true;
+                            }
+                        }
+                    }
+                    dataArr.push({id: park.id, text: park.name, defaultSelected: false, selected: selected});
+                }
+                console.log(dataArr)
+                el_free_parks.html('').select2({data: dataArr});
+                el_free_parks.trigger('change');
+                $('.campgroundclass').css('z-index', 5);
+            },
+            /*
             addCampGroundEventListener: function() {
               //await this.$nextTick();
               let vm = this;
@@ -448,11 +499,6 @@
               let el_campgrounds = $('#' + campGroundLabel);
               //console.log(el_campgrounds);
               el_campgrounds.select2({
-                  /*
-                  dropdownParent: $('#' + campGroundParentLabel),
-                  selectionCssClass: "campgroundclass",
-                  */
-                  //containerCssClass: "campgroundclass",
                   //placeholder: "campgrounds",
               });
               el_campgrounds.on('select2:select', function(e) {
@@ -472,16 +518,6 @@
               });
               $('.campgroundclass').css('z-index', 5);
             },
-            /*
-            removeCampGroundEventListener: function() {
-              //await this.$nextTick();
-              let vm = this;
-              // CampGrounds
-              let campGroundLabel = 'campgrounds_' + vm.visit.index;
-              let el_campgrounds = $('#' + campGroundLabel);
-              el_campgrounds.select2();
-              el_campgrounds.off('select2:select').off("select2:unselect");
-            },
             */
 
         },
@@ -494,20 +530,13 @@
             this.addEventListeners();
             this.updateJqueryData();
             if (this.isInternal) {
-                //console.log(this.visit.selected_campground_ids);
+                await this.triggerFreeParksSelector(true);
+            }
+
+            /*
+            if (this.isInternal) {
                 await this.triggerCampGroundSelector(true);
             }
-            //this.updateCampGrounds(this.visit.selected_park_ids);
-            //await this.addCampGroundEventListener();
-            // read in campgrounds from db
-            //await this.$nextTick();
-            /*
-            let vm = this;
-            let el_campgrounds = $('#campgrounds_'+vm.visit.index)
-            //el_campgrounds.val(vm.visit.selected_campground_ids.toString());
-            //console.log(vm.visit.selected_campground_ids);
-            el_campgrounds.val(vm.visit.selected_campground_ids);
-            el_campgrounds.trigger('change');
             */
         },
     }

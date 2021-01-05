@@ -26,6 +26,7 @@ from django.shortcuts import redirect, get_object_or_404
 from feewaiver.serializers import (
         ContactDetailsSerializer,
         FeeWaiverSerializer,
+        FeeWaiverMinimalSerializer,
         ContactDetailsSaveSerializer,
         FeeWaiverSaveSerializer,
         FeeWaiverDTSerializer,
@@ -226,7 +227,7 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
     #import ipdb; ipdb.set_trace()
     #queryset = Proposal.objects.all()
     queryset = FeeWaiver.objects.none()
-    serializer_class = FeeWaiverSerializer
+    serializer_class = FeeWaiverMinimalSerializer
 
     def get_queryset(self):
         user = self.request.user
@@ -612,17 +613,29 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
                         for db_park_id in [str(v_id) for v_id in visit_obj.parks.all().values_list('id', flat=True)]:
                             if db_park_id not in parks_data:
                                 visit_obj.parks.remove(Park.objects.get(id=db_park_id))
-                    # add campgrounds
-                    campgrounds_data = visit.get('selected_campground_ids')
-                    if campgrounds_data:
-                        # add new campgrounds
-                        for campground_id in campgrounds_data:
-                            if campground_id not in [str(c_id) for c_id in visit_obj.campgrounds.all().values_list('id', flat=True)]:
-                                visit_obj.campgrounds.add(CampGround.objects.get(id=campground_id))
-                        # remove unchecked campgrounds
-                        for db_campground_id in [str(c_id) for c_id in visit_obj.campgrounds.all().values_list('id', flat=True)]:
-                            if db_campground_id not in campgrounds_data:
-                                visit_obj.campgrounds.remove(CampGround.objects.get(id=db_campground_id))
+                    # add free parks
+                    free_parks_data = visit.get('selected_free_park_ids')
+                    if free_parks_data:
+                        # add new free parks
+                        for free_park_id in free_parks_data:
+                            if free_park_id not in [str(v_id) for v_id in visit_obj.free_parks.all().values_list('id', flat=True)]:
+                                visit_obj.free_parks.add(Park.objects.get(id=free_park_id))
+                        # remove unchecked free parks
+                        for db_free_park_id in [str(v_id) for v_id in visit_obj.free_parks.all().values_list('id', flat=True)]:
+                            if db_free_park_id not in free_parks_data:
+                                visit_obj.free_parks.remove(Park.objects.get(id=db_free_park_id))
+
+                    ## add campgrounds
+                    #campgrounds_data = visit.get('selected_campground_ids')
+                    #if campgrounds_data:
+                    #    # add new campgrounds
+                    #    for campground_id in campgrounds_data:
+                    #        if campground_id not in [str(c_id) for c_id in visit_obj.campgrounds.all().values_list('id', flat=True)]:
+                    #            visit_obj.campgrounds.add(CampGround.objects.get(id=campground_id))
+                    #    # remove unchecked campgrounds
+                    #    for db_campground_id in [str(c_id) for c_id in visit_obj.campgrounds.all().values_list('id', flat=True)]:
+                    #        if db_campground_id not in campgrounds_data:
+                    #            visit_obj.campgrounds.remove(CampGround.objects.get(id=db_campground_id))
 
                 instance.log_user_action(
                     FeeWaiverUserAction.ACTION_SAVE.format(instance.lodgement_number, request.user.get_full_name()),
@@ -685,11 +698,16 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
                     if parks_data:
                         for park_id in parks_data:
                             visit_obj.parks.add(Park.objects.get(id=park_id))
+                    # add free parks
+                    free_parks_data = visit.get('selected_free_park_ids')
+                    if free_parks_data:
+                        for free_park_id in free_parks_data:
+                            visit_obj.free_parks.add(Park.objects.get(id=free_park_id))
                     # add campgrounds
-                    campgrounds_data = visit.get('selected_campground_ids')
-                    if campgrounds_data:
-                        for campground_id in campgrounds_data:
-                            visit_obj.campgrounds.add(CampGround.objects.get(id=campground_id))
+                    #campgrounds_data = visit.get('selected_campground_ids')
+                    #if campgrounds_data:
+                     #   for campground_id in campgrounds_data:
+                      #      visit_obj.campgrounds.add(CampGround.objects.get(id=campground_id))
                 # send email
                 send_fee_waiver_received_notification(fee_waiver_obj,request)
                 email_subject = "Fee Waiver {} has been submitted".format(fee_waiver_obj.lodgement_number)

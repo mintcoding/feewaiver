@@ -29,6 +29,7 @@ class Participants(models.Model):
 class Park(models.Model):
     name = models.CharField(max_length=256, blank=True, default='')
     email_list = models.CharField(max_length=256, blank=True, null=True, help_text='email addresses should be separated by semi-colons')
+    entrance_fee = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -304,6 +305,7 @@ class FeeWaiverVisit(RevisionedMixin):
     date_from = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=False,verbose_name="Date from", help_text='')
     date_to = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=False,verbose_name="Date to", help_text='')
     parks = models.ManyToManyField(Park)
+    free_parks = models.ManyToManyField(Park, related_name="feewaiver_free_parks")
     campgrounds = models.ManyToManyField(CampGround)
     number_of_vehicles = models.IntegerField(default=0)
     number_of_participants = models.IntegerField(default=0)
