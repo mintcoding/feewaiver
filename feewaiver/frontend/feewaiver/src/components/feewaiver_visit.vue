@@ -502,7 +502,7 @@
                     }
                     dataArr.push({id: park.id, text: park.name, defaultSelected: false, selected: selected});
                 }
-                console.log(dataArr)
+                //console.log(dataArr)
                 el_free_parks.html('').select2({data: dataArr});
                 el_free_parks.trigger('change');
                 $('.campgroundclass').css('z-index', 5);
