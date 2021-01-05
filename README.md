@@ -2,7 +2,7 @@
 status](https://travis-ci.org/dbca-wa/disturbance.svg?branch=master)](https://travis-ci.org/dbca-wa/disturbance/builds) [![Coverage Status](https://coveralls.io/repos/github/dbca-wa/disturbance/badge.svg?branch=master)](https://coveralls.io/github/dbca-wa/disturbance?branch=master)-->
 # Fee Waiver
 
-The Fee Waiver System allows an unauthenicated user to apply for a park entry fee and/or camping fee waiver. It is a database-backed Django application, using REST API with Vue.js as the client side app.
+The Fee Waiver System allows an unauthenticated user to apply for a park entry fee and/or camping fee waiver. It is a database-backed Django application, using REST API with Vue.js as the client side app.
 
 
 # Requirements
