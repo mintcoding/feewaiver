@@ -5,6 +5,7 @@ import traceback
 from feewaiver.main_models import TemporaryDocument, EmailUser
 from django.conf import settings
 from feewaiver.models import FeeWaiverUserAction
+from django.contrib import auth
 
 #from disturbance.components.proposals.models import ProposalApiary, Proposal, PublicLiabilityInsuranceDocument, \
  #   DeedPollDocument, SupportingApplicationDocument
@@ -90,7 +91,9 @@ def delete_document(request, instance, comms_instance, document_type, input_name
     if document:
         document.delete()
         # log document action
-        if request.user is EmailUser:
+        request_user = auth.get_user(request)
+        #if request.user is EmailUser:
+        if type(request_user) is EmailUser:
             instance.fee_waiver.log_user_action(
                 FeeWaiverUserAction.ACTION_DELETE_DOCUMENT.format(
                     instance.fee_waiver.lodgement_number, 
@@ -183,7 +186,9 @@ def save_document(request, instance, comms_instance, document_type, input_name=N
         document.save()
 
         # log document action
-        if request.user is EmailUser:
+        request_user = auth.get_user(request)
+        #if request.user is EmailUser:
+        if type(request_user) is EmailUser:
             instance.fee_waiver.log_user_action(
                 FeeWaiverUserAction.ACTION_SAVE_DOCUMENT.format(
                     instance.fee_waiver.lodgement_number, 
