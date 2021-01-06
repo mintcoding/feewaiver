@@ -65,6 +65,8 @@ import Vue from 'vue'
 import FormSection from "@/components/forms/section_toggle.vue"
 import ResponsiveDatatablesHelper from "@/utils/responsive_datatable_helper.js"
 //require("bootstrap/dist/css/bootstrap.css");
+//require("bootstrap/dist/js/bootstrap.min.js");
+//require("bootstrap/dist/js/bootstrap.js");
 import {
     api_endpoints,
     helpers
@@ -82,7 +84,7 @@ export default {
             //Profile to check if user has access to process Proposal
             profile: {},
             show_spinner: false, 
-            popoversInitialised: false,
+            //popoversInitialised: false,
             filterFeeWaiverStatus: 'All',
             filterFeeWaiverLodgedFrom: '',
             filterFeeWaiverLodgedTo: '',
@@ -235,11 +237,13 @@ export default {
                                 }),
                                 result = '<span>' + truncated + '</span>',
                                 popTemplate = _.template('<a href="#" ' +
+                                //popTemplate = _.template('<button ' +
                                     'role="button" ' +
                                     'data-toggle="popover" ' +
                                     'data-trigger="click" ' +
                                     'data-placement="top auto"' +
                                     'data-html="true" ' +
+                                    'data-container="body" ' +
                                     'data-content="<%= text %>" ' +
                                     '>more</a>');
                             if (_.endsWith(truncated, ellipsis)) {
@@ -324,65 +328,6 @@ export default {
         refreshFromResponse: function(){
             this.$refs.feewaiver_datatable.vmDataTable.ajax.reload();
         },
-        initialisePopovers: function(){
-            if (!this.popoversInitialised){
-                //this.initialiseActionLogs(this._uid,this.$refs.showActionBtn,this.actionsDtOptions,this.actionsTable);
-                //this.initialiseCommLogs('-internal-proposal-'+this._uid,this.$refs.showCommsBtn,this.commsDtOptions,this.commsTable);
-                this.popoversInitialised = true;
-            }
-        },
-        initialiseDash: function(vm_uid,ref,datatable_options,table){
-            let vm = this;
-            let commsLogId = 'comms-log-table'+vm_uid;
-            let popover_name = 'popover-'+ vm._uid+'-comms';
-            $(ref).popover({
-                content: function() {
-                    return ` 
-                    <table id="${commsLogId}" class="hover table table-striped table-bordered dt-responsive " cellspacing="0" width="100%">
-                    </table>`
-                },
-                html: true,
-                title: 'Communications Log',
-                container: 'body',
-                placement: 'right',
-                trigger: "click",
-                template: `<div class="popover ${popover_name}" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>`,
-            }).on('inserted.bs.popover', function () {
-                table = $('#'+commsLogId).DataTable(datatable_options);
-
-                // activate popover when table is drawn.
-                table.on('draw.dt', function () {
-                    var $tablePopover = $(this).find('[data-toggle="popover"]');
-                    if ($tablePopover.length > 0) {
-                        $tablePopover.popover();
-                        // the next line prevents from scrolling up to the top after clicking on the popover.
-                        $($tablePopover).on('click', function (e) {
-                            e.preventDefault();
-                            return true;   
-                        });
-                    }
-                });
-            }).on('shown.bs.popover', function () {
-                var el = ref;
-                var popoverheight = parseInt($('.'+popover_name).height());
-
-                var popover_bounding_top = parseInt($('.'+popover_name)[0].getBoundingClientRect().top);
-                var popover_bounding_bottom = parseInt($('.'+popover_name)[0].getBoundingClientRect().bottom);
-
-                var el_bounding_top = parseInt($(el)[0].getBoundingClientRect().top);
-                var el_bounding_bottom = parseInt($(el)[0].getBoundingClientRect().top);
-                
-                var diff = el_bounding_top - popover_bounding_top;
-
-                var position = parseInt($('.'+popover_name).position().top);
-                var pos2 = parseInt($(el).position().top) - 5;
-
-                var x = diff + 5;
-                $('.'+popover_name).children('.arrow').css('top', x + 'px');
-            });
-
-        },
-
         addEventListeners: function(){
             let vm = this;
             // Initialise Proposal Date Filters
@@ -434,19 +379,20 @@ export default {
                 //table = $('#'+commsLogId).DataTable(datatable_options);
 
                 // activate popover when table is drawn.
-            }).on('draw.dt', function () {
+            //}).on('draw.dt', function () {
+            }).on('responsive-display.dt', function () {
+                //$(this).find('[data-toggle="popover"]').popover();
                 var tablePopover = $(this).find('[data-toggle="popover"]');
-                //console.log(tablePopover)
                 if (tablePopover.length > 0) {
                     tablePopover.popover();
-                    // the next line prevents from scrolling up to the top after clicking on the popover.
-                    $(tablePopover).on('click', function (e) {
-                        e.preventDefault();
-                        return true;   
-                    });
+                }
+            }).on('draw.dt', function () {
+                //$(this).find('[data-toggle="popover"]').popover();
+                var tablePopover = $(this).find('[data-toggle="popover"]');
+                if (tablePopover.length > 0) {
+                    tablePopover.popover();
                 }
             });
-
         },
         initialiseSearch:function(){
             //this.regionSearch();
