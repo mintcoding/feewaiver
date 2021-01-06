@@ -543,12 +543,12 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
                 #email_subject = request.data.get("email_subject")
                 if action == 'issue':
                     instance.issue(request)
-                    instance.generate_doc()
+                    instance.generate_doc(request)
                     email_subject = "Entry Fee Waiver Request {} has been issued".format(instance.lodgement_number)
                     send_approval_notification(instance, request, action, email_subject)
                 if action == 'issue_concession':
                     instance.issue_concession(request)
-                    instance.generate_doc()
+                    instance.generate_doc(request)
                     email_subject = "Concession issued for Entry Fee Waiver Request {}".format(instance.lodgement_number)
                     send_approval_notification(instance, request, action, email_subject)
                 if action == 'decline':

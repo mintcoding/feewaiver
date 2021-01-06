@@ -7,7 +7,7 @@ from feewaiver.main_models import GlobalSettings
 
 
 #def create_apiary_licence_pdf_contents(approval, proposal, copied_to_permit, approver, site_transfer_preview=None):
-def create_feewaiver_pdf_contents(feewaiver):
+def create_feewaiver_pdf_contents(feewaiver, request):
 
     feewaiver_template = GlobalSettings.objects.get(key=GlobalSettings.KEY_FEEWAIVER_TEMPLATE_FILE)
 
@@ -22,6 +22,7 @@ def create_feewaiver_pdf_contents(feewaiver):
     from feewaiver.serializers import FeeWaiverDocSerializer
     serializer_context = {
             #'feewaiver': feewaiver,
+            "request": request,
             }
     context_obj = FeeWaiverDocSerializer(feewaiver, context=serializer_context)
     context = context_obj.data

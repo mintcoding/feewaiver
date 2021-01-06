@@ -256,14 +256,14 @@ class FeeWaiver(RevisionedMixin):
        #         return self.__approver_group() in user.proposalapprovergroup_set.all()
        # else:
        #     return False
-    def generate_doc(self):
+    def generate_doc(self, request):
         #import ipdb; ipdb.set_trace()
         #self.licence_document = create_apiary_licence_pdf_contents(self, proposal, copied_to_permit, request_user)
-        feewaiver_document = self.create_feewaiver_document()
+        feewaiver_document = self.create_feewaiver_document(request)
         self.save(version_comment='Created Feewaiver PDF: {}'.format(feewaiver_document.name))
 
-    def create_feewaiver_document(self):
-        pdf_contents = create_feewaiver_pdf_contents(self)
+    def create_feewaiver_document(self, request):
+        pdf_contents = create_feewaiver_pdf_contents(self, request)
 
         filename = 'feewaiver-{}.pdf'.format(self.lodgement_number)
         document = FeeWaiverDocument.objects.create(feewaiver=self, name=filename)
