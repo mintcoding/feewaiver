@@ -385,12 +385,22 @@ export default {
                 var tablePopover = $(this).find('[data-toggle="popover"]');
                 if (tablePopover.length > 0) {
                     tablePopover.popover();
+                    // the next line prevents from scrolling up to the top after clicking on the popover.
+                    $(tablePopover).on('click', function (e) {
+                        e.preventDefault();
+                        return true;   
+                    });
                 }
             }).on('draw.dt', function () {
                 //$(this).find('[data-toggle="popover"]').popover();
                 var tablePopover = $(this).find('[data-toggle="popover"]');
                 if (tablePopover.length > 0) {
                     tablePopover.popover();
+                    // the next line prevents from scrolling up to the top after clicking on the popover.
+                    $(tablePopover).on('click', function (e) {
+                        e.preventDefault();
+                        return true;   
+                    });
                 }
             });
         },
