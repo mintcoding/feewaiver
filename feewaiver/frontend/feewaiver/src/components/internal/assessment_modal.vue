@@ -40,8 +40,18 @@
                         </div>
                     </div>
                 </div>
-                <button type="button" class="btn btn-default" @click="ok">Ok</button>
-                <button type="button" class="btn btn-default" @click="cancel">Cancel</button>
+                <!--button type="button" class="btn btn-default" @click="ok">Ok</button>
+                <button type="button" class="btn btn-default" @click="cancel">Cancel</button-->
+                <div v-if="processingWorkflow">
+                    <button type="button" disabled class="btn btn-default" @click="ok"><i class="fa fa-spinner fa-spin"></i> Processing</button>
+                    <!--span v-else-if="ok_button_disabled" class="d-inline-block" tabindex="0" data-toggle="tooltip" title="Please select at least one site to issue">
+                        <button type="button" style="pointer-events: none;" class="btn btn-default" @click="ok" disabled>Ok</button>
+                    </span-->
+                </div>
+                <div v-else>
+                    <button type="button" class="btn btn-default" @click="ok" >Ok</button>
+                    <button type="button" class="btn btn-default" @click="cancel">Cancel</button>
+                </div>
             </div>
         </modal>
     </div>
@@ -76,6 +86,7 @@ export default {
             workflowDetails: "",
             errorResponse: "",
             modalTitle: "",
+            processingWorkflow: false,
             /*
             region_id: null,
             district_id: null,
@@ -158,6 +169,7 @@ export default {
       },
       //sendData: async function(){        
       ok: async function(){        
+          this.processingWorkflow = true;
           let post_url = '/api/feewaivers/' + this.feeWaiver.id + '/workflow_action/'
           let payload = new FormData(this.form);
           
@@ -197,6 +209,7 @@ export default {
           } else {
               this.errorResponse = 'Error:' + feeWaiverRes.statusText;
           }
+          this.processingWorkflow = false;
       },
       /*
       uploadFile(target,file_obj){
