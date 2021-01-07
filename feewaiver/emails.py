@@ -213,10 +213,12 @@ def send_approval_notification(fee_waiver,request, action, email_subject):
     email = FeeWaiverApprovalNotificationEmail()
     #if email_subject:
     email.subject = email_subject
+    status = 'approved' if fee_waiver.processing_status in ['issued', 'concession'] else 'declined'
 
     #comments = request.data.get('comments')
     context = {
         'feewaiver': fee_waiver,
+        'status': status
         #'comments': comments,
     }
     #if action in ["issue", "issue_concession", "decline"]:

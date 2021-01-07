@@ -2,10 +2,7 @@
 
 {%  block content %}
 <p>Fee Waiver Request <strong>{{feewaiver.lodgement_number}}</strong> 
-has been updated with status {{feewaiver.processing_status_display}} 
-{% if feewaiver.proposed_status_display %}
-({{feewaiver.proposed_status_display}})
-{% endif %}
+has been {{status}}.
 </p>
 <p>Comments: {{comments}} </p>
 {%  endblock %}
