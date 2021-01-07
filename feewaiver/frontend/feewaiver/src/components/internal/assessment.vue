@@ -234,20 +234,22 @@ export default {
           }
           this.show_spinner = false;
       },
-
+    /*
         updateAssignedOfficerSelect:function(){
+            console.log("update assigned officer")
             let vm = this;
             $(vm.$refs.assigned_officer).val(vm.feeWaiver.assigned_officer);
             $(vm.$refs.assigned_officer).trigger('change');
         },
+        */
         assignRequestUser: function(){
             let vm = this;
             vm.$http.get(helpers.add_endpoint_json('/api/feewaivers',(vm.feeWaiver.id+'/assign_request_user')))
             .then((response) => {
                 vm.feeWaiver = response.body;
-                vm.updateAssignedOfficerSelect();
+                //vm.updateAssignedOfficerSelect();
             }, (error) => {
-                vm.updateAssignedOfficerSelect();
+                //vm.updateAssignedOfficerSelect();
                 swal(
                     'Proposal Error',
                     helpers.apiVueResourceError(error),
@@ -266,9 +268,9 @@ export default {
                     emulateJSON:true
                 }).then((response) => {
                     vm.feeWaiver = response.body;
-                    vm.updateAssignedOfficerSelect();
+                    //vm.updateAssignedOfficerSelect();
                 }, (error) => {
-                    vm.updateAssignedOfficerSelect();
+                    //vm.updateAssignedOfficerSelect();
                     swal(
                         'Proposal Error',
                         helpers.apiVueResourceError(error),
@@ -280,9 +282,9 @@ export default {
                 vm.$http.get(helpers.add_endpoint_json('/api/feewaivers',(vm.feeWaiver.id+'/unassign')))
                 .then((response) => {
                     vm.feeWaiver = response.body;
-                    vm.updateAssignedOfficerSelect();
+                    //vm.updateAssignedOfficerSelect();
                 }, (error) => {
-                    vm.updateAssignedOfficerSelect();
+                    //vm.updateAssignedOfficerSelect();
                     swal(
                         'Proposal Error',
                         helpers.apiVueResourceError(error),
@@ -313,41 +315,50 @@ export default {
                 allowClear: true,
                 placeholder:"Select Officer"
             }).
-            on("select2:select",function (e) {
+            on("select2:select", function (e) {
                 var selected = $(e.currentTarget);
                 vm.feeWaiver.assigned_officer = selected.val();
+                //await vm.$nextTick();
                 vm.assignTo();
+                /*
             }).on("select2:unselecting", function(e) {
                 var self = $(this);
                 setTimeout(() => {
                     self.select2('close');
                 }, 0);
-            }).on("select2:unselect",function (e) {
+                */
+            }).on("select2:unselect", function (e) {
                 var selected = $(e.currentTarget);
                 vm.feeWaiver.assigned_officer = null;
+                //await vm.$nextTick();
                 vm.assignTo();
             });
+            //});
         },
 
 
     },
-    mounted: function() {
-        this.$nextTick(() => {
-            Vue.http.get(`/api/feewaivers/${this.feeWaiverId}.json`).then(res => {
-                  this.feeWaiver = res.body;
-            },
-            err => {
-              console.log(err);
-            });
-        });
+    created: async function() {
+        await this.$nextTick();
+        const res = await Vue.http.get(`/api/feewaivers/${this.feeWaiverId}.json`)
+        this.feeWaiver = res.body;
+        await this.$nextTick();
+        this.initialiseAssignedOfficerSelect()
     },
+    /*
     updated: function(){
         this.$nextTick(() => {
             this.initialiseAssignedOfficerSelect()
         });
     },
-    created: function() {
+    mounted: async function() {
+        await this.$nextTick();
+        //this.$nextTick(() => {
+        //this.initialiseAssignedOfficerSelect()
+        //this.updateAssignedOfficerSelect()
+        //});
     },
+    */
     beforeRouteEnter: function(to, from, next) {
         next(vm => {
             vm.feeWaiverId = to.params.fee_waiver_id;
