@@ -7,7 +7,6 @@ from django.core.wsgi import get_wsgi_application
 from dj_static import Cling, MediaCling
 
 import confy
-#import ipdb; ipdb.set_trace()
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 confy.read_environment_file(BASE_DIR+"/.env")
 os.environ.setdefault("BASE_DIR", BASE_DIR)

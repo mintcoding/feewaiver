@@ -12,9 +12,6 @@ from feewaiver.models import (
         CampGround,
         )
 from feewaiver.main_models import TemporaryDocumentCollection
-#from disturbance.components.organisations.models import (
- #                               Organisation
-  #                          )
 from feewaiver.main_serializers import CommunicationLogEntrySerializer
 from rest_framework import serializers
 
@@ -86,7 +83,6 @@ class ContactDetailsSaveSerializer(serializers.ModelSerializer):
 class ContactDetailsSerializer(serializers.ModelSerializer):
     participants_id = serializers.IntegerField(write_only=True)
     participants_code = serializers.SerializerMethodField()
-    #        required=True, write_only=True, allow_null=False)
 
     class Meta:
         model = ContactDetails
@@ -148,18 +144,15 @@ class FeeWaiverVisitSaveSerializer(serializers.ModelSerializer):
         model = FeeWaiverVisit
         fields = (
                 'id',
-                #'fee_waiver_id',
                 'description',     
                 'camping_requested',
                 'date_from',     
                 'date_to',     
                 'issued',
                 'index',
-                #'selected_park_ids',    
                 'number_of_vehicles',     
                 'number_of_participants',     
                 'age_of_participants_array', 
-                #'camping_assessment_choices',
                 'camping_assessment',
                 )
         read_only_fields = (
@@ -170,15 +163,11 @@ class FeeWaiverVisitSaveSerializer(serializers.ModelSerializer):
 class FeeWaiverVisitSerializer(serializers.ModelSerializer):
     selected_park_ids = serializers.SerializerMethodField()
     selected_free_park_ids = serializers.SerializerMethodField()
-    #selected_campground_ids = serializers.SerializerMethodField()
     selected_park_names = serializers.SerializerMethodField()
     selected_free_park_names = serializers.SerializerMethodField()
-    #selected_campground_names = serializers.SerializerMethodField()
     fee_waiver_id = serializers.IntegerField(
             required=True, write_only=True, allow_null=False)
     camping_approved = serializers.SerializerMethodField()
-    #camping_assessment_choices = serializers.SerializerMethodField()
-
 
     class Meta:
         model = FeeWaiverVisit
@@ -191,14 +180,11 @@ class FeeWaiverVisitSerializer(serializers.ModelSerializer):
                 'date_to',     
                 'selected_park_ids',    
                 'selected_free_park_ids',    
-                #'selected_campground_ids',    
                 'selected_park_names',    
                 'selected_free_park_names',    
-                #'selected_campground_names',    
                 'number_of_vehicles',     
                 'number_of_participants',     
                 'age_of_participants_array', 
-                #'camping_assessment_choices',
                 'camping_assessment',
                 'camping_approved',
                 'issued',
@@ -220,12 +206,6 @@ class FeeWaiverVisitSerializer(serializers.ModelSerializer):
             park_id_list.append(str(park.id))
         return park_id_list
 
-    #def get_selected_campground_ids(self, obj):
-    #    campground_id_list = []
-    #    for campground in obj.campgrounds.all():
-    #        campground_id_list.append(str(campground.id))
-    #    return campground_id_list
-
     def get_selected_park_names(self, obj):
         park_name_list = []
         for park in obj.parks.all():
@@ -237,12 +217,6 @@ class FeeWaiverVisitSerializer(serializers.ModelSerializer):
         for park in obj.free_parks.all():
             park_name_list.append(str(park.name))
         return park_name_list
-
-    #def get_selected_campground_names(self, obj):
-    #    campground_name_list = []
-    #    for campground in obj.campgrounds.all():
-    #        campground_name_list.append(str(campground.name))
-    #    return campground_name_list
 
     def get_camping_approved(self, obj):
         choices=FeeWaiverVisit.CAMPING_CHOICES
@@ -261,16 +235,8 @@ class FeeWaiverSaveSerializer(serializers.ModelSerializer):
                 'id',
                 'lodgement_number',
                 'lodgement_date',
-                #'contact_details_id',     
                 'fee_waiver_purpose',     
                 'comments_to_applicant',
-                #'visits',
-                #'processing_status',
-                #'can_process',
-                #'assigned_officer',
-                #'assigned_officer_id',
-                #'action_group',
-                #'current_officer',
                 )
         read_only_fields = (
             'id',
@@ -296,7 +262,6 @@ class FeeWaiverMinimalSerializer(serializers.ModelSerializer):
                 'lodgement_date',
                 'contact_details_id',     
                 'fee_waiver_purpose',     
-                #'visits',
                 'processing_status',
                 'proposed_status',
                 'can_process',
@@ -305,7 +270,6 @@ class FeeWaiverMinimalSerializer(serializers.ModelSerializer):
                 'assigned_officer_id',
                 'action_group',
                 'current_officer',
-                #'comments_to_applicant',
                 )
         read_only_fields = (
             'id',
@@ -324,7 +288,6 @@ class FeeWaiverMinimalSerializer(serializers.ModelSerializer):
 
     def get_can_process(self,obj):
         # Check if currently logged in user has access to process the proposal
-        #import ipdb; ipdb.set_trace()
         request = self.context.get('request')
         if request:
             user = request.user
@@ -337,7 +300,6 @@ class FeeWaiverMinimalSerializer(serializers.ModelSerializer):
 
     def get_can_assign(self,obj):
         # Check if currently logged in user has access to process the proposal
-        #import ipdb; ipdb.set_trace()
         request = self.context.get('request')
         if request:
             user = request.user
@@ -414,7 +376,6 @@ class FeeWaiverSerializer(serializers.ModelSerializer):
 
     def get_can_process(self,obj):
         # Check if currently logged in user has access to process the proposal
-        #import ipdb; ipdb.set_trace()
         request = self.context.get('request')
         if request:
             user = request.user
@@ -427,7 +388,6 @@ class FeeWaiverSerializer(serializers.ModelSerializer):
 
     def get_can_assign(self,obj):
         # Check if currently logged in user has access to process the proposal
-        #import ipdb; ipdb.set_trace()
         request = self.context.get('request')
         if request:
             user = request.user
@@ -459,7 +419,6 @@ class FeeWaiverDTSerializer(serializers.ModelSerializer):
     assigned_officer = serializers.SerializerMethodField(read_only=True)
     latest_feewaiver_document = serializers.SerializerMethodField()
     participants = serializers.SerializerMethodField()
-    #licence_document = serializers.CharField(source='licence_document._file.url')
 
     class Meta:
         model = FeeWaiver
@@ -468,26 +427,19 @@ class FeeWaiverDTSerializer(serializers.ModelSerializer):
                 'lodgement_number',
                 'contact_name',
                 'participants',
-                #'contact_details',
-                #'submitter',
                 'processing_status',
                 'proposed_status',
-                #'lodgement_date',
                 'lodgement_date',
                 'can_process',
                 'assigned_officer',
                 'action_shortcut',
                 'comments_to_applicant',
                 'latest_feewaiver_document',
-                #document,
-                #assigned_to,
                 )
         read_only_fields = (
             'id',
         )
 
-    #def get_lodgement_date(self, obj):
-     #   return obj.lodgement_date.strftime('%d/%m/%Y')
     def get_participants(self, obj):
         if obj.contact_details:
             return obj.contact_details.participants.name
@@ -509,7 +461,6 @@ class FeeWaiverDTSerializer(serializers.ModelSerializer):
 
     def get_can_process(self,obj):
         # Check if currently logged in user has access to process the proposal
-        #import ipdb; ipdb.set_trace()
         request = self.context.get('request')
         if request:
             user = request.user
@@ -521,25 +472,17 @@ class FeeWaiverDTSerializer(serializers.ModelSerializer):
         return False
 
     def get_action_shortcut(self, obj):
-        #link = '<div v-if="show_spinner"><i class="fa fa-2x fa-spinner fa-spin"></i></div><div v-else>'
         link = ''
         if self.get_can_process(obj) and obj.processing_status == 'with_approver':
             if obj.proposed_status == 'issue':
                 link +=  '<a href="{}" class="action-{}" data-issue="{}">Issue Fee Waiver</a><br/>'.format(obj.id, obj.id, obj.id)
             if obj.proposed_status == 'concession':
-                #link +=  '<a href="#${full.id}" data-concession="${full.id}">Concession</a><br/>'
                 link +=  '<a href="{}" class="action-{}" data-concession="{}">Issue Concession</a><br/>'.format(obj.id, obj.id, obj.id)
             if obj.proposed_status == 'decline':
-                #link +=  '<a href="#${full.id}" data-decline="${full.id}">Decline</a><br/>'
                 link +=  '<a href="{}" class="action-{}" data-decline="{}">Decline</a><br/>'.format(obj.id, obj.id, obj.id)
-        #link += '</div>'
         return link
 
     def get_latest_feewaiver_document(self, obj):
-        #url = ''
-        #if obj.documents.order_by('-uploaded_date'):
-        #    url = obj.documents.order_by('-uploaded_date')[0]._file.url
-        #return url
         return obj.latest_feewaiver_document
 
 
@@ -557,7 +500,6 @@ class FeeWaiverDocSerializer(serializers.ModelSerializer):
     full_camping_waiver_exists = serializers.SerializerMethodField()
     part_camping_waiver_exists = serializers.SerializerMethodField()
     concession = serializers.SerializerMethodField()
-    #licence_document = serializers.CharField(source='licence_document._file.url')
 
     class Meta:
         model = FeeWaiver
@@ -566,10 +508,8 @@ class FeeWaiverDocSerializer(serializers.ModelSerializer):
                 'lodgement_number',
                 'contact_name',
                 'contact_details',
-                #'submitter',
                 'processing_status',
                 'proposed_status',
-                #'lodgement_date',
                 'lodgement_date',
                 'can_process',
                 'assigned_officer',
@@ -581,15 +521,10 @@ class FeeWaiverDocSerializer(serializers.ModelSerializer):
                 'part_camping_waiver_exists',
                 'participants_name',
                 'concession',
-                #document,
-                #assigned_to,
                 )
         read_only_fields = (
             'id',
         )
-
-    #def get_lodgement_date(self, obj):
-     #   return obj.lodgement_date.strftime('%d/%m/%Y')
 
     def get_address(self, obj):
         return (obj.contact_details.postal_address + '\n' +
@@ -644,7 +579,6 @@ class FeeWaiverDocSerializer(serializers.ModelSerializer):
 
     def get_can_process(self,obj):
         # Check if currently logged in user has access to process the proposal
-        #import ipdb; ipdb.set_trace()
         request = self.context.get('request')
         if request:
             user = request.user

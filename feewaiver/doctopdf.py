@@ -6,7 +6,6 @@ from docxtpl import DocxTemplate
 from feewaiver.main_models import GlobalSettings
 
 
-#def create_apiary_licence_pdf_contents(approval, proposal, copied_to_permit, approver, site_transfer_preview=None):
 def create_feewaiver_pdf_contents(feewaiver, request):
 
     feewaiver_template = GlobalSettings.objects.get(key=GlobalSettings.KEY_FEEWAIVER_TEMPLATE_FILE)
@@ -18,10 +17,8 @@ def create_feewaiver_pdf_contents(feewaiver, request):
         path_to_template = os.path.join(settings.BASE_DIR, 'feewaiver', 'static', 'feewaiver', 'fee_waiver_template.docx')
 
     doc = DocxTemplate(path_to_template)
-    #from disturbance.components.approvals.serializers import ApprovalSerializerForLicenceDoc
     from feewaiver.serializers import FeeWaiverDocSerializer
     serializer_context = {
-            #'feewaiver': feewaiver,
             "request": request,
             }
     context_obj = FeeWaiverDocSerializer(feewaiver, context=serializer_context)
@@ -46,3 +43,4 @@ def create_feewaiver_pdf_contents(feewaiver, request):
     os.remove(new_doc_file)
     os.remove(new_pdf_file)
     return file_contents
+

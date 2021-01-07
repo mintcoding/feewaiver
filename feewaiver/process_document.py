@@ -7,12 +7,8 @@ from django.conf import settings
 from feewaiver.models import FeeWaiverUserAction
 from django.contrib import auth
 
-#from disturbance.components.proposals.models import ProposalApiary, Proposal, PublicLiabilityInsuranceDocument, \
- #   DeedPollDocument, SupportingApplicationDocument
-
 
 def process_generic_document(request, instance, document_type=None, *args, **kwargs):
-    #import ipdb; ipdb.set_trace()
     print("process_generic_document")
     print(request.data)
     try:
@@ -41,17 +37,6 @@ def process_generic_document(request, instance, document_type=None, *args, **kwa
         elif comms_instance:
             returned_file_data = [dict(file=d._file.url, id=d.id, name=d.name,) for d in comms_instance.documents.all() if d._file]
             return {'filedata': returned_file_data, 'comms_instance_id': comms_instance.id}
-        # example document_type
-        #elif input_name:
-        #    if document_type == DeedPollDocument.DOC_TYPE_NAME:
-        #        documents_qs = instance.deed_poll_documents
-        #    elif document_type == PublicLiabilityInsuranceDocument.DOC_TYPE_NAME:
-        #        documents_qs = instance.public_liability_insurance_documents
-        #    elif document_type == SupportingApplicationDocument.DOC_TYPE_NAME:
-        #        documents_qs = instance.supporting_application_documents
-
-        #    returned_file_data = [dict(file=d._file.url, id=d.id, name=d.name,) for d in documents_qs.filter(input_name=input_name) if d._file]
-        #    return { 'filedata': returned_file_data }
         else:
             returned_file_data = [dict(file=d._file.url, id=d.id, name=d.name, ) for d in instance.documents.all() if d._file]
             return {'filedata': returned_file_data}
@@ -62,18 +47,6 @@ def process_generic_document(request, instance, document_type=None, *args, **kwa
 
 
 def delete_document(request, instance, comms_instance, document_type, input_name=None):
-    # example document_type
-    #if 'document_id' in request.data:
-        #if document_type == DeedPollDocument.DOC_TYPE_NAME:
-        #    document_id = request.data.get('document_id')
-        #    document = instance.deed_poll_documents.get(id=document_id)
-        #elif document_type == PublicLiabilityInsuranceDocument.DOC_TYPE_NAME:
-        #    document_id = request.data.get('document_id')
-        #    document = instance.public_liability_insurance_documents.get(id=document_id)
-        #elif document_type == SupportingApplicationDocument.DOC_TYPE_NAME:
-        #    document_id = request.data.get('document_id')
-        #    document = instance.supporting_application_documents.get(id=document_id)
-
     # comms_log doc store delete
     if comms_instance and 'document_id' in request.data:
         document_id = request.data.get('document_id')

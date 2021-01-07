@@ -1,12 +1,7 @@
 from django.conf import settings
 from ledger.accounts.models import EmailUser,Address, Profile,EmailIdentity, EmailUserAction, EmailUserLogEntry, CommunicationsLogEntry
-#from commercialoperator.components.organisations.models import (
-#                                    Organisation,
-#                                )
-#from commercialoperator.components.main.models import UserSystemSettings, Document, ApplicationType
-from feewaiver.main_models import UserSystemSettings, Document#, ApplicationType
-#from commercialoperator.components.proposals.models import Proposal
-#from commercialoperator.components.organisations.utils import can_admin_org, is_consultant
+#from feewaiver.main_models import UserSystemSettings, Document
+from feewaiver.main_models import Document
 from feewaiver.helpers import is_feewaiver_admin 
 from rest_framework import serializers
 from ledger.accounts.utils import in_dbca_domain
@@ -30,53 +25,13 @@ class UserAddressSerializer(serializers.ModelSerializer):
             'postcode'
         )
 
-class UserSystemSettingsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserSystemSettings
-        fields = (
-            'one_row_per_park',
-        )
-
-#class UserOrganisationSerializer(serializers.ModelSerializer):
-#    name = serializers.CharField(source='organisation.name')
-#    abn = serializers.CharField(source='organisation.abn')
-#    email = serializers.SerializerMethodField()
-#    is_consultant = serializers.SerializerMethodField(read_only=True)
-#    is_admin = serializers.SerializerMethodField(read_only=True)
-#    active_proposals = serializers.SerializerMethodField(read_only=True)
-#
+#class UserSystemSettingsSerializer(serializers.ModelSerializer):
 #    class Meta:
-#        model = Organisation
+#        model = UserSystemSettings
 #        fields = (
-#            'id',
-#            'name',
-#            'abn',
-#            'email',
-#            'is_consultant',
-#            'is_admin',
-#            'active_proposals',
+#            'one_row_per_park',
 #        )
-#
-#    def get_is_admin(self, obj):
-#        user = EmailUser.objects.get(id=self.context.get('user_id'))
-#        return can_admin_org(obj, user)
-#
-#    def get_is_consultant(self, obj):
-#        user = EmailUser.objects.get(id=self.context.get('user_id'))
-#        return is_consultant(obj, user)
-#
-#    def get_email(self, obj):
-#        email = EmailUser.objects.get(id=self.context.get('user_id')).email
-#        return email
-#
-#    def get_active_proposals(self, obj):
-#        _list = []
-#        #for application_type in ['T Class', 'Filming', 'Event']:
-#        for application_type in [ApplicationType.TCLASS, ApplicationType.FILMING, ApplicationType.EVENT ]:
-#            qs = Proposal.objects.filter(application_type__name=application_type, org_applicant=obj).exclude(processing_status__in=['approved', 'declined', 'discarded']).values_list('lodgement_number', flat=True)
-#            _list.append( dict(application_type=application_type, proposals=list(qs)) )
-#        return _list
-#
+
 
 class UserFilterSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
@@ -96,13 +51,11 @@ class UserFilterSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    #commercialoperator_organisations = serializers.SerializerMethodField()
     residential_address = UserAddressSerializer()
     personal_details = serializers.SerializerMethodField()
     address_details = serializers.SerializerMethodField()
     contact_details = serializers.SerializerMethodField()
     full_name = serializers.SerializerMethodField()
-    #identification = DocumentSerializer()
     is_department_user = serializers.SerializerMethodField()
     is_payment_admin = serializers.SerializerMethodField()
     system_settings= serializers.SerializerMethodField()
@@ -116,7 +69,6 @@ class UserSerializer(serializers.ModelSerializer):
             'last_name',
             'first_name',
             'email',
-            #'identification',
             'residential_address',
             'phone_number',
             'mobile_number',
@@ -159,13 +111,6 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_is_payment_admin(self, obj):
         return is_payment_admin(obj)
-
-    #def get_commercialoperator_organisations(self, obj):
-    #    commercialoperator_organisations = obj.commercialoperator_organisations
-    #    serialized_orgs = UserOrganisationSerializer(
-    #        commercialoperator_organisations, many=True, context={
-    #            'user_id': obj.id}).data
-    #    return serialized_orgs
 
     def get_system_settings(self, obj):
         try:
@@ -261,3 +206,4 @@ class EmailUserLogEntrySerializer(CommunicationLogEntrySerializer):
 
     def get_documents(self,obj):
         return [[d.name,d._file.url] for d in obj.documents.all()]
+

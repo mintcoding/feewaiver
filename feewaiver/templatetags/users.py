@@ -1,6 +1,4 @@
 from django.template import Library
-#from wildlifelicensing.apps.main import helpers
-#from feewaiver import helpers
 from django.conf import settings
 from feewaiver import helpers as feewaiver_helpers
 from feewaiver.main_models import SystemMaintenance
@@ -34,7 +32,6 @@ def is_model_backend(context):
 @register.simple_tag(takes_context=True)
 def is_payment_officer(context):
     request = context['request']
-    #user= request.user._wrapped if hasattr(request.user,'_wrapped') else request.user
     return is_payment_admin(request.user)
 
 @register.simple_tag()
