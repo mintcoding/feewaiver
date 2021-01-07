@@ -1,20 +1,6 @@
 <template lang="html">
     <div class="ffu-wrapper">
         <label :id="id" :num_files="num_documents()" style="display: none;">{{label}}</label>
-        <!--template v-if="help_text">
-            <HelpText :help_text="help_text" />
-        </template-->
-
-        <!--template v-if="help_text_url">
-            <HelpTextUrl :help_text_url="help_text_url" />
-        </template-->
-
-        <!--CommentBlock 
-            :label="label"
-            :name="name"
-            :field_data="field_data"
-            /-->
-
         <template v-if="files">
             <template v-for="v in documents">
                 <div>
@@ -49,10 +35,7 @@ import {
   helpers
 }
 from '@/utils/hooks';
-//import CommentBlock from './comment_block.vue';
-//import HelpText from './help_text.vue';
 import Vue from 'vue';
-//import { mapGetters } from 'vuex';
 export default {
     name: "FileField",
     props:{
@@ -86,7 +69,6 @@ export default {
             default: 'Attach Document'
         }
     },
-    //components: {CommentBlock, HelpText},
     data:function(){
         return {
             repeat:1,
@@ -97,7 +79,6 @@ export default {
             help_text_url:'',
             commsLogId: null,
             temporary_document_collection_id: null,
-            //document_action_url: this.documentActionUrl,
         }
     },
     computed: {
@@ -116,7 +97,6 @@ export default {
                 if (!this.temporary_document_collection_id) {
                     url = api_endpoints.temporary_document
                 } else {
-                    //url = api_endpoints.temporary_document + this.temporary_document_collection_id + '/process_temp_comms_log_document/'
                     url = api_endpoints.temporary_document + this.temporary_document_collection_id + '/process_temp_document/'
                 }
             } else {
@@ -185,7 +165,6 @@ export default {
                 formData.append('input_name', this.name);
                 formData.append('csrfmiddlewaretoken', this.csrf_token);
                 let res = await Vue.http.post(this.document_action_url, formData)
-                //let res = await Vue.http.post(this.documentActionUrl, formData)
                 this.documents = res.body.filedata;
                 this.commsLogId = res.body.comms_instance_id;
             }
@@ -207,10 +186,8 @@ export default {
             if (this.document_action_url) {
                 let res = await Vue.http.post(this.document_action_url, formData)
                 this.documents = res.body.filedata;
-                //this.documents = await this.get_documents()
                 this.commsLogId = res.body.comms_instance_id;
             }
-            //vm.documents = res.body;
             this.show_spinner = false;
 
         },
@@ -255,7 +232,6 @@ export default {
                         "input_name": this.name,
                     }
                 );
-                //this.$parent.temporary_document_collection_id = this.temporary_document_collection_id
                 this.$nextTick(async () => {
                     // must emit event here
                     this.handleChange(e);
@@ -295,7 +271,6 @@ export default {
                 this.commsLogId = res.body.comms_instance_id;
                 this.show_spinner = false;
             } else {
-                console.log("no documentActionUrl");
             }
 
         },
@@ -309,7 +284,6 @@ export default {
     },
     mounted:function () {
         if (this.value) {
-            //vm.files = (Array.isArray(vm.value))? vm.value : [vm.value];
             if (Array.isArray(this.value)) {
                 this.value;
             } else {
@@ -350,3 +324,4 @@ export default {
         text-decoration: underline;
     }
 </style>
+

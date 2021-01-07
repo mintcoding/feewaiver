@@ -23,7 +23,6 @@
                             <div class="col-sm-12 top-buffer-s">
                                 <strong>Currently assigned to</strong><br/>
                                 <div class="form-group">
-                                    <!--template v-if="feeWaiver.processing_status == 'With Approver'"-->
                                     <template>
                                         <select ref="assigned_officer" :disabled="!canAssign" class="form-control" v-model="feeWaiver.assigned_officer_id">
                                             <option :value="null"></option>
@@ -151,7 +150,6 @@ export default {
             comms_add_url: helpers.add_endpoint_json('/api/feewaivers',vm.$route.params.fee_waiver_id+'/add_comms_log'),
             logs_url: helpers.add_endpoint_json('/api/feewaivers',vm.$route.params.fee_waiver_id+'/action_log'),
             panelClickersInitialised: false,
-            //is_local: helpers.is_local(),
         }
     },
     components: {
@@ -214,9 +212,7 @@ export default {
         finalApproval: async function(approval_type) {
           this.show_spinner = true;
           let post_url = '/api/feewaivers/' + this.feeWaiver.id + '/final_approval/'
-          //let payload = new FormData(this.form);
           let payload = {"approval_type": approval_type}
-          //approval_type ? payload.append('approval_type', approval_type) : null;
           let feeWaiverRes = await this.parentSave(false)
           if (feeWaiverRes.ok) {
               try {
@@ -236,7 +232,6 @@ export default {
       },
     /*
         updateAssignedOfficerSelect:function(){
-            console.log("update assigned officer")
             let vm = this;
             $(vm.$refs.assigned_officer).val(vm.feeWaiver.assigned_officer);
             $(vm.$refs.assigned_officer).trigger('change');

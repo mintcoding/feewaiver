@@ -3,9 +3,6 @@
         <i class='fa fa-5x fa-spinner fa-spin'></i>
     </div>
     <div v-else :class="containingClass">
-        <!--strong> fill in form</strong-->
-        <!--a class="navbar-brand" href="{% url 'ds_home' %}"><div style="inline"><img src="{% static 'feewaiver/img/dpaw_small.png' %}">Staff login</div></a-->
-        <!--a class="navbar-brand pull-right" href="/"><div style="inline"><img src="/static/feewaiver/img/dpaw_small.png">Staff login</div></a-->
     <form id="feewaiver-form" @submit.prevent="submit">
         <div class="panel panel-default headerbox">
             <strong>
@@ -113,19 +110,6 @@
                 </div>
             </div>
         </FormSection>
-        <!--FormSection :formCollapse="false" label="Fee Waiver Request" Index="fee_waiver_request" :noChevron="!isInternal">
-            <div class="col-sm-10">
-                <div class="form-group">
-                    <div class="row">
-                      <label for="fee_waiver_purpose" class="col-sm-4 control-label">Describe the purpose of the visit(s)</label>
-                      <div class="col-sm-8">
-                          <textarea :disabled="readonly" required class="form-control" name="fee_waiver_purpose" v-model="feeWaiver.fee_waiver_purpose"/>
-                      </div>
-                    </div>
-                </div>
-            </div>
-        </FormSection-->
-        <!--div v-for="visit in visits" :key="visit.index + '_' + uuid"-->
         <div v-for="visit in visits" >
             <VisitSection 
             :key="'visit' + visit.index + '_' + uuid"
@@ -159,8 +143,6 @@
         </div>
         <div>
             <input type="hidden" name="csrfmiddlewaretoken" :value="csrf_token"/>
-            <!--input type='hidden' name="schema" :value="JSON.stringify(proposal)" /-->
-            <!--input type='hidden' name="proposal_id" :value="1" /-->
             <div class="row" style="margin-bottom: 50px">
               <div class="navbar navbar-fixed-bottom" style="background-color: #f5f5f5;">
                 <div class="navbar-inner">
@@ -259,15 +241,6 @@
             },
         },
         computed: {
-            /*
-            canProcess: function() {
-                let process = false;
-                if (this.feeWaiver && this.feeWaiver.can_process) {
-                    process = true;
-                }
-                return process;
-            },
-            */
             readonly: function() {
                 if (this.isFinalised) {
                     return true
@@ -286,7 +259,6 @@
                     //cclass = 'col-sm-12';
                     cclass = '';
                 }
-                console.log(cclass);
                 return cclass;
             },
             documentActionUrl: function() {
@@ -378,8 +350,6 @@
                 };
                 const form = document.getElementsByTagName('form')[0]
                 form.addEventListener('submit', function(evt) {
-                    console.log(!vm.contactDetails.email);
-                    console.log(!contactDetailsEmail.validity.valid) 
                     if (!contactDetailsEmail.validity.valid) {
                         showEmailError();
                         evt.preventDefault();
@@ -433,17 +403,14 @@
                         showCancelButton: true,
                         confirmButtonText: 'Submit'
                     });
-                    console.log(this.payload)
                     try {
                         const returnedFeeWaiver = await this.$http.post(api_endpoints.feewaivers,this.payload);
-                        console.log(returnedFeeWaiver);
                         this.$router.push({
                             name: 'submit_feewaiver',
                             params: { fee_waiver: returnedFeeWaiver.body}
                         });
 
                     } catch (error) {
-                        console.log(error);
                         let swalTitle = "Error";
                         let swalText = error.data[0];
                         if (error.data[0].slice(0,1) === '"{') {
@@ -463,12 +430,10 @@
             },
             updatePayload: async function() {
                 await this.$nextTick();
-                //await this.$nextTick(() => {
                 this.payload = {};
                 this.payload = {
                     'contact_details': Object.assign({}, this.contactDetails),
                     'fee_waiver': Object.assign({}, this.feeWaiver),
-                    //'parks': this.selected_park_ids,
                     'visits': [],
                     'temporary_document_collection_id': this.temporary_document_collection_id,
                 }
@@ -487,15 +452,9 @@
                 //});
             },
             save: async function(confirmSave=true) {
-                //await this.$nextTick(async () => {
-                //let payload = {}
                 await this.updatePayload()
                 let url = `/api/feewaivers/${this.feeWaiverId}/assessor_save/`;
-                //await this.$http.post(url, JSON.stringify(payload));
-                //console.log("this.payload")
-                //console.log(this.payload)
                 const feeWaiverRes = await this.$http.post(url, this.payload);
-                //console.log(feeWaiverRes);
                 if (confirmSave) {
                     swal(
                         'Saved',
@@ -508,29 +467,20 @@
             fetchAdminData: async function() {
                 this.participantGroupList = [];
                 const response = await this.$http.get(api_endpoints.admin_data);
-                //console.log(response)
                 for (let group of response.body.participants_list) {
                     this.participantGroupList.push(group)
                 }
                 for (let group of response.body.parks_list) {
                     this.parksList.push(group)
                 }
-                /*
-                for (let group of response.body.campground_list) {
-                    this.campGroundsList.push(group)
-                }
-                */
                 for (let choice of response.body.camping_choices) {
                     this.campingChoices.push(choice)
                 }
             },
             loadFeeWaiverData: async function() {
-                console.log(this.feeWaiverId);
                 const url = api_endpoints.feewaivers + this.feeWaiverId + '/feewaiver_contactdetails_pack/';
 
                 const returnVal = await this.$http.get(url);
-                //console.log(url);
-                //console.log(returnVal.body.fee_waiver);
                 this.feeWaiver.id = returnVal.body.fee_waiver.id;
                 this.feeWaiver.lodgement_number = returnVal.body.fee_waiver.lodgement_number;
                 this.feeWaiver.fee_waiver_purpose = returnVal.body.fee_waiver.fee_waiver_purpose;
@@ -544,11 +494,9 @@
                 for (let retrievedVisit of returnVal.body.fee_waiver.visits) {
                     let visit = Object.assign({}, retrievedVisit);
                     // we are now saving the index to db
-                    //visit.index = ++this.visitIdx;
                     visit.date_to = moment(visit.date_to, 'YYYY-MM-DD').format('DD/MM/YYYY');
                     visit.date_from = moment(visit.date_from, 'YYYY-MM-DD').format('DD/MM/YYYY');
                     visit.number_of_vehicles = visit.number_of_vehicles.toString()
-                    //this.feeWaiver = Object.assign({}, feeWaiverUpdate);
                     this.visits.push(visit);
                 }
                 this.contactDetails = Object.assign({}, returnVal.body.contact_details);
@@ -577,25 +525,7 @@
     }
 </script>
 
-<!--style lang="css" scoped-->
 <style lang="css">
-/*
-    input:required {
-        border: 1px solid red;
-    }
-    select:required {
-        border: 1px solid red;
-    }
-    .select2 {
-        border: 1px solid red;
-    }
-    textarea:required {
-        border: 1px solid red;
-    }
-    .actionBtn {
-        cursor: pointer;
-    }
-    */
     .input_file_wrapper {
         margin: 1.5em 0 0 0;
     }
@@ -632,29 +562,5 @@
     .error {
         color: red;
     }
-    /*
-    input[type=email]{
-        -webkit-appearance: none;
-        appearance: none;
-
-        width: 100%;
-        border: 1px solid #333;
-        margin: 0;
-
-        font-family: inherit;
-        font-size: 90%;
-
-        box-sizing: border-box;
-    }
-    */
-/*
-    input[type=email]:invalid{
-        border-color: #900;
-        background-color: #FDD;
-    }
-    input:focus:invalid {
-        outline: none;
-    }
-    */
 </style>
 

@@ -58,14 +58,12 @@ export default {
           if (!Object.keys(this.feeWaiver).length) {
               this.$router.push({
                   name: 'external-feewaiver-form',
-                  //params: { fee_waiver: returnedFeeWaiver.body}
               });
           }
       });
   },
   beforeRouteEnter: function(to, from, next) {
     next(vm => {
-        //vm.feeWaiver = to.params.fee_waiver;
         vm.feeWaiver = Object.assign({}, to.params.fee_waiver);
     })
   }

@@ -23,7 +23,6 @@
                             <label class="col-sm-4 control-label">Paid Park/s</label>
                             <div :id="'parks_parent_' + visit.index" class="col-sm-6 parkclass">
                                 <select :disabled="readonly" :id="'parks_' + visit.index" class="form-control" multiple="multiple">
-                                    <!--option value="null"></option-->
                                     <option v-for="park in paidParks" :value="park.id">{{park.name}}</option>
                                 </select>
                             </div>
@@ -56,7 +55,6 @@
                             <label class="col-sm-4 control-label">Free Park/s</label>
                             <div class="col-sm-6 campgroundclass">
                                 <select :disabled="readonly" :id="'free_parks_' + visit.index" class="form-control" multiple="multiple">
-                                    <!--option v-for="park in freeParks" :value="park.id">{{park.name}}</option-->
                                 </select>
                             </div>
                         </div>
@@ -166,13 +164,10 @@
     import { api_endpoints, helpers }from '@/utils/hooks'
     import FormSection from "@/components/forms/section_toggle.vue"
     import 'bootstrap/dist/css/bootstrap.css';
-    //require('eonasdan-bootstrap-datetimepicker');
     require("moment");
     require("select2/dist/css/select2.min.css");
     require("select2-bootstrap-theme/dist/select2-bootstrap.min.css");
     import select2 from "select2/dist/js/select2.full.js";
-    //require('../../node_modules/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css');
-    //require('../../node_modules/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js');
     require('eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css');
     require('eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js');
 
@@ -223,8 +218,6 @@
         data:function () {
             let vm = this;
             return {
-                //paidParks: [],
-                //freeParks: [],
                 //selectableCampGrounds: [],
                 datepickerOptions:{
                     format: 'DD/MM/YYYY',
@@ -297,7 +290,6 @@
         methods:{
             /*
             triggerCampGroundSelector: async function(internal) {
-                console.log("trigger")
                 await this.$nextTick();
                 //this.updateCampGrounds(this.visit.selected_park_ids);
                 this.addCampGroundEventListener();
@@ -306,7 +298,6 @@
             },
             */
             triggerFreeParksSelector: async function(internal) {
-                console.log("trigger")
                 await this.$nextTick();
                 this.addFreeParksEventListener(internal);
                 //this.updateSelectableCampGrounds(this.visit.selected_park_ids, internal);
@@ -342,7 +333,6 @@
                     }
                     // with internal flag, load from db
                     if (internal) {
-                        console.log("internal");
                         //for (let park of newParks) {
                         for (let camp of this.visit.selected_campground_ids) {
                             if (campGround.id == camp) {
@@ -379,8 +369,6 @@
               let el_fr_date = $('#dateFromPicker_' + vm.visit.index);
               let el_to_date = $('#dateToPicker_' + vm.visit.index);
 
-              //el_fr_date.datetimepicker();
-              //el_to_date.datetimepicker();
               // "From" field
               el_fr_date.datetimepicker({
                 format: "DD/MM/YYYY",
@@ -418,22 +406,17 @@
               // Parks
               let parkLabel = 'parks_' + vm.visit.index;
               let parkParentLabel = 'parks_parent_' + vm.visit.index;
-              //let el_parks = $(vm.$refs.refLabel);
-              //$('#parks').css("z-index", 100000);
               let el_parks = $('#' + parkLabel);
                 el_parks.select2({
                     //placeholder: "parks",
                 });
-              //el_parks.css("z-index", 10);
               el_parks.on('select2:select', function(e) {
-                  //console.log(e);
                   let val = e.params.data;
                   if (!vm.visit.selected_park_ids.includes(val.id)) {
                       vm.visit.selected_park_ids.push(val.id);
                   }
               }).
               on("select2:unselect",function (e) {
-                  //console.log(e);
                   let val = e.params.data;
                   if (vm.visit.selected_park_ids.includes(val.id)) {
                       let index = vm.visit.selected_park_ids.indexOf(val.id);
@@ -443,7 +426,6 @@
                       /*
                       for (let campGround of vm.campGroundsList) {
                           if (campGround.park_id == val.id) {
-                              console.log(campGround);
                               let index = vm.visit.selected_campground_ids.indexOf(campGround.id.toString());
                               vm.visit.selected_campground_ids.splice(index, 1);
                           }
@@ -458,23 +440,17 @@
                 let vm = this;
                 // Free Parks
                 let freeParkLabel = 'free_parks_' + vm.visit.index;
-                //let parkParentLabel = 'parks_parent_' + vm.visit.index;
-                //let el_parks = $(vm.$refs.refLabel);
-                //$('#parks').css("z-index", 100000);
                 let el_free_parks = $('#' + freeParkLabel);
                   el_free_parks.select2({
                       //placeholder: "parks",
                   });
-                //el_parks.css("z-index", 10);
                 el_free_parks.on('select2:select', function(e) {
-                    //console.log(e);
                     let val = e.params.data;
                     if (!vm.visit.selected_free_park_ids.includes(val.id)) {
                         vm.visit.selected_free_park_ids.push(val.id);
                     }
                 }).
                 on("select2:unselect",function (e) {
-                    //console.log(e);
                     let val = e.params.data;
                     if (vm.visit.selected_free_park_ids.includes(val.id)) {
                         let index = vm.visit.selected_free_park_ids.indexOf(val.id);
@@ -484,7 +460,6 @@
                 let dataArr = []
                 for (let park of vm.freeParks) {
                     let selected = false;
-                    // check for previously selected campgrounds
                     for (let option of el_free_parks.find("option")) {
                         if (park.id == option.value && option.selected) {
                             selected = true;
@@ -492,7 +467,6 @@
                     }
                     // with internal flag, load from db
                     if (internal) {
-                        console.log("internal");
                         //for (let park of newParks) {
                         for (let db_park of this.visit.selected_free_park_ids) {
                             if (park.id == db_park) {
@@ -502,7 +476,6 @@
                     }
                     dataArr.push({id: park.id, text: park.name, defaultSelected: false, selected: selected});
                 }
-                //console.log(dataArr)
                 el_free_parks.html('').select2({data: dataArr});
                 el_free_parks.trigger('change');
                 $('.campgroundclass').css('z-index', 5);
@@ -515,19 +488,16 @@
               let campGroundLabel = 'campgrounds_' + vm.visit.index;
               //let campGroundParentLabel = 'campgrounds_parent_' + vm.visit.index;
               let el_campgrounds = $('#' + campGroundLabel);
-              //console.log(el_campgrounds);
               el_campgrounds.select2({
                   //placeholder: "campgrounds",
               });
               el_campgrounds.on('select2:select', function(e) {
-                  //console.log(e);
                   let val = e.params.data;
                   if (!vm.visit.selected_campground_ids.includes(val.id)) {
                       vm.visit.selected_campground_ids.push(val.id);
                   }
               }).
               on("select2:unselect",function (e) {
-                  //console.log(e);
                   let val = e.params.data;
                   if (vm.visit.selected_campground_ids.includes(val.id)) {
                       let index = vm.visit.selected_campground_ids.indexOf(val.id);
@@ -544,7 +514,6 @@
         },
         created: async function() {
             await this.$nextTick();
-            //console.log("created");
             this.addEventListeners();
             this.updateJqueryData();
             if (this.isInternal) {
@@ -570,12 +539,6 @@
     .list-group{
         margin-bottom: 0;
     }
-    /*
-    .fixed-top{
-        position: fixed;
-        top:56px;
-    }
-    */
     .insurance-items {
         padding-inline-start: 1em;
     }
@@ -593,22 +556,5 @@
     .input-file-wrapper {
         margin: 1.5em 0 0 0;
     }
-    /*
-    .select2-container.parkclass {
-        position: relative;
-        z-index: 10;
-    }
-    .select2-container.campgroundclass {
-        position: relative;
-        z-index: 5;
-    }
-    .parkclass {
-        z-index: 10;
-    }
-    .campgroundclass {
-        z-index: 5;
-    }
-    */
-
 </style>
 

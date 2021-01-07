@@ -30,26 +30,6 @@
                             </div>
                         </div>
                     </div>
-                    <!--div class="row">
-                        <div class="col-md-3">
-                            <label for="">Expiry From</label>
-                            <div class="input-group date" ref="proposalDateFromPicker">
-                                <input type="text" class="form-control" placeholder="DD/MM/YYYY" v-model="filterProposalLodgedFrom">
-                                <span class="input-group-addon">
-                                    <span class="glyphicon glyphicon-calendar"></span>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <label for="">Expiry To</label>
-                            <div class="input-group date" ref="proposalDateToPicker">
-                                <input type="text" class="form-control" placeholder="DD/MM/YYYY" v-model="filterProposalLodgedTo">
-                                <span class="input-group-addon">
-                                    <span class="glyphicon glyphicon-calendar"></span>
-                                </span>
-                            </div>
-                        </div>
-                    </div-->
                     <div class="row">
                         <div class="col-lg-12" style="margin-top:25px;">
                             <datatable ref="feewaiver_datatable" :id="datatable_id" :dtOptions="feewaiver_options" :dtHeaders="feewaiver_headers"/>
@@ -64,9 +44,6 @@ import datatable from '@/utils/vue/datatable.vue'
 import Vue from 'vue'
 import FormSection from "@/components/forms/section_toggle.vue"
 import ResponsiveDatatablesHelper from "@/utils/responsive_datatable_helper.js"
-//require("bootstrap/dist/css/bootstrap.css");
-//require("bootstrap/dist/js/bootstrap.min.js");
-//require("bootstrap/dist/js/bootstrap.js");
 import {
     api_endpoints,
     helpers
@@ -84,11 +61,9 @@ export default {
             //Profile to check if user has access to process Proposal
             profile: {},
             show_spinner: false, 
-            //popoversInitialised: false,
             filterFeeWaiverStatus: 'All',
             filterFeeWaiverLodgedFrom: '',
             filterFeeWaiverLodgedTo: '',
-            //filterProposalSubmitter: 'All',
             dashboardTitle: '',
             dashboardDescription: '',
             dateFormat: 'DD/MM/YYYY',
@@ -107,12 +82,10 @@ export default {
                 },
                 responsive: true,
                 serverSide: true,
-                //lengthMenu: [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "All"] ],
                 order: [
                     [0, 'desc']
                     ],
                 ajax: {
-                    //"url": vm.url,
                     "url": '/api/feewaivers_paginated/feewaiver_internal/?format=datatables',
                     "dataSrc": 'data',
                     // adding extra GET params for Custom filtering
@@ -144,13 +117,6 @@ export default {
                         visible: true,
                         //searchable: false,
                     },
-                    /*
-                    {
-                        data: "contact_name",
-                        visible: true,
-                        orderable: false,
-                    },
-                    */
                     {
                         data: "participants",
                         visible: true,
@@ -159,13 +125,7 @@ export default {
                     {
                         data: "processing_status",
                         mRender:function (data,type,full) {
-                            //return data != '' && data != null ? moment(data).format(vm.dateFormat): '';
                             let fullStatus = full.processing_status;
-                            /*
-                            if (full.processing_status === "With Approver" && full.proposed_status) {
-                                fullStatus += '<br>(' + full.proposed_status + ')';
-                            }
-                            */
                             return fullStatus
                         },
                         //searchable: false,
@@ -183,7 +143,6 @@ export default {
                         visible: true,
                         orderable: false,
                         mRender:function(data,type,full){
-                            //console.log(full)
                             if (data) {
                                 return `<a href="${data}" target="_blank"><i style="color:red" class="fa fa-file-pdf-o"></i></a>`;
                             } else {
@@ -274,8 +233,6 @@ export default {
                 ],
                 processing: true,
                 initComplete: function() {
-                    //vm.$refs.feewaiver_datatable.vmDataTable.columns.adjust().responsive.recalc().draw();
-                    //console.log(vm.$refs.feewaiver_datatable.vmDataTable.columns)
                     vm.$refs.feewaiver_datatable.vmDataTable.columns.adjust().draw();
                 },
             }
@@ -306,24 +263,18 @@ export default {
             vm.$http.get(api_endpoints.filter_list).then((response) => {
                 vm.feewaiver_status = response.body.feewaiver_status_choices;
             },(error) => {
-                console.log(error);
             })
-            //console.log(vm.regions);
         },
         actionShortcut: async function(id, approvalType) {
             let vm = this;
             let processingTableStr = `.action-${id}`;
             let processingTable = $(processingTableStr);
             processingTable.replaceWith("<div><i class='fa fa-2x fa-spinner fa-spin'></i></div>");
-            //processingTable.replaceWith = "<i class='fa fa-2x fa-spinner fa-spin'></i>"
-            //let table = vm.$refs.feewaiver_datatable.vmDataTable
-            //table.data("processing.dt", true);
             let post_url = '/api/feewaivers/' + id + '/final_approval/'
             let res = await Vue.http.post(post_url, {'approval_type': approvalType});
             if (res.ok) {
                 this.refreshFromResponse();
             }
-            //table.data("processing.dt", false);
         },
         refreshFromResponse: function(){
             this.$refs.feewaiver_datatable.vmDataTable.ajax.reload();
@@ -353,19 +304,10 @@ export default {
             //Internal Action shortcut listeners
             let table = vm.$refs.feewaiver_datatable.vmDataTable
             table.on('processing.dt', function(e) {
-                console.log("processing");
             })
             table.on('click', 'a[data-issue]', async function(e) {
-                //let processingTable = $(vm.$refs.feewaiver_datatable.table).filter('[data-issue]')
                 e.preventDefault();
-                //vm.$refs.feewaiver_datatable.vmDataTable.draw();
                 var id = $(this).attr('data-issue');
-                /*
-                let processingTable = $(vm.$refs.feewaiver_datatable.table)
-                //processingTable.replaceWith = "<div><i class='fa fa-2x fa-spinner fa-spin'></i></div>"
-                processingTable.replaceWith('<div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>')
-                console.log(processingTable);
-                */
                 await vm.actionShortcut(id, 'issue');
             }).on('click', 'a[data-concession]', async function(e) {
                 e.preventDefault();
@@ -375,13 +317,7 @@ export default {
                 e.preventDefault();
                 var id = $(this).attr('data-decline');
                 await vm.actionShortcut(id, 'decline');
-            //}).on('inserted.bs.popover', function () {
-                //table = $('#'+commsLogId).DataTable(datatable_options);
-
-                // activate popover when table is drawn.
-            //}).on('draw.dt', function () {
             }).on('responsive-display.dt', function () {
-                //$(this).find('[data-toggle="popover"]').popover();
                 var tablePopover = $(this).find('[data-toggle="popover"]');
                 if (tablePopover.length > 0) {
                     tablePopover.popover();
@@ -392,7 +328,6 @@ export default {
                     });
                 }
             }).on('draw.dt', function () {
-                //$(this).find('[data-toggle="popover"]').popover();
                 var tablePopover = $(this).find('[data-toggle="popover"]');
                 if (tablePopover.length > 0) {
                     tablePopover.popover();
@@ -405,7 +340,6 @@ export default {
             });
         },
         initialiseSearch:function(){
-            //this.regionSearch();
             this.dateSearch();
         },
         dateSearch:function(){
@@ -448,7 +382,6 @@ export default {
     },
     mounted: function(){
 		this.fetchFilterLists();
-        //this.fetchProfile();
         let vm = this;
         $( 'a[data-toggle="collapse"]' ).on( 'click', function () {
             var chev = $( this ).children()[ 0 ];
@@ -456,22 +389,15 @@ export default {
                 $( chev ).toggleClass( "glyphicon-chevron-down glyphicon-chevron-up" );
             }, 100 );
         });
-        /*
-        this.$nextTick(() => {
-            vm.initialisePopovers();
-        });
-        */
     },
     updated: function() {
         this.$nextTick(() => {
             this.initialiseSearch();
             this.addEventListeners();
-            //this.setDashboardText();
         });
     },
     created: function() {
     },
-
 }
 </script>
 <style scoped>
