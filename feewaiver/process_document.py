@@ -65,7 +65,6 @@ def delete_document(request, instance, comms_instance, document_type, input_name
         document.delete()
         # log document action
         request_user = auth.get_user(request)
-        #if request.user is EmailUser:
         if type(request_user) is EmailUser:
             instance.fee_waiver.log_user_action(
                 FeeWaiverUserAction.ACTION_DELETE_DOCUMENT.format(
@@ -76,12 +75,6 @@ def delete_document(request, instance, comms_instance, document_type, input_name
 
 
 def cancel_document(request, instance, comms_instance, document_type, input_name=None):
-        #if document_type == DeedPollDocument.DOC_TYPE_NAME:
-        #    document_list = instance.deed_poll_documents.all()
-        #elif document_type == PublicLiabilityInsuranceDocument.DOC_TYPE_NAME:
-        #    document_list = instance.public_liability_insurance_documents.all()
-        #elif document_type == SupportingApplicationDocument.DOC_TYPE_NAME:
-        #    document_list = instance.supporting_application_documents.all()
         if comms_instance:
             document_list = comms_instance.documents.all()
         else:
@@ -97,36 +90,6 @@ def cancel_document(request, instance, comms_instance, document_type, input_name
 
 
 def save_document(request, instance, comms_instance, document_type, input_name=None):
-    #import ipdb; ipdb.set_trace()
-    # Match model related_name to instance or comms_instance, eg.
-    # sanction_outcome = models.ForeignKey(SanctionOutcome, related_name='documents')..
-    # this document can be accessed or created by 'instance.documents'
-
-    # example document_type
-    #if 'filename' in request.data and input_name:
-     #   filename = request.data.get('filename')
-      #  _file = request.data.get('_file')
-
-        #if document_type == DeedPollDocument.DOC_TYPE_NAME:
-        #    document = instance.deed_poll_documents.get_or_create(input_name=input_name, name=filename)[0]
-        #    path_format_string = '{}/proposals/{}/deed_poll_documents/{}'
-        #elif document_type == PublicLiabilityInsuranceDocument.DOC_TYPE_NAME:
-        #    document = instance.public_liability_insurance_documents.get_or_create(input_name=input_name, name=filename)[0]
-        #    path_format_string = '{}/proposals/{}/public_liability_insurance_documents/{}'
-        #elif document_type == SupportingApplicationDocument.DOC_TYPE_NAME:
-        #    document = instance.supporting_application_documents.get_or_create(input_name=input_name, name=filename)[0]
-        #    path_format_string = '{}/proposals/{}/supporting_application_documents/{}'
-
-        #if isinstance(instance, ProposalApiary):
-        #    id_number = instance.proposal.id
-        #elif isinstance(instance, Proposal):
-        #    id_number = instance.id
-        #else:
-        #    raise('Object type is wrong')
-
-       # path = default_storage.save(path_format_string.format(settings.MEDIA_APIARY_DIR, id_number, filename), ContentFile(_file.read()))
-        #document._file = path
-        #document.save()
 
     # comms_log doc store save
     if comms_instance and 'filename' in request.data:
@@ -160,7 +123,6 @@ def save_document(request, instance, comms_instance, document_type, input_name=N
 
         # log document action
         request_user = auth.get_user(request)
-        #if request.user is EmailUser:
         if type(request_user) is EmailUser:
             instance.fee_waiver.log_user_action(
                 FeeWaiverUserAction.ACTION_SAVE_DOCUMENT.format(
@@ -191,11 +153,9 @@ def save_contact_details_document_obj(instance, contact_details, temp_document):
     document = contact_details.documents.get_or_create(
         name=temp_document.name)[0]
     path = default_storage.save(
-        #'{}/{}/communications/{}/documents/{}'.format(
         '{}/{}/{}/documents/{}'.format(
             instance._meta.model_name, 
             instance.id, 
-            #contact_details.id, 
             temp_document.name
             ),
             temp_document._file
@@ -220,21 +180,3 @@ def save_default_document_obj(instance, temp_document):
     document._file = path
     document.save()
 
-## For transferring files from temp doc objs to physical artifact renderer objs
-#def save_renderer_document_obj(instance, temp_document, input_name):
-#    document = instance.renderer_documents.get_or_create(
-#            input_name=input_name,
-#            name=temp_document.name)[0]
-#    path = default_storage.save(
-#        'disturbance/{}/{}/renderer_documents/{}/{}'.format(
-#            instance._meta.model_name,
-#            instance.id,
-#            input_name,
-#            temp_document.name
-#            ),
-#            temp_document._file
-#        )
-#
-#    document._file = path
-#    document.save()
-#
