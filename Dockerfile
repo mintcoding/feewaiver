@@ -3,7 +3,7 @@ FROM ubuntu:20.04 as builder_base_feewaiver
 MAINTAINER asi@dbca.wa.gov.au
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Australia/Perth
-ENV PRODUCTION_EMAIL=True
+ENV PRODUCTION_EMAIL=False
 ENV SECRET_KEY="ThisisNotRealKey"
 RUN apt-get clean
 RUN apt-get update
