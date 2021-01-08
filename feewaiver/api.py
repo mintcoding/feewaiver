@@ -297,7 +297,6 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
 
     @detail_route(methods=['POST',])
     def assign_to(self, request, *args, **kwargs):
-        #import ipdb; ipdb.set_trace()
         try:
             instance = self.get_object()
             user_id = request.data.get('assigned_officer_id',None)
