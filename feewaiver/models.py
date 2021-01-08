@@ -397,3 +397,14 @@ class ApproversGroup(models.Model):
         verbose_name_plural = "Approvers group"
 
 
+import reversion
+reversion.register(Participants)
+reversion.register(Park)
+reversion.register(ContactDetails, follow=['participants', 'documents'])
+reversion.register(FeeWaiver, follow=['assigned_officer', 'visit', 'documents'])
+reversion.register(ContactDetailsDocument)
+reversion.register(FeeWaiverDocument)
+reversion.register(FeeWaiverVisit, follow=['parks', 'free_parks'])
+reversion.register(AssessorsGroup)
+reversion.register(ApproversGroup)
+

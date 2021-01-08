@@ -237,6 +237,7 @@ export default {
             $(vm.$refs.assigned_officer).trigger('change');
         },
         */
+        /*
         assignRequestUser: function(){
             let vm = this;
             vm.$http.get(helpers.add_endpoint_json('/api/feewaivers',(vm.feeWaiver.id+'/assign_request_user')))
@@ -252,6 +253,29 @@ export default {
                 )
             });
         },
+        */
+        assignRequestUser: async function(){
+            await this.$nextTick();
+            const res = this.$http.get(helpers.add_endpoint_json('/api/feewaivers',(this.feeWaiver.id+'/assign_request_user')))
+            this.feeWaiver = res.body;
+            await this.$nextTick();
+            this.updateAssignedOfficerSelect();
+        },
+        assignTo: async function() {
+            await this.$nextTick();
+            const res = this.$http.post(helpers.add_endpoint_json('/api/feewaivers',(this.feeWaiver.id+'/assign_to')),data);
+            this.feeWaiver = res.body;
+            await this.$nextTick();
+            this.updateAssignedOfficerSelect();
+        },
+        unAssign: async function() {
+            await this.$nextTick();
+            const res = this.$http.get(helpers.add_endpoint_json('/api/feewaivers',(this.feeWaiver.id+'/unassign')))
+            this.feeWaiver = res.body;
+            await this.$nextTick();
+            this.updateAssignedOfficerSelect();
+        },
+        /*
         assignTo: function(){
             let vm = this;
             let unassign = true;
@@ -288,6 +312,7 @@ export default {
                 });
             }
         },
+        */
         parentSave: async function() {
             const feeWaiverRes = await this.$refs.fee_waiver_form.save(false);
             return feeWaiverRes;
@@ -310,11 +335,11 @@ export default {
                 allowClear: true,
                 placeholder:"Select Officer"
             }).
-            on("select2:select", function (e) {
+            on("select2:select", async function (e) {
                 var selected = $(e.currentTarget);
                 vm.feeWaiver.assigned_officer = selected.val();
                 //await vm.$nextTick();
-                vm.assignTo();
+                await vm.assignTo();
                 /*
             }).on("select2:unselecting", function(e) {
                 var self = $(this);
@@ -322,11 +347,11 @@ export default {
                     self.select2('close');
                 }, 0);
                 */
-            }).on("select2:unselect", function (e) {
+            }).on("select2:unselect", async function (e) {
                 var selected = $(e.currentTarget);
                 vm.feeWaiver.assigned_officer = null;
                 //await vm.$nextTick();
-                vm.assignTo();
+                await vm.unAssign();
             });
             //});
         },

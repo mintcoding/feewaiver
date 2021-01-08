@@ -4,6 +4,8 @@ MAINTAINER asi@dbca.wa.gov.au
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Australia/Perth
 ENV PRODUCTION_EMAIL=False
+ENV EMAIL_INSTANCE="DEV"
+ENV NON_PROD_EMAIL="brendan.blackford@dbca.wa.gov.au"
 ENV SECRET_KEY="ThisisNotRealKey"
 RUN apt-get clean
 RUN apt-get update
