@@ -2,10 +2,19 @@ from django.contrib import admin
 from django.contrib.admin import AdminSite
 from django.contrib.auth.admin import UserAdmin
 from feewaiver.models import *
-from feewaiver.main_models import GlobalSettings
+from feewaiver.main_models import GlobalSettings, SystemMaintenance
 from ledger.accounts import admin as ledger_admin
 from ledger.accounts.models import EmailUser
 from copy import deepcopy
+from feewaiver import forms
+
+
+@admin.register(SystemMaintenance)
+class SystemMaintenanceAdmin(admin.ModelAdmin):
+    list_display = ['name', 'description', 'start_date', 'end_date', 'duration']
+    ordering = ('start_date',)
+    readonly_fields = ('duration',)
+    form = forms.SystemMaintenanceAdminForm
 
 
 class FeeWaiverAdminSite(AdminSite):
