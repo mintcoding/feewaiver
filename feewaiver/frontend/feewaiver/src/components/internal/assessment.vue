@@ -230,13 +230,11 @@ export default {
           }
           this.show_spinner = false;
       },
-    /*
         updateAssignedOfficerSelect:function(){
             let vm = this;
-            $(vm.$refs.assigned_officer).val(vm.feeWaiver.assigned_officer);
+            $(vm.$refs.assigned_officer).val(vm.feeWaiver.assigned_officer_id);
             $(vm.$refs.assigned_officer).trigger('change');
         },
-        */
         /*
         assignRequestUser: function(){
             let vm = this;
@@ -256,21 +254,22 @@ export default {
         */
         assignRequestUser: async function(){
             await this.$nextTick();
-            const res = this.$http.get(helpers.add_endpoint_json('/api/feewaivers',(this.feeWaiver.id+'/assign_request_user')))
+            const res = await this.$http.get(helpers.add_endpoint_json('/api/feewaivers',(this.feeWaiver.id+'/assign_request_user')))
             this.feeWaiver = res.body;
             await this.$nextTick();
             this.updateAssignedOfficerSelect();
         },
         assignTo: async function() {
             await this.$nextTick();
-            const res = this.$http.post(helpers.add_endpoint_json('/api/feewaivers',(this.feeWaiver.id+'/assign_to')),data);
+            const data = {'assigned_officer_id': this.feeWaiver.assigned_officer_id};
+            const res = await this.$http.post(helpers.add_endpoint_json('/api/feewaivers',(this.feeWaiver.id+'/assign_to')),data);
             this.feeWaiver = res.body;
             await this.$nextTick();
             this.updateAssignedOfficerSelect();
         },
         unAssign: async function() {
             await this.$nextTick();
-            const res = this.$http.get(helpers.add_endpoint_json('/api/feewaivers',(this.feeWaiver.id+'/unassign')))
+            const res = await this.$http.get(helpers.add_endpoint_json('/api/feewaivers',(this.feeWaiver.id+'/unassign')))
             this.feeWaiver = res.body;
             await this.$nextTick();
             this.updateAssignedOfficerSelect();
@@ -337,7 +336,7 @@ export default {
             }).
             on("select2:select", async function (e) {
                 var selected = $(e.currentTarget);
-                vm.feeWaiver.assigned_officer = selected.val();
+                vm.feeWaiver.assigned_officer_id = selected.val();
                 //await vm.$nextTick();
                 await vm.assignTo();
                 /*
@@ -349,7 +348,7 @@ export default {
                 */
             }).on("select2:unselect", async function (e) {
                 var selected = $(e.currentTarget);
-                vm.feeWaiver.assigned_officer = null;
+                vm.feeWaiver.assigned_officer_id = null;
                 //await vm.$nextTick();
                 await vm.unAssign();
             });
