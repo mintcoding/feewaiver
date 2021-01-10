@@ -138,6 +138,9 @@ def send_workflow_notification(fee_waiver,request, action, email_subject=None, w
     if email_subject:
         email.subject = email_subject
     url = request.build_absolute_uri(reverse('internal-feewaiver-detail',kwargs={'feewaiver_pk':fee_waiver.id}))
+    if "-internal" not in url:
+        # add it. This email is for internal staff (assessors)
+        url = '-internal.{}'.format(settings.SITE_DOMAIN).join(url.split('.' + settings.SITE_DOMAIN))
 
     comments = request.data.get('comments')
     context = {
