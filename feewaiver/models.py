@@ -154,6 +154,7 @@ class FeeWaiver(RevisionedMixin):
         self.save()
 
     def return_to_assessor(self, request):
+        self.assigned_officer = None
         self.processing_status = self.PROCESSING_STATUS_WITH_ASSESSOR
         self.log_user_action(
             FeeWaiverUserAction.ACTION_RETURN_TO_ASSESSOR.format(self.lodgement_number), 
