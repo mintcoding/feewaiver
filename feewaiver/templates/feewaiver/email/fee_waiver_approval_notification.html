@@ -2,9 +2,9 @@
 
 {%  block content %}
 {% if status == 'approved' %}
-    <p>Fee Waiver Request <strong>{{feewaiver.lodgement_number}}</strong> has been {{status}}{% if feewaiver.processing_status == 'issued' %}.{% else %}for a concession entry fee.{% endif %}
+    <p>Your Fee Waiver Request <strong>{{feewaiver.lodgement_number}}</strong> has been {{status}}{% if feewaiver.processing_status == 'issued' %}.{% else %} for a concession entry fee.{% endif %}
     Please ensure a copy of the attached approval document is on hand for every vehicle entering and 
-    presented to staff at the park entry station or upon request to obtain the concession.
+    presented to staff at the park entry station or upon request to obtain the {% if feewaiver.processing_status == 'issued' %}waiver{% else %}concession{% endif %}.
     </p>
 {% else %}
     <p>
