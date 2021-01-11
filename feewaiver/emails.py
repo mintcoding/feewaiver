@@ -124,6 +124,7 @@ class FeeWaiverApprovalNotificationEmail(TemplateEmailBase):
 
 def send_fee_waiver_received_notification(fee_waiver,request):
     email = FeeWaiverReceivedNotificationEmail()
+    email.subject = "Entry Fee Waiver {} request has been received".format(fee_waiver.lodgement_number)
 
     context = {
         'feewaiver': fee_waiver
@@ -148,13 +149,22 @@ def send_workflow_notification(fee_waiver,request, action, email_subject=None, w
         'comments': comments,
         'url': url,
     }
-
+    # set email recipients
     if action in ["propose_issue", "propose_concession", "propose_decline"]:
         to_addresses = list(ApproversGroup.objects.first().members.all().values_list('email', flat=True))
     if action in ["return_to_assessor", "submit"]:
         to_addresses = list(AssessorsGroup.objects.first().members.all().values_list('email', flat=True))
     if action in ["issue", "issue_concession", "decline"]:
         to_addresses = fee_waiver.contact_details.email
+    # update subject line
+    if action == "propose_decline":
+        email.subject = "Entry Fee Waiver {} Propose Decline".format(fee_waiver.lodgement_number)
+    elif action in ["propose_issue", "propose_concession"]:
+        email.subject = "Entry Fee Waiver {} Propose Issue".format(fee_waiver.lodgement_number)
+    elif action == "submit":
+        email.subject = "Entry Fee Waiver {} has been submitted".format(fee_waiver.lodgement_number)
+    elif action == "return_to_assessor":
+        email.subject = "Entry Fee Waiver {} Return to Assessor".format(fee_waiver.lodgement_number)
     sender = settings.DEFAULT_FROM_EMAIL
     if workflow_entry:
         msg = email.send(to_addresses, sender, context=context, attachments=prepare_attachments(workflow_entry.documents))
