@@ -40,6 +40,7 @@ COPY timezone /etc/timezone
 ENV TZ=Australia/Perth
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN touch /app/.env
+COPY .git ./.git
 COPY feewaiver ./feewaiver
 RUN python manage_fw.py collectstatic --noinput
 
