@@ -409,4 +409,6 @@ reversion.register(FeeWaiverVisit, follow=['parks', 'free_parks'])
 reversion.register(AssessorsGroup)
 reversion.register(ApproversGroup)
 reversion.register(EmailUser)
-
+reversion.register(FeeWaiverLogEntry, follow=['documents',])
+reversion.register(FeeWaiverLogDocument)
+reversion.register(FeeWaiverUserAction)
