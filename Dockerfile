@@ -26,8 +26,6 @@ RUN pip install --no-cache-dir -r requirements.txt \
   # Reference: https://stackoverflow.com/questions/18643998/geodjango-geosexception-error
   #&& sed -i -e "s/ver = geos_version().decode()/ver = geos_version().decode().split(' ')[0]/" /usr/local/lib/python3.6/dist-packages/django/contrib/gis/geos/libgeos.py \
   && rm -rf /var/lib/{apt,dpkg,cache,log}/ /tmp/* /var/tmp/*
-RUN pip install ipython==7.19
-RUN pip install jedi==0.17.2
 
 COPY libgeos.py.patch /app/
 RUN patch /usr/local/lib/python3.8/dist-packages/django/contrib/gis/geos/libgeos.py /app/libgeos.py.patch
