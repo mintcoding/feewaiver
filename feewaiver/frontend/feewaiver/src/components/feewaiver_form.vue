@@ -214,7 +214,7 @@
                 parksList: [],
                 //campGroundsList: [],
                 campingChoices: [],
-                visitIdx: 0,
+                //visitIdx: 0,
                 visits: [
                     {
                         index: 0,
@@ -304,8 +304,11 @@
                 this.temporary_document_collection_id = id.temp_doc_id;
             },
             addVisit: async function () {
+                await this.$nextTick();
+                let lastVisitPosition = this.visits.length;
                 let visit = {
-                    index: ++this.visitIdx,
+                    //index: ++this.visitIdx,
+                    index: lastVisitPosition,
                     selected_park_ids: [],
                     selected_free_park_ids: [],
                     //selected_campground_ids: [],
@@ -381,9 +384,9 @@
                 let ageOfParticipants = null;
                 for (let visit of this.visits) {
                     if (visit && visit.age_of_participants_array && visit.age_of_participants_array.length < 1) {
-                        const visitIdx = 'visit_' + visit.index;
+                        const visitIdxRef = 'visit_' + visit.index;
                         const ageOfParticipantsIdx = 'age_of_participants_' + visit.index
-                        visitRef = this.$refs[visitIdx];
+                        visitRef = this.$refs[visitIdxRef];
                         ageOfParticipants = visitRef[0].$refs[ageOfParticipantsIdx];
                     }
                 }
@@ -431,7 +434,7 @@
             removeVisit: function(visitIdx) {
                 // remove visit
                 let i = 0;
-                for (let visit of this.visit) {
+                for (let visit of this.visits) {
                     i++
                     if (visit.index === visitIdx) {
                         this.visits.splice(i, 1);
@@ -439,7 +442,7 @@
                 }
                 // reindex
                 let ii = 0;
-                for (let visit of this.visit) {
+                for (let visit of this.visits) {
                     visit.index = ii;
                     ii++
                 }
@@ -506,7 +509,7 @@
                 this.feeWaiver.can_process = returnVal.body.fee_waiver.can_process;
                 // visits should be empty if reading from backend
                 this.visits = []
-                this.visitIdx = -1;
+                //this.visitIdx = -1;
                 for (let retrievedVisit of returnVal.body.fee_waiver.visits) {
                     let visit = Object.assign({}, retrievedVisit);
                     // we are now saving the index to db
