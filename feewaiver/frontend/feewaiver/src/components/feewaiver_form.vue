@@ -428,6 +428,22 @@
 
                 }
             },
+            removeVisit: function(visitIdx) {
+                // remove visit
+                let i = 0;
+                for (let visit of this.visit) {
+                    i++
+                    if (visit.index === visitIdx) {
+                        this.visits.splice(i, 1);
+                    }
+                }
+                // reindex
+                let ii = 0;
+                for (let visit of this.visit) {
+                    visit.index = ii;
+                    ii++
+                }
+            },
             updatePayload: async function() {
                 await this.$nextTick();
                 this.payload = {};

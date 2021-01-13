@@ -3,6 +3,13 @@
                 <div class="col-sm-10">
                     <div class="form-group">
                         <div class="row">
+                            <button class="btn btn-primary pull-right" style="margin-top:5px;" @click.prevent="removeVisit()">Remove Visit</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-10">
+                    <div class="form-group">
+                        <div class="row">
                             <label for="visit_description" class="col-sm-4 control-label" >Provide the details and purpose of your visit</label>
                             <div class="col-sm-8">
                                 <textarea 
@@ -297,6 +304,10 @@
                 this.updateSelectableCampGrounds(this.visit.selected_park_ids, internal);
             },
             */
+            removeVisit: function() {
+                console.log("remove visit");
+                this.$parent.removeVisit(this.visit.index);
+            },
             triggerFreeParksSelector: async function(internal) {
                 await this.$nextTick();
                 this.addFreeParksEventListener(internal);
