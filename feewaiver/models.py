@@ -21,6 +21,7 @@ class Participants(models.Model):
     class Meta:
         app_label = 'feewaiver'
         verbose_name_plural = 'Participants'
+        ordering = ['name']
 
 
 class Park(models.Model):
@@ -33,6 +34,7 @@ class Park(models.Model):
 
     class Meta:
         app_label = 'feewaiver'
+        ordering = ['name']
 
 
 class CampGround(models.Model):
