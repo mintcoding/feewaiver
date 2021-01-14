@@ -520,6 +520,10 @@
                     visit.number_of_vehicles = visit.number_of_vehicles.toString()
                     this.visits.push(visit);
                 }
+                // sort array
+                this.visits.sort(function(a, b) {
+                    return a.index - b.index
+                });
                 this.contactDetails = Object.assign({}, returnVal.body.contact_details);
                 // TODO: try to improve this
                 if (this.contactDetails.participants_code) {
