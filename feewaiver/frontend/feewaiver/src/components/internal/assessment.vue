@@ -171,7 +171,7 @@ export default {
     computed: {
         assessmentTitle: function() {
             let title = 'Entry Fee Waiver Request: ' + this.feeWaiver.lodgement_number;
-            if (this.feeWaiver && this.feeWaiver.proposed_status) {
+            if (this.feeWaiver && this.feeWaiver.proposed_status && this.feeWaiver.processing_status === "With Approver") {
                 switch (this.feeWaiver.proposed_status) {
                     case "Decline":
                         title += ' (Proposed Decision: Decline)';
