@@ -3,7 +3,7 @@
                 <div class="col-sm-10">
                     <div class="form-group">
                         <div class="row">
-                            <button v-if="visit.index > 0" class="btn btn-primary pull-right" style="margin-top:5px;" @click.prevent="removeVisit()">Remove Visit</button>
+                            <button v-if="visit.index > 0 && !isInternal" class="btn btn-primary pull-right" style="margin-top:5px;" @click.prevent="removeVisit()">Remove Visit</button>
                         </div>
                     </div>
                 </div>

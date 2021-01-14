@@ -435,10 +435,10 @@
                 // remove visit
                 let i = 0;
                 for (let visit of this.visits) {
-                    i++
                     if (visit.index === visitIdx) {
                         this.visits.splice(i, 1);
                     }
+                    i++
                 }
                 // reindex
                 let ii = 0;
@@ -446,6 +446,8 @@
                     visit.index = ii;
                     ii++
                 }
+                // force load of visit child components
+                ++this.uuid;
             },
             updatePayload: async function() {
                 await this.$nextTick();
