@@ -305,7 +305,6 @@
             },
             */
             removeVisit: function() {
-                console.log("remove visit");
                 this.$parent.removeVisit(this.visit.index);
             },
             triggerFreeParksSelector: async function(internal) {
