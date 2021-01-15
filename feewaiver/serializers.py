@@ -429,6 +429,7 @@ class FeeWaiverDTSerializer(serializers.ModelSerializer):
     assigned_officer = serializers.SerializerMethodField(read_only=True)
     latest_feewaiver_document = serializers.SerializerMethodField()
     participants = serializers.SerializerMethodField()
+    organisation = serializers.SerializerMethodField()
 
     class Meta:
         model = FeeWaiver
@@ -445,14 +446,19 @@ class FeeWaiverDTSerializer(serializers.ModelSerializer):
                 'action_shortcut',
                 'comments_to_applicant',
                 'latest_feewaiver_document',
+                'organisation',
                 )
         read_only_fields = (
             'id',
         )
 
     def get_participants(self, obj):
-        if obj.contact_details:
+        if obj.contact_details and obj.contact_details.participants:
             return obj.contact_details.participants.name
+
+    def get_organisation(self, obj):
+        if obj.contact_details:
+            return obj.contact_details.organisation
 
     def get_assigned_officer(self,obj):
         if obj.assigned_officer:
