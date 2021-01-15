@@ -513,6 +513,7 @@ class FeeWaiverDocSerializer(serializers.ModelSerializer):
     can_process = serializers.SerializerMethodField()
     assigned_officer = serializers.SerializerMethodField()
     approver = serializers.SerializerMethodField()
+    approver_title = serializers.SerializerMethodField()
     full_camping_waiver_exists = serializers.SerializerMethodField()
     part_camping_waiver_exists = serializers.SerializerMethodField()
     concession = serializers.SerializerMethodField()
@@ -530,6 +531,7 @@ class FeeWaiverDocSerializer(serializers.ModelSerializer):
                 'can_process',
                 'assigned_officer',
                 'approver',
+                'approver_title',
                 'comments_to_applicant',
                 'visits',
                 'address',
@@ -577,6 +579,12 @@ class FeeWaiverDocSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if request:
             return request.user.get_full_name()
+        return None
+
+    def get_approver_title(self,obj):
+        request = self.context.get('request')
+        if request:
+            return request.user.title
         return None
 
     def get_contact_name(self, obj):
