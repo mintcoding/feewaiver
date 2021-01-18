@@ -148,7 +148,7 @@
                 <div class="navbar-inner">
                     <div v-if="feeWaiverId" class="container">
                       <p class="pull-right">
-                        <button class="btn btn-primary pull-right" style="margin-top:5px;" @click.prevent="save()">Save Changes</button>
+                        <button :disabled="!canProcess" class="btn btn-primary pull-right" style="margin-top:5px;" @click.prevent="save()">Save Changes</button>
                       </p>
                     </div>
                     <div v-else class="container">
