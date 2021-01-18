@@ -479,7 +479,8 @@ class FeeWaiverDTSerializer(serializers.ModelSerializer):
     def get_can_process(self,obj):
         # Check if currently logged in user has access to process the proposal
         request = self.context.get('request')
-        if request:
+        if request and obj.processing_status not in ['issued', 'concession', 'declined']:
+        #if request:
             user = request.user
             if obj.assigned_officer:
                 if obj.assigned_officer == user:
@@ -605,7 +606,8 @@ class FeeWaiverDocSerializer(serializers.ModelSerializer):
     def get_can_process(self,obj):
         # Check if currently logged in user has access to process the proposal
         request = self.context.get('request')
-        if request:
+        #if request:
+        if request and obj.processing_status not in ['issued', 'concession', 'declined']:
             user = request.user
             if obj.assigned_officer:
                 if obj.assigned_officer == user:
