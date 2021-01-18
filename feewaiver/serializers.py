@@ -26,6 +26,7 @@ class EmailUserSerializer(serializers.ModelSerializer):
                 'first_name',
                 'last_name',
                 'title',
+                'position_title',
                 'organisation',
                 'name'
                 )
@@ -584,7 +585,7 @@ class FeeWaiverDocSerializer(serializers.ModelSerializer):
     def get_approver_title(self,obj):
         request = self.context.get('request')
         if request:
-            return request.user.title
+            return request.user.position_title
         return None
 
     def get_contact_name(self, obj):
