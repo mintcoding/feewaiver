@@ -98,14 +98,12 @@ class Document(models.Model):
 
 
 def update_feewaiver_word_filename(instance, filename):
-    #import ipdb; ipdb.set_trace()
     cur_time = datetime.now().strftime('%Y%m%d_%H_%M') 
     new_filename = 'fee_waiver_template_{}'.format(cur_time)
     return 'feewaiver_template/{}.docx'.format(new_filename)
 
 
 class FeeWaiverWordTemplate(models.Model):
-    #feewaiver = models.ForeignKey(FeeWaiver,related_name='documents')
     _file = models.FileField(upload_to=update_feewaiver_word_filename)
     uploaded_date = models.DateTimeField(auto_now_add=True, editable=False)
     description = models.TextField(blank=True,
