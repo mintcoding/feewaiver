@@ -89,13 +89,11 @@ class FeeWaiverFilterBackend(DatatablesFilterBackend):
         total_count = queryset.count()
 
         def get_choice(status, choices=FeeWaiver.PROCESSING_STATUS_CHOICES):
-            #import ipdb; ipdb.set_trace()
             for i in choices:
                 if i[1]==status:
                     return i[0]
             return None
         def get_choice_display(status, choices=FeeWaiver.PROCESSING_STATUS_CHOICES):
-            #import ipdb; ipdb.set_trace()
             for i in choices:
                 if i[0]==status:
                     return i[1]
