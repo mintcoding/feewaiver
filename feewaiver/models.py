@@ -55,7 +55,7 @@ class ContactDetails(RevisionedMixin):
     contact_name = models.CharField(max_length=256, blank=True, null=True)
     postal_address = models.CharField(max_length=256, blank=True, null=True)
     suburb = models.CharField(max_length=256, blank=True, null=True)
-    state = models.CharField(max_length=10, blank=True, null=True)
+    state = models.CharField(max_length=30, blank=True, null=True)
     postcode = models.CharField(max_length=10, blank=True, null=True)
     phone = models.CharField(max_length=50, blank=True, null=True)
     email = models.EmailField()
