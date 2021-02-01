@@ -7,6 +7,9 @@ ENV PRODUCTION_EMAIL=False
 ENV EMAIL_INSTANCE="DEV"
 ENV NON_PROD_EMAIL="brendan.blackford@dbca.wa.gov.au,walter.genuit@dbca.wa.gov.au,aaron.farr@dbca.wa.gov.au"
 ENV SECRET_KEY="ThisisNotRealKey"
+ARG build_tag=0.0.0
+ENV BUILD_TAG=$build_tag
+RUN echo "*************************************************** Build TAG = $build_tag ***************************************************"
 RUN apt-get clean
 RUN apt-get update
 RUN apt-get upgrade -y

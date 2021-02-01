@@ -88,6 +88,7 @@ if DEV_STATIC and not DEV_STATIC_URL:
     raise ImproperlyConfigured('If running in DEV_STATIC, DEV_STATIC_URL has to be set')
 DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 DEV_APP_BUILD_URL = env('DEV_APP_BUILD_URL')  # URL of the Dev app.js served by webpack & express
+BUILD_TAG = env('BUILD_TAG', '0.0.0')
 
 # Department details
 SYSTEM_NAME = env('SYSTEM_NAME', 'Fee waiver')
