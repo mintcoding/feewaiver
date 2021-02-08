@@ -250,7 +250,7 @@ class FeeWaiver(RevisionedMixin):
 
 class FeeWaiverDocument(Document):
     feewaiver = models.ForeignKey(FeeWaiver,related_name='documents')
-    _file = models.FileField(upload_to=update_feewaiver_doc_filename)
+    _file = models.FileField(upload_to=update_feewaiver_doc_filename, max_length=255)
 
     class Meta:
         app_label = 'feewaiver'
@@ -300,7 +300,7 @@ class FeeWaiverVisit(RevisionedMixin):
 
 class ContactDetailsDocument(Document):
     contact_details = models.ForeignKey(ContactDetails,related_name='documents')
-    _file = models.FileField(null=True)
+    _file = models.FileField(null=True, max_length=255)
     can_delete = models.BooleanField(default=True) # after initial submit prevent document from being deleted
 
     def delete(self):
@@ -321,7 +321,7 @@ class FeeWaiverLogEntry(CommunicationsLogEntry):
 
 class FeeWaiverLogDocument(Document):
     log_entry = models.ForeignKey(FeeWaiverLogEntry,related_name='documents', null=True,)
-    _file = models.FileField(null=True)
+    _file = models.FileField(null=True, max_length=255)
 
     class Meta:
         app_label = 'feewaiver'

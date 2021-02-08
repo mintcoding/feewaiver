@@ -271,7 +271,8 @@ export default {
         actionShortcut: async function(id, approvalType) {
             let vm = this;
             let processingTableStr = `.action-${id}`;
-            let processingTable = $(processingTableStr);
+            //let processingTable = $(processingTableStr);
+            let processingTable = $(vm.$refs.feewaiver_datatable.vmDataTable)
             processingTable.replaceWith("<div><i class='fa fa-2x fa-spinner fa-spin'></i></div>");
             let post_url = '/api/feewaivers/' + id + '/final_approval/'
             let res = await Vue.http.post(post_url, {'approval_type': approvalType});
