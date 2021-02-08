@@ -460,24 +460,27 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
         try:
             with transaction.atomic():
                 instance = self.get_object()
-                action = request.data.get("approval_type")
-                if action == 'issue':
-                    instance.issue(request)
-                    instance.generate_doc(request)
-                    email_subject = "Entry Fee Waiver Request {} has been issued".format(instance.lodgement_number)
-                    send_approval_notification(instance, request, action, email_subject)
-                if action == 'issue_concession':
-                    instance.issue_concession(request)
-                    instance.generate_doc(request)
-                    email_subject = "Concession issued for Entry Fee Waiver Request {}".format(instance.lodgement_number)
-                    send_approval_notification(instance, request, action, email_subject)
-                if action == 'decline':
-                    instance.decline(request)
-                    email_subject = "Entry Fee Waiver Request {} has been declined".format(instance.lodgement_number)
-                    send_approval_notification(instance, request, action, email_subject)
+                if not instance.finalised:
+                    instance.finalised = True
+                    instance.save()
+                    action = request.data.get("approval_type")
+                    if action == 'issue':
+                        instance.issue(request)
+                        instance.generate_doc(request)
+                        email_subject = "Entry Fee Waiver Request {} has been issued".format(instance.lodgement_number)
+                        send_approval_notification(instance, request, action, email_subject)
+                    if action == 'issue_concession':
+                        instance.issue_concession(request)
+                        instance.generate_doc(request)
+                        email_subject = "Concession issued for Entry Fee Waiver Request {}".format(instance.lodgement_number)
+                        send_approval_notification(instance, request, action, email_subject)
+                    if action == 'decline':
+                        instance.decline(request)
+                        email_subject = "Entry Fee Waiver Request {} has been declined".format(instance.lodgement_number)
+                        send_approval_notification(instance, request, action, email_subject)
 
-                # send email
-                #send_approver_notification(instance, request, action)
+                    # send email
+                    #send_approver_notification(instance, request, action)
                 return Response()
 
         except serializers.ValidationError:

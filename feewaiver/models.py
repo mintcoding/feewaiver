@@ -101,6 +101,7 @@ class FeeWaiver(RevisionedMixin):
     fee_waiver_purpose = models.TextField(blank=True)
     assigned_officer = models.ForeignKey(EmailUser, blank=True, null=True, related_name='feewaiver_assigned', on_delete=models.SET_NULL)
     comments_to_applicant = models.TextField(blank=True)
+    finalised = models.BooleanField(default=False)
 
     def __str__(self):
         return self.lodgement_number
