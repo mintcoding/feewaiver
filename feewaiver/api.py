@@ -498,60 +498,61 @@ class FeeWaiverViewSet(viewsets.ModelViewSet):
         try:
             with transaction.atomic():
                 instance = self.get_object()
-                contact_details_data = request.data.get('contact_details')
-                contact_serializer = ContactDetailsSaveSerializer(instance.contact_details, data=contact_details_data)
-                contact_serializer.is_valid(raise_exception=True)
-                contact_details_obj = contact_serializer.save()
+                if not instance.finalised:
+                    contact_details_data = request.data.get('contact_details')
+                    contact_serializer = ContactDetailsSaveSerializer(instance.contact_details, data=contact_details_data)
+                    contact_serializer.is_valid(raise_exception=True)
+                    contact_details_obj = contact_serializer.save()
 
-                fee_waiver_data = request.data.get('fee_waiver')
-                waiver_serializer = FeeWaiverSaveSerializer(instance, data=fee_waiver_data)
-                waiver_serializer.is_valid(raise_exception=True)
-                fee_waiver_obj = waiver_serializer.save()
+                    fee_waiver_data = request.data.get('fee_waiver')
+                    waiver_serializer = FeeWaiverSaveSerializer(instance, data=fee_waiver_data)
+                    waiver_serializer.is_valid(raise_exception=True)
+                    fee_waiver_obj = waiver_serializer.save()
 
-                visits_data = request.data.get('visits')
-                for visit in visits_data:
-                    visit_obj = FeeWaiverVisit.objects.get(id=visit['id'])
-                    visit_serializer = FeeWaiverVisitSaveSerializer(visit_obj, data=visit)
-                    visit_serializer.is_valid(raise_exception=True)
-                    visit_obj = visit_serializer.save()
-                    # add parks
-                    parks_data = visit.get('selected_park_ids')
-                    if parks_data:
-                        # add new parks
-                        for park_id in parks_data:
-                            if park_id not in [str(v_id) for v_id in visit_obj.parks.all().values_list('id', flat=True)]:
-                                visit_obj.parks.add(Park.objects.get(id=park_id))
-                        # remove unchecked parks
-                        for db_park_id in [str(v_id) for v_id in visit_obj.parks.all().values_list('id', flat=True)]:
-                            if db_park_id not in parks_data:
-                                visit_obj.parks.remove(Park.objects.get(id=db_park_id))
-                    # add free parks
-                    free_parks_data = visit.get('selected_free_park_ids')
-                    if free_parks_data:
-                        # add new free parks
-                        for free_park_id in free_parks_data:
-                            if free_park_id not in [str(v_id) for v_id in visit_obj.free_parks.all().values_list('id', flat=True)]:
-                                visit_obj.free_parks.add(Park.objects.get(id=free_park_id))
-                        # remove unchecked free parks
-                        for db_free_park_id in [str(v_id) for v_id in visit_obj.free_parks.all().values_list('id', flat=True)]:
-                            if db_free_park_id not in free_parks_data:
-                                visit_obj.free_parks.remove(Park.objects.get(id=db_free_park_id))
+                    visits_data = request.data.get('visits')
+                    for visit in visits_data:
+                        visit_obj = FeeWaiverVisit.objects.get(id=visit['id'])
+                        visit_serializer = FeeWaiverVisitSaveSerializer(visit_obj, data=visit)
+                        visit_serializer.is_valid(raise_exception=True)
+                        visit_obj = visit_serializer.save()
+                        # add parks
+                        parks_data = visit.get('selected_park_ids')
+                        if parks_data:
+                            # add new parks
+                            for park_id in parks_data:
+                                if park_id not in [str(v_id) for v_id in visit_obj.parks.all().values_list('id', flat=True)]:
+                                    visit_obj.parks.add(Park.objects.get(id=park_id))
+                            # remove unchecked parks
+                            for db_park_id in [str(v_id) for v_id in visit_obj.parks.all().values_list('id', flat=True)]:
+                                if db_park_id not in parks_data:
+                                    visit_obj.parks.remove(Park.objects.get(id=db_park_id))
+                        # add free parks
+                        free_parks_data = visit.get('selected_free_park_ids')
+                        if free_parks_data:
+                            # add new free parks
+                            for free_park_id in free_parks_data:
+                                if free_park_id not in [str(v_id) for v_id in visit_obj.free_parks.all().values_list('id', flat=True)]:
+                                    visit_obj.free_parks.add(Park.objects.get(id=free_park_id))
+                            # remove unchecked free parks
+                            for db_free_park_id in [str(v_id) for v_id in visit_obj.free_parks.all().values_list('id', flat=True)]:
+                                if db_free_park_id not in free_parks_data:
+                                    visit_obj.free_parks.remove(Park.objects.get(id=db_free_park_id))
 
-                    ## add campgrounds
-                    #campgrounds_data = visit.get('selected_campground_ids')
-                    #if campgrounds_data:
-                    #    # add new campgrounds
-                    #    for campground_id in campgrounds_data:
-                    #        if campground_id not in [str(c_id) for c_id in visit_obj.campgrounds.all().values_list('id', flat=True)]:
-                    #            visit_obj.campgrounds.add(CampGround.objects.get(id=campground_id))
-                    #    # remove unchecked campgrounds
-                    #    for db_campground_id in [str(c_id) for c_id in visit_obj.campgrounds.all().values_list('id', flat=True)]:
-                    #        if db_campground_id not in campgrounds_data:
-                    #            visit_obj.campgrounds.remove(CampGround.objects.get(id=db_campground_id))
+                        ## add campgrounds
+                        #campgrounds_data = visit.get('selected_campground_ids')
+                        #if campgrounds_data:
+                        #    # add new campgrounds
+                        #    for campground_id in campgrounds_data:
+                        #        if campground_id not in [str(c_id) for c_id in visit_obj.campgrounds.all().values_list('id', flat=True)]:
+                        #            visit_obj.campgrounds.add(CampGround.objects.get(id=campground_id))
+                        #    # remove unchecked campgrounds
+                        #    for db_campground_id in [str(c_id) for c_id in visit_obj.campgrounds.all().values_list('id', flat=True)]:
+                        #        if db_campground_id not in campgrounds_data:
+                        #            visit_obj.campgrounds.remove(CampGround.objects.get(id=db_campground_id))
 
-                instance.log_user_action(
-                    FeeWaiverUserAction.ACTION_SAVE.format(instance.lodgement_number, request.user.get_full_name()),
-                    request)
+                    instance.log_user_action(
+                        FeeWaiverUserAction.ACTION_SAVE.format(instance.lodgement_number, request.user.get_full_name()),
+                        request)
                 return Response()
         except serializers.ValidationError:
             print(traceback.print_exc())
