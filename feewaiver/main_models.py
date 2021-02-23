@@ -104,7 +104,7 @@ def update_feewaiver_word_filename(instance, filename):
 
 
 class FeeWaiverWordTemplate(models.Model):
-    _file = models.FileField(upload_to=update_feewaiver_word_filename)
+    _file = models.FileField(upload_to=update_feewaiver_word_filename, max_length=255)
     uploaded_date = models.DateTimeField(auto_now_add=True, editable=False)
     description = models.TextField(blank=True,
                                    verbose_name='description', help_text='')
