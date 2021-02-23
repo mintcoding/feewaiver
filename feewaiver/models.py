@@ -60,6 +60,7 @@ class ContactDetails(RevisionedMixin):
     phone = models.CharField(max_length=50, blank=True, null=True)
     email = models.EmailField()
     email_confirmation = models.EmailField()
+    cc_email = models.EmailField(blank=True, null=True)
     organisation_description = models.TextField(blank=True)
 
     def __str__(self):
