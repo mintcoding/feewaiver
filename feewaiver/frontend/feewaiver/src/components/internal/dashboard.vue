@@ -281,11 +281,12 @@ export default {
             let post_url = '/api/feewaivers/' + id + '/final_approval/'
             let res = await Vue.http.post(post_url, {'approval_type': approvalType});
             if (res.ok) {
-                this.refreshFromResponse();
+                // this should also be await?
+                await this.refreshFromResponse();
             }
         },
-        refreshFromResponse: function(){
-            this.$refs.feewaiver_datatable.vmDataTable.ajax.reload();
+        refreshFromResponse: async function(){
+            await this.$refs.feewaiver_datatable.vmDataTable.ajax.reload();
         },
         addEventListeners: function(){
             let vm = this;
