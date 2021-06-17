@@ -495,11 +495,13 @@ class FeeWaiverDTSerializer(serializers.ModelSerializer):
         links = ''
         if self.get_can_process(obj) and obj.processing_status == 'with_approver':
             if obj.proposed_status == 'issue':
-                links +=  '<a href="{}" class="action-{}" data-issue="{}">Issue Fee Waiver</a><br/>'.format(obj.id, obj.id, obj.id)
+                #links +=  '<a href="{}" onclick="alert('+"'hello'"+');" class="action-{}" data-issue="{}">Issue Fee Waiver</a><br/>'.format(obj.id, obj.id, obj.id)
+                links +=  '<a href="javascript:void(0)" :click="actionShortcut({}, {})" class="action-{}" data-issue="{}">Issue Fee Waiver</a><br/>'.format(obj.id, "'issue'", obj.id, obj.id)
             if obj.proposed_status == 'concession':
-                links +=  '<a href="{}" class="action-{}" data-concession="{}">Issue Concession</a><br/>'.format(obj.id, obj.id, obj.id)
+                #links +=  '<a href="javascript:void(0)" v-on:click="actionShortcut({}, {})" class="action-{}" data-concession="{}">Issue Concession</a><br/>'.format(obj.id, "'issue_concession'", obj.id, obj.id)
+                links +=  '<button v-on:click="actionShortcu" class="action-{}" data-concession="{}">button</button><br/>'.format(obj.id, "'issue_concession'", obj.id, obj.id)
             if obj.proposed_status == 'decline':
-                links +=  '<a href="{}" class="action-{}" data-decline="{}">Decline</a><br/>'.format(obj.id, obj.id, obj.id)
+                links +=  '<a href="javascript:void(0)" :click="actionShortcut({}, {})" class="action-{}" data-decline="{}">Decline</a><br/>'.format(obj.id, "'decline'", obj.id, obj.id)
         # add Process/View
         if self.get_can_process(obj):
             links += '<a class="process-view-{}" href=/internal/fee_waiver/{}>Process</a><br/>'.format(obj.id, obj.id);

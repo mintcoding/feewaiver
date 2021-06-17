@@ -1,6 +1,7 @@
 <template id="proposal_dashboard">
     <div class="container">
         <FormSection :formCollapse="false" label="Fee Waiver Requests" Index="fee_waiver_requests">
+                    <button onclick="actionShortcutHook.actionShortcut()">Issue Concession</button><br/>
                     <div class="row">
                         <div class="col-md-3">
                             <label for="">Lodged From</label>
@@ -48,6 +49,18 @@ import {
     api_endpoints,
     helpers
 }from '@/utils/hooks'
+var actionShortcutHook = {
+    actionShortcut: function(id, approvalType) {
+        console.log(id)
+        console.log(approvalType)
+    }
+}
+/*
+const actionShortcut = new function(id, approvalType) {
+    console.log(id)
+    console.log(approvalType)
+}
+*/
 export default {
     name: 'FeeWaiverDash',
     props: {
@@ -169,8 +182,16 @@ export default {
                     {
                         data: "can_process",
                         mRender:function (data,type,full) {
+                            let vm = this;
                             //let links = '';
-                            let links = full.action_shortcut;
+                            //let links = full.action_shortcut;
+                            //let links = `<a href="javascript:void(0)" v-on:click.prevent="actionShortcut(${full.id}, "issue_concession")>Issue Concession</a><br/>`;
+                            //let links = `<button v-on:click="test()">Issue Concession</button><br/>`;
+                            let links = `<button onclick="helpers.actionShortcutHook.actionShortcut()">Issue Concession</button>`;
+                            //let links = `<a href="#" v-on:click.prevent="actionShortcut(${full.id}, 'issue_concession');">Issue Concession</a><br/>`;
+                            //let links = `<button v-on:click.prevent="actionShortcut">Issue Concession</button>`;
+                            //let links = `<button onclick="vm.actionShortcutHook.actionShortcut(${full.id}, 'issue_concession');">Issue Concession</button>`;
+                            //let links = `<button onclick="actionShortcut(${full.id}, 'issue_concession');">Issue Concession</button>`;
                             /*
                             if(full.can_process){
 
@@ -263,6 +284,10 @@ export default {
     computed: {
     },
     methods:{
+        test: function() {
+            console.log('test');
+            alert('test');
+        },
         fetchFilterLists: function(){
             let vm = this;
 
@@ -271,6 +296,7 @@ export default {
             },(error) => {
             })
         },
+        /*
         actionShortcutWrapper: async function(id, approvalType) {
             this.removeActionShortcutEventListeners();
             this.$nextTick(async () => {
@@ -280,7 +306,10 @@ export default {
                 }
             });
         },
+        */
         actionShortcut: async function(id, approvalType) {
+            console.log(id)
+            console.log(approvalType)
             let vm = this;
             let processingTableStr = `.action-${id}`;
             let processViewStr = `.process-view-${id}`;
@@ -297,7 +326,7 @@ export default {
         },
         refreshFromResponse: async function(){
             await this.$refs.feewaiver_datatable.vmDataTable.ajax.reload();
-            this.addActionShortcutEventListeners();
+            //this.addActionShortcutEventListeners();
         },
         addEventListeners: async function(){
             let vm = this;
@@ -344,8 +373,9 @@ export default {
                 }
             });
 
-            vm.addActionShortcutEventListeners();
+            //vm.addActionShortcutEventListeners();
         },
+        /*
         addActionShortcutEventListeners: function() {
             let vm = this;
             //Internal Action shortcut listeners
@@ -369,26 +399,11 @@ export default {
             //Internal Action shortcut listeners
             let table = vm.$refs.feewaiver_datatable.vmDataTable
             table.off('click', 'a[data-issue]', async function(e) {
-                /*
-                e.preventDefault();
-                var id = $(this).attr('data-issue');
-                await vm.actionShortcutWrapper(id, 'issue');
-                */
             }).off('click', 'a[data-concession]', async function(e) {
-                /*
-                e.preventDefault();
-
-                var id = $(this).attr('data-concession');
-                await vm.actionShortcutWrapper(id, 'issue_concession');
-                */
             }).off('click', 'a[data-decline]', async function(e) {
-                /*
-                e.preventDefault();
-                var id = $(this).attr('data-decline');
-                await vm.actionShortcutWrapper(id, 'decline');
-                */
             });
         },
+        */
         initialiseSearch:function(){
             this.dateSearch();
         },
