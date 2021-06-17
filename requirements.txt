@@ -1,4 +1,4 @@
-reportlab==3.5.26
+reportlab==3.5.55
 Django==1.11.29
 ipython==7.19.0
 jedi==0.17.2
