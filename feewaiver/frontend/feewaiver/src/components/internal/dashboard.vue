@@ -282,6 +282,7 @@ export default {
         },
         actionShortcut: async function(id, approvalType) {
             let vm = this;
+            this.processingActionShortcut = true;
             let processingTableStr = `.action-${id}`;
             let processViewStr = `.process-view-${id}`;
             let processingTable = $(processingTableStr);
